@@ -16,7 +16,10 @@ import {
   Star,
   TrendingUp,
   Trophy,
-  Target
+  Target,
+  Users,
+  Calendar,
+  ArrowRight
 } from 'lucide-react';
 import { useAccountTypeAuth } from '@/hooks/useAccountTypeAuth';
 
@@ -200,6 +203,55 @@ export default function PlayerDashboard() {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+
+        {/* Tournament Registration Section */}
+        <div className="mb-6 md:mb-8">
+          <div className="bg-gradient-to-r from-yellow-50 to-orange-50 border border-yellow-200 rounded-xl p-4 md:p-6">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-yellow-100 rounded-full">
+                  <Trophy className="h-6 w-6 md:h-8 md:w-8 text-yellow-600" />
+                </div>
+                <div>
+                  <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-1">التسجيل في البطولات</h3>
+                  <p className="text-sm md:text-base text-gray-600">سجل في البطولات المتاحة وشارك في المنافسات</p>
+                </div>
+              </div>
+              <Link 
+                href="/tournaments/unified-registration"
+                className="inline-flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 bg-gradient-to-r from-yellow-500 to-orange-600 text-white rounded-lg hover:from-yellow-600 hover:to-orange-700 transition-all duration-300 hover:scale-105 shadow-lg text-sm md:text-base"
+              >
+                <Trophy className="h-4 w-4 md:h-5 md:w-5" />
+                تسجيل في البطولات
+                <ArrowRight className="h-3 w-3 md:h-4 md:w-4" />
+              </Link>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4 mt-4 md:mt-6">
+              <div className="flex items-center gap-3 p-3 bg-white/50 rounded-lg">
+                <Users className="h-4 w-4 md:h-5 md:w-5 text-blue-600" />
+                <div>
+                  <p className="font-semibold text-gray-900 text-sm md:text-base">تسجيل فردي</p>
+                  <p className="text-xs md:text-sm text-gray-600">سجل نفسك في البطولات</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3 p-3 bg-white/50 rounded-lg">
+                <Calendar className="h-4 w-4 md:h-5 md:w-5 text-green-600" />
+                <div>
+                  <p className="font-semibold text-gray-900 text-sm md:text-base">البطولات المتاحة</p>
+                  <p className="text-xs md:text-sm text-gray-600">جميع البطولات النشطة</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3 p-3 bg-white/50 rounded-lg">
+                <Trophy className="h-4 w-4 md:h-5 md:w-5 text-purple-600" />
+                <div>
+                  <p className="font-semibold text-gray-900 text-sm md:text-base">دفع آمن</p>
+                  <p className="text-xs md:text-sm text-gray-600">طرق دفع متعددة</p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 

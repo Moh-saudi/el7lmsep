@@ -1,6 +1,8 @@
 'use client';
 
 import React, { memo } from 'react';
+import Link from 'next/link';
+import { Trophy, Users, Calendar, ArrowRight } from 'lucide-react';
 
 // مكون الصفحة الرئيسية الحماسية
 const WelcomeHero = memo(() => {
@@ -30,6 +32,53 @@ const WelcomeHero = memo(() => {
           <div className="flex items-center gap-3 p-4 bg-orange-50 rounded-lg">
             <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
             <span className="text-gray-700">التواصل مع الطلاب والأهالي</span>
+          </div>
+        </div>
+        
+        {/* Tournament Registration Section */}
+        <div className="bg-gradient-to-r from-yellow-50 to-orange-50 border border-yellow-200 rounded-xl p-6 mb-8">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-yellow-100 rounded-full">
+                <Trophy className="h-8 w-8 text-yellow-600" />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-gray-900 mb-1">التسجيل في البطولات</h3>
+                <p className="text-gray-600">سجل طلابك في البطولات المتاحة بسهولة</p>
+              </div>
+            </div>
+            <Link 
+              href="/tournaments/unified-registration"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-yellow-500 to-orange-600 text-white rounded-lg hover:from-yellow-600 hover:to-orange-700 transition-all duration-300 hover:scale-105 shadow-lg"
+            >
+              <Trophy className="h-5 w-5" />
+              تسجيل في البطولات
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+            <div className="flex items-center gap-3 p-3 bg-white/50 rounded-lg">
+              <Users className="h-5 w-5 text-blue-600" />
+              <div>
+                <p className="font-semibold text-gray-900">اختيار الطلاب</p>
+                <p className="text-sm text-gray-600">من قائمة طلابك المسجلين</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3 p-3 bg-white/50 rounded-lg">
+              <Calendar className="h-5 w-5 text-green-600" />
+              <div>
+                <p className="font-semibold text-gray-900">البطولات المتاحة</p>
+                <p className="text-sm text-gray-600">جميع البطولات النشطة</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3 p-3 bg-white/50 rounded-lg">
+              <Trophy className="h-5 w-5 text-purple-600" />
+              <div>
+                <p className="font-semibold text-gray-900">دفع آمن</p>
+                <p className="text-sm text-gray-600">طرق دفع متعددة</p>
+              </div>
+            </div>
           </div>
         </div>
         

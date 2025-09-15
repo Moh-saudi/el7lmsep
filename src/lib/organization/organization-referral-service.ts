@@ -381,7 +381,14 @@ class OrganizationReferralService {
         id: s.id,
         ...(s.data() as any)
       })) as PlayerJoinRequest[];
-    } catch (error) {
+    } catch (error: any) {
+      // تحسين معالجة الأخطاء
+      if (error?.code === 'failed-precondition' && error?.message?.includes('index')) {
+        console.warn('⚠️ Firebase index is still building. Please wait a few minutes and refresh the page.');
+        // إرجاع مصفوفة فارغة مؤقتاً حتى يتم بناء الفهرس
+        return [];
+      }
+      
       console.error('خطأ في جلب طلبات الانضمام:', error);
       return [];
     }

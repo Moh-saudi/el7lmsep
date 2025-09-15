@@ -27,7 +27,8 @@ import {
   Play,
   GraduationCap,
   Package,
-  CheckCircle
+  CheckCircle,
+  Mail
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
@@ -93,7 +94,7 @@ const Sidebar = () => {
     {
       title: 'sidebar.player.search',
       icon: <Search className="w-5 h-5" />,
-      path: '/dashboard/player/search'
+      path: '/dashboard/player/search-players'
     },
     {
       title: 'sidebar.player.stats',
@@ -103,7 +104,7 @@ const Sidebar = () => {
     {
       title: 'sidebar.common.messages',
       icon: <MessageSquare className="w-5 h-5" />,
-      path: '/dashboard/messages'
+      path: '/dashboard/player/messages'
     },
     {
       title: 'sidebar.player.subscriptions',
@@ -113,7 +114,7 @@ const Sidebar = () => {
     {
       title: 'sidebar.player.subscriptionStatus',
       icon: <Clock className="w-5 h-5" />,
-      path: '/dashboard/subscription'
+      path: '/dashboard/player/subscription-status'
     },
     {
       title: 'sidebar.player.notifications',
@@ -134,11 +135,11 @@ const Sidebar = () => {
         icon: <User className="w-5 h-5" />,
         path: '/dashboard/club/profile'
       },
-    {
-      title: 'sidebar.club.searchPlayers',
-      icon: <Search className="w-5 h-5" />, 
-      path: '/dashboard/club/search'
-      },
+      {
+        title: 'sidebar.club.searchPlayers',
+        icon: <Search className="w-5 h-5" />, 
+        path: '/dashboard/club/search-players'
+        },
       {
         title: 'sidebar.club.players',
         icon: <Users className="w-5 h-5" />,
@@ -147,7 +148,7 @@ const Sidebar = () => {
     {
       title: 'sidebar.club.videos',
       icon: <VideoIcon className="w-5 h-5" />, 
-      path: '/dashboard/club/videos'
+      path: '/dashboard/club/player-videos'
       },
       {
         title: 'sidebar.club.playerVideos',
@@ -157,12 +158,12 @@ const Sidebar = () => {
       {
       title: 'sidebar.club.stats',
         icon: <BarChart3 className="w-5 h-5" />,
-      path: '/dashboard/club/stats'
+      path: '/dashboard/club/player-evaluation'
       },
       {
       title: 'sidebar.club.finances',
         icon: <DollarSign className="w-5 h-5" />,
-      path: '/dashboard/club/finances'
+      path: '/dashboard/club/billing'
       },
       {
         title: 'sidebar.player.referrals',
@@ -172,7 +173,7 @@ const Sidebar = () => {
           {
       title: 'sidebar.common.messages',
       icon: <MessageSquare className="w-5 h-5" />,
-      path: '/dashboard/messages'
+      path: '/dashboard/player/messages'
     },
     {
       title: 'sidebar.player.notifications',
@@ -231,7 +232,7 @@ const Sidebar = () => {
     {
       title: 'sidebar.common.messages',
       icon: <MessageSquare className="w-5 h-5" />,
-      path: '/dashboard/messages'
+      path: '/dashboard/player/messages'
     },
     {
       title: 'sidebar.player.notifications',
@@ -255,32 +256,32 @@ const Sidebar = () => {
     {
       title: 'sidebar.academy.students',
       icon: <Users className="w-5 h-5" />, 
-      path: '/dashboard/academy/students'
+      path: '/dashboard/academy/players'
     },
     {
       title: 'sidebar.academy.courses',
         icon: <FileText className="w-5 h-5" />,
-      path: '/dashboard/academy/courses'
+      path: '/dashboard/academy/player-videos'
     },
     {
       title: 'sidebar.academy.videos',
       icon: <VideoIcon className="w-5 h-5" />, 
-      path: '/dashboard/academy/videos'
+      path: '/dashboard/academy/player-videos'
     },
     {
       title: 'sidebar.academy.trainers',
       icon: <Users className="w-5 h-5" />, 
-      path: '/dashboard/academy/trainers'
+      path: '/dashboard/academy/players'
     },
     {
       title: 'sidebar.academy.stats',
       icon: <BarChart3 className="w-5 h-5" />, 
-      path: '/dashboard/academy/stats'
+      path: '/dashboard/academy/player-videos'
     },
     {
       title: 'sidebar.academy.finances',
       icon: <DollarSign className="w-5 h-5" />, 
-      path: '/dashboard/academy/finances'
+      path: '/dashboard/academy/billing'
     },
     {
       title: 'sidebar.player.referrals',
@@ -290,7 +291,7 @@ const Sidebar = () => {
     {
       title: 'sidebar.common.messages',
       icon: <MessageSquare className="w-5 h-5" />,
-      path: '/dashboard/messages'
+      path: '/dashboard/player/messages'
     },
     {
       title: 'sidebar.player.notifications',
@@ -314,7 +315,7 @@ const Sidebar = () => {
     {
       title: 'sidebar.trainer.sessions',
       icon: <Clock className="w-5 h-5" />, 
-      path: '/dashboard/trainer/sessions'
+      path: '/dashboard/trainer/player-videos'
     },
     {
       title: 'sidebar.trainer.players',
@@ -324,17 +325,17 @@ const Sidebar = () => {
     {
       title: 'sidebar.trainer.videos',
       icon: <VideoIcon className="w-5 h-5" />, 
-      path: '/dashboard/trainer/videos'
+      path: '/dashboard/trainer/player-videos'
     },
     {
       title: 'sidebar.trainer.programs',
       icon: <FileText className="w-5 h-5" />, 
-      path: '/dashboard/trainer/programs'
+      path: '/dashboard/trainer/player-videos'
     },
     {
       title: 'sidebar.trainer.stats',
       icon: <BarChart3 className="w-5 h-5" />, 
-      path: '/dashboard/trainer/stats'
+      path: '/dashboard/trainer/player-videos'
     },
     {
       title: 'sidebar.player.referrals',
@@ -344,7 +345,7 @@ const Sidebar = () => {
     {
       title: 'sidebar.common.messages',
       icon: <MessageSquare className="w-5 h-5" />,
-      path: '/dashboard/messages'
+      path: '/dashboard/player/messages'
     },
     {
       title: 'sidebar.player.notifications',
@@ -435,14 +436,19 @@ const Sidebar = () => {
       path: '/dashboard/admin/notifications'
     },
     {
-      title: 'sidebar.admin.videos',
+      title: 'sidebar.admin.media',
       icon: <VideoIcon className="w-5 h-5" />,
-      path: '/dashboard/admin/videos'
+      path: '/dashboard/admin/media'
     },
     {
       title: 'sidebar.admin.users',
       icon: <Users className="w-5 h-5" />,
       path: '/dashboard/admin/users'
+    },
+    {
+      title: 'ترحيل البريد الإلكتروني',
+      icon: <Mail className="w-5 h-5" />,
+      path: '/dashboard/admin/email-migration'
     },
     {
       title: 'sidebar.admin.stats',
@@ -453,6 +459,11 @@ const Sidebar = () => {
       title: 'sidebar.admin.settings',
       icon: <KeyRound className="w-5 h-5" />,
       path: '/dashboard/admin/settings'
+    },
+    {
+      title: 'إدارة BeOn V3',
+      icon: <MessageSquare className="w-5 h-5" />,
+      path: '/dashboard/admin/beon-v3'
     }
   ];
 

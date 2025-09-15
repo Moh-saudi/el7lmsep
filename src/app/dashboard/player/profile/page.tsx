@@ -516,10 +516,10 @@ export default function PlayerProfile() {
       trainerId: (playerData as any)?.trainerId,
       club_id: (playerData as any)?.club_id,
       clubId: (playerData as any)?.clubId,
-              agent_id: (playerData as any)?.agent_id,
-        agentId: (playerData as any)?.agentId,
-              academy_id: (playerData as any)?.academy_id,
-        academyId: (playerData as any)?.academyId
+      agent_id: (playerData as any)?.agent_id,
+      agentId: (playerData as any)?.agentId,
+      academy_id: (playerData as any)?.academy_id,
+      academyId: (playerData as any)?.academyId
     });
     
     if ((playerData as any)?.trainer_id || (playerData as any)?.trainerId) {
@@ -539,8 +539,8 @@ export default function PlayerProfile() {
       return 'academy';
     }
     
-    console.log('⚠️ لم يتم العثور على انتماء - استخدام الافتراضي: مدرب');
-    return 'trainer'; // افتراضي
+    console.log('✅ تم تحديد النوع: لاعب مستقل');
+    return 'independent'; // اللاعبين المستقلين
   };
 
   // Upload profile image
@@ -1968,7 +1968,8 @@ export default function PlayerProfile() {
       console.log(`🔑 Using user ID: "${user.uid}" (length: ${user.uid.length})`);
       
       try {
-        const result = await uploadPlayerAdditionalImage(files[i], user.uid);
+        const accountType = getAccountType();
+        const result = await uploadPlayerAdditionalImage(files[i], user.uid, accountType);
         console.log('✅ Upload result:', result);
         
         if (result && result.url) {

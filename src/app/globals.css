@@ -69,19 +69,13 @@
   }
 }
 
-/* Cairo Font System for Arabic */
-@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap');
-
-/* Inter Font System for English */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
-
-/* Font loading optimization */
+/* Font loading optimization - استخدام الخطوط المحلية أولاً */
 @font-face {
   font-family: 'Cairo';
   font-display: swap;
   font-style: normal;
   font-weight: 400;
-  src: local('Cairo'), url('https://fonts.gstatic.com/s/cairo/v20/SLXVc1nY6HkvangtZmpcWmhzfH5lWWgcQyyS4J0.woff2') format('woff2');
+  src: local('Cairo'), local('Cairo-Regular');
 }
 
 @font-face {
@@ -89,7 +83,7 @@
   font-display: swap;
   font-style: normal;
   font-weight: 400;
-  src: local('Inter'), url('https://fonts.gstatic.com/s/inter/v12/UcC73FwrK3iLTeHuS_fvQtMwCp50KnMa1ZL7.woff2') format('woff2');
+  src: local('Inter'), local('Inter-Regular');
 }
 
 html, body, * {

@@ -2,18 +2,29 @@
 
 import { createBrowserClient } from '@supabase/ssr';
 
-// تعريف أسماء buckets التخزين في Supabase
+// تعريف أسماء buckets التخزين في Supabase (محدثة لتتطابق مع البوكتات الفعلية)
 export const STORAGE_BUCKETS = {
   PROFILE_IMAGES: 'profile-images',
-  ADDITIONAL_IMAGES: 'additional-images',
-  PLAYER_AVATAR: 'player-avatar',
-  PLAYER_ADDITIONAL_IMAGES: 'player-additional-images',
+  ADDITIONAL_IMAGES: 'avatars', // بوكت avatars للاعبين المستقلين
+  PLAYER_AVATAR: 'avatars',
+  PLAYER_ADDITIONAL_IMAGES: 'avatars',
   VIDEOS: 'videos',
   DOCUMENTS: 'documents',
-  PLAYER_VIDEOS: 'player-videos',
-  CLUB_VIDEOS: 'club-videos',
-  ACADEMY_VIDEOS: 'academy-videos',
-  ADS: 'ads' // Bucket جديد للإعلانات
+  PLAYER_VIDEOS: 'videos',
+  CLUB_VIDEOS: 'videos',
+  ACADEMY_VIDEOS: 'videos',
+  ADS: 'ads', // Bucket للإعلانات
+  // بوكتات خاصة باللاعبين حسب نوع الحساب
+  PLAYER_TRAINER: 'playertrainer',
+  PLAYER_CLUB: 'playerclub',
+  PLAYER_AGENT: 'playeragent',
+  PLAYER_ACADEMY: 'playeracademy',
+  // بوكتات إضافية موجودة في Supabase
+  WALLET: 'wallet',
+  CLUB_AVATAR: 'clubavatar',
+  AGENT: 'agent',
+  ACADEMY: 'academy',
+  TRAINER: 'trainer'
 };
 
 // تصدير عنوان وAPI key الخاص بـ Supabase - Updated with working credentials

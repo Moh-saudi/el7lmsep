@@ -410,11 +410,11 @@ const EnhancedMessageCenter: React.FC = () => {
       // إرسال عبر SMS
       if ((sendVia === 'sms' || sendVia === 'all') && contact.phone) {
         try {
-          const smsResponse = await fetch('/api/notifications/sms/bulk', {
+          const smsResponse = await fetch('/api/beon/sms', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              phoneNumbers: [contact.phone],
+              singlePhone: contact.phone,
               message: message
             })
           });

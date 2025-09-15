@@ -271,7 +271,7 @@ export default function TrainerPlayersPage() {
         d = new Date(date);
       }
       
-      return d.toLocaleDateString('ar-EG', {
+      return d.toLocaleDateString('en-GB', {
         year: 'numeric',
         month: 'long',
         day: 'numeric'

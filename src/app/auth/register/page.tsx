@@ -379,12 +379,13 @@ export default function RegisterPage() {
       
       console.log('⏭️ OTP verification disabled, creating account directly...');
       
-      // توليد بريد إلكتروني مؤقت آمن لـ Firebase
-      const cleanPhone = formattedPhone.replace(/[^0-9]/g, '');
-      const cleanCountryCode = formData.countryCode.replace(/[^0-9]/g, '');
-      const timestamp = Date.now();
-      const randomSuffix = Math.random().toString(36).substring(2, 8);
-      const firebaseEmail = `user_${cleanCountryCode}_${cleanPhone}_${timestamp}_${randomSuffix}@el7lm.com`;
+      // توليد بريد إلكتروني مؤقت قصير لـ Firebase
+      const { generateTypedFirebaseEmail } = await import('@/lib/utils/firebase-email-generator');
+      const firebaseEmail = generateTypedFirebaseEmail(
+        formData.phone, 
+        formData.countryCode, 
+        formData.accountType
+      );
       
       const registrationData = {
         full_name: formData.name,

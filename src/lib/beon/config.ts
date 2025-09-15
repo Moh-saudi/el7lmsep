@@ -1,120 +1,116 @@
-// تكوين BeOn V3 API حسب الوثائق الرسمية المحدثة
-export const BEON_CONFIG = {
-  // API Integration Token - الـ Token الجديد لـ V3
-  TOKENS: {
-    // V3 API Token - للجميع
-    V3_API: process.env.BEON_V3_TOKEN || 'Yt3A3RwMQHx49trsz1EMgSKP8qOD0CSVJXdJxy6IqNNtcYblsYWtfVAtaJpv',
-    // SMS Regular - للرسائل العادية
-    SMS_REGULAR: process.env.BEON_SMS_TOKEN || 'Yt3A3RwMQHx49trsz1EMgSKP8qOD0CSVJXdJxy6IqNNtcYblsYWtfVAtaJpv',
-    // SMS Template - للرسائل القوالب
-    SMS_TEMPLATE: process.env.BEON_SMS_TEMPLATE_TOKEN || 'Yt3A3RwMQHx49trsz1EMgSKP8qOD0CSVJXdJxy6IqNNtcYblsYWtfVAtaJpv',
-    // SMS Bulk - للرسائل الجماعية
-    SMS_BULK: process.env.BEON_BULK_SMS_TOKEN || 'Yt3A3RwMQHx49trsz1EMgSKP8qOD0CSVJXdJxy6IqNNtcYblsYWtfVAtaJpv',
-    // WhatsApp OTP
-    WHATSAPP_OTP: process.env.BEON_WHATSAPP_OTP_TOKEN || process.env.BEON_OTP_TOKEN || 'SPb4sbemr5bwb7sjzCqTcL',
-    // WhatsApp
-    WHATSAPP: process.env.BEON_WHATSAPP_TOKEN || 'Yt3A3RwMQHx49trsz1EMgSKP8qOD0CSVJXdJxy6IqNNtcYblsYWtfVAtaJpv'
-  },
+/**
+ * BeOn V3 API Configuration
+ * تكوين API BeOn V3
+ */
+
+export const BEON_V3_CONFIG = {
+  // Base URL for BeOn V3 API
+  BASE_URL: process.env.BEON_V3_BASE_URL || 'https://v3.api.beon.chat',
   
-  // API Endpoints حسب الوثائق الرسمية V3
+  // Your API Token
+  TOKEN: process.env.BEON_V3_TOKEN || 'Yt3A3RwMQHx49trsz1EMgSKP8qOD0CSVJXdJxy6IqNNtcYblsYWtfVAtaJpv',
+  
+  // Endpoints
   ENDPOINTS: {
-    BASE_URL: process.env.BEON_BASE_URL || 'https://v3.api.beon.chat',
-    
-    // SMS Regular - للرسائل العادية (endpoint صحيح)
-    SMS: '/api/v3/messages/sms',
-    
-    // SMS Template - للرسائل القوالب
-    SMS_TEMPLATE: '/api/v3/messages/sms/template',
-    
-    // SMS Bulk - للرسائل الجماعية
+    // SMS Endpoints
     SMS_BULK: '/api/v3/messages/sms/bulk',
+    SMS_TEMPLATE: '/api/v3/send/message/sms/template',
     
-    // WhatsApp OTP
-    WHATSAPP_OTP: '/api/v3/messages/otp',
+    // WhatsApp Endpoints (using SMS endpoints as per documentation)
+    WHATSAPP: '/api/v3/messages/sms/bulk',
     
-    // WhatsApp
-    WHATSAPP: '/api/v3/messages/whatsapp'
+    // Template Management
+    CREATE_TEMPLATE: '/api/v3/partner/templates/create',
+    
+    // Account
+    ACCOUNT_DETAILS: '/api/v3/account'
   },
   
-  // إعدادات افتراضية
+  // Default settings
   DEFAULTS: {
-    SENDER_NAME: process.env.BEON_SENDER_NAME || 'El7lm',
+    SENDER_NAME: 'El7lm',
     LANGUAGE: 'ar',
-    OTP_LENGTH: 4,
-    CALLBACK_URL: process.env.BEON_CALLBACK_URL || 'http://www.el7lm.com/beon/'
-  },
-  
-  // Headers المطلوبة حسب الوثائق الرسمية V3
-  HEADERS: {
-    CONTENT_TYPE: 'multipart/form-data', // ✅ Content-Type الصحيح
-    TOKEN_HEADER: 'beon-token', // ✅ Header الصحيح حسب الوثائق V3
-    AUTHORIZATION_HEADER: 'Authorization'
+    OTP_LENGTH: 4
   }
 };
 
-// دالة للحصول على Token المناسب حسب نوع الخدمة
-export function getBeOnToken(serviceType: 'sms' | 'template' | 'bulk' | 'whatsapp' | 'whatsapp_otp'): string {
-  switch (serviceType) {
-    case 'sms':
-      return BEON_CONFIG.TOKENS.SMS_REGULAR;
-    case 'template':
-      return BEON_CONFIG.TOKENS.SMS_TEMPLATE;
-    case 'bulk':
-      return BEON_CONFIG.TOKENS.SMS_BULK;
-    case 'whatsapp':
-      return BEON_CONFIG.TOKENS.WHATSAPP;
-    case 'whatsapp_otp':
-      return BEON_CONFIG.TOKENS.WHATSAPP_OTP;
-    default:
-      return BEON_CONFIG.TOKENS.API_TOKEN;
-  }
-}
-
-// دالة للحصول على Endpoint المناسب
-export function getBeOnEndpoint(serviceType: 'sms' | 'template' | 'bulk' | 'whatsapp' | 'whatsapp_otp'): string {
-  switch (serviceType) {
-    case 'sms':
-      return BEON_CONFIG.ENDPOINTS.SMS;
-    case 'template':
-      return BEON_CONFIG.ENDPOINTS.SMS_TEMPLATE;
-    case 'bulk':
-      return BEON_CONFIG.ENDPOINTS.SMS_BULK;
-    case 'whatsapp':
-      return BEON_CONFIG.ENDPOINTS.WHATSAPP;
-    case 'whatsapp_otp':
-      return BEON_CONFIG.ENDPOINTS.WHATSAPP_OTP;
-    default:
-      return BEON_CONFIG.ENDPOINTS.SMS;
-  }
-}
-
-// دالة إنشاء Headers
-export function createBeOnHeaders(token: string): Record<string, string> {
+// Helper function to create headers
+export const createBeOnHeaders = (token?: string) => {
   return {
-    'beon-token': token // ✅ Header الصحيح حسب الوثائق V3
-    // لا نضع Content-Type لأن FormData يضعه تلقائياً
+    'beon-token': token || BEON_V3_CONFIG.TOKEN,
+    'Content-Type': 'application/json; charset=utf-8'
   };
+};
+
+// Helper function to create form data headers
+export const createBeOnFormHeaders = (token?: string) => {
+  return {
+    'beon-token': token || BEON_V3_CONFIG.TOKEN
+  };
+};
+
+// Response interfaces
+export interface BeOnResponse {
+  success: boolean;
+  message?: string;
+  error?: string;
+  data?: any;
+  code?: string;
+  retryAfter?: number;
 }
 
-// دالة التحقق من صحة التكوين
-export function validateBeOnConfig(): boolean {
-  const requiredTokens = [
-    BEON_CONFIG.TOKENS.API_TOKEN,
-    BEON_CONFIG.TOKENS.SMS_REGULAR,
-    BEON_CONFIG.TOKENS.SMS_TEMPLATE,
-    BEON_CONFIG.TOKENS.SMS_BULK
-  ];
-  
-  return requiredTokens.every(token => token && token.length > 0);
+export interface BeOnError {
+  code: string;
+  message: string;
+  details?: any;
+  retryAfter?: number;
 }
 
-// دالة طباعة معلومات التكوين للتصحيح
-export function logBeOnConfig(): void {
-  console.log('🔧 BeOn V3 Configuration:');
-  console.log('📱 Base URL:', BEON_CONFIG.ENDPOINTS.BASE_URL);
-  console.log('🔑 API Token:', BEON_CONFIG.TOKENS.API_TOKEN.substring(0, 20) + '...');
-  console.log('📧 SMS Token:', BEON_CONFIG.TOKENS.SMS_REGULAR.substring(0, 20) + '...');
-  console.log('📋 Template Token:', BEON_CONFIG.TOKENS.SMS_TEMPLATE.substring(0, 20) + '...');
-  console.log('📦 Bulk Token:', BEON_CONFIG.TOKENS.SMS_BULK.substring(0, 20) + '...');
-  console.log('✅ Config Valid:', validateBeOnConfig());
+export interface BeOnSMSResponse {
+  success: boolean;
+  messageId?: string;
+  phoneNumbers: string[];
+  status: 'sent' | 'failed' | 'pending';
+  timestamp?: string;
+}
+
+export interface SMSBulkRequest {
+  phoneNumbers: string[];
+  message: string;
+  sender?: string;
+  lang?: string;
+}
+
+export interface SMSTemplateRequest {
+  template_id: number;
+  phoneNumber: string;
+  name: string;
+  vars: string[];
+}
+
+export interface TemplateCreateRequest {
+  name: string;
+  lang: string;
+  message: string;
+}
+
+// Utility functions
+export async function retryRequest<T>(
+  requestFn: () => Promise<T>, 
+  maxRetries: number = 3,
+  delay: number = 1000
+): Promise<T> {
+  for (let i = 0; i < maxRetries; i++) {
+    try {
+      return await requestFn();
+    } catch (error) {
+      if (i === maxRetries - 1) throw error;
+      
+      // زيادة التأخير مع كل محاولة
+      const currentDelay = delay * Math.pow(2, i);
+      console.log(`🔄 إعادة المحاولة ${i + 1}/${maxRetries} بعد ${currentDelay}ms`);
+      await new Promise(resolve => setTimeout(resolve, currentDelay));
+    }
+  }
+  throw new Error('فشل في جميع محاولات إعادة الإرسال');
 }

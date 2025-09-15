@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { collection, query, orderBy, getDocs, where, limit, doc, updateDoc, addDoc, deleteDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase/config';
 import toast from 'react-hot-toast';
+import { openWhatsAppShare, testWhatsAppShare } from '@/lib/utils/whatsapp-share';
 
 export default function AdminPaymentsPage() {
   const [payments, setPayments] = useState([]);
@@ -63,6 +64,9 @@ export default function AdminPaymentsPage() {
   
   // تتبع المدفوعات السابقة للإشعارات
   const [previousPaymentIds, setPreviousPaymentIds] = useState(new Set());
+  
+  // تتبع الإشعارات المرسلة لتجنب التكرار
+  const [sentNotifications, setSentNotifications] = useState(new Set());
   
   // إدارة إرسال الإشعارات للمدير
   const [adminNotificationsEnabled, setAdminNotificationsEnabled] = useState(() => {
@@ -265,8 +269,14 @@ export default function AdminPaymentsPage() {
           status: newStatus,
           updated_at: new Date()
         });
-      } catch (bulkError) {
-        console.log('لم يتم العثور على الدفعة في جدول bulk_payments:', bulkError);
+        console.log('تم تحديث الدفعة في جدول bulk_payments بنجاح');
+      } catch (bulkError: any) {
+        // هذا أمر طبيعي - ليس كل المدفوعات موجودة في bulk_payments
+        if (bulkError?.code === 'not-found') {
+          console.log('الدفعة غير موجودة في جدول bulk_payments - هذا أمر طبيعي');
+        } else {
+          console.log('خطأ في تحديث جدول bulk_payments:', bulkError);
+        }
       }
 
       toast.success('تم تحديث حالة الدفعة بنجاح');
@@ -283,8 +293,12 @@ export default function AdminPaymentsPage() {
   const activateSubscription = async (payment) => {
     try {
       const userId = payment.playerId || payment.userId;
-      if (!userId) {
-        console.error('لا يوجد معرف مستخدم للتفعيل');
+      if (!userId || userId === 'unknown') {
+        console.error('لا يوجد معرف مستخدم للتفعيل:', { 
+          paymentId: payment.id, 
+          playerId: payment.playerId, 
+          userId: payment.userId 
+        });
         return;
       }
 
@@ -335,8 +349,14 @@ export default function AdminPaymentsPage() {
           subscription_expires_at: subscriptionData.expires_at,
           updated_at: new Date()
         });
-      } catch (bulkError) {
-        console.log('لم يتم العثور على الدفعة في جدول bulk_payments:', bulkError);
+        console.log('تم تحديث الدفعة في جدول bulk_payments بنجاح');
+      } catch (bulkError: any) {
+        // هذا أمر طبيعي - ليس كل المدفوعات موجودة في bulk_payments
+        if (bulkError?.code === 'not-found') {
+          console.log('الدفعة غير موجودة في جدول bulk_payments - هذا أمر طبيعي');
+        } else {
+          console.log('خطأ في تحديث جدول bulk_payments:', bulkError);
+        }
       }
 
       console.log('تم تفعيل الاشتراك بنجاح');
@@ -344,6 +364,25 @@ export default function AdminPaymentsPage() {
       console.error('خطأ في تفعيل الاشتراك:', error);
       throw error;
     }
+  };
+
+  // دالة لإنشاء رسالة SMS قصيرة
+  const createShortSMSMessage = (payment) => {
+    // اختصار اسم العميل
+    const customerName = payment.playerName || payment.playerId || 'غير محدد';
+    const shortName = customerName.length > 8 ? customerName.substring(0, 6) + '..' : customerName;
+    
+    // اختصار المبلغ
+    const amount = payment.amount || 0;
+    const currency = payment.currency || 'EGP';
+    
+    // إنشاء رسالة قصيرة جداً
+    const message = `💰 مدفوعة جديدة!\n👤 ${shortName}\n💵 ${amount} ${currency}`;
+    
+    return {
+      message: message,
+      length: message.length
+    };
   };
 
   // إرسال إشعار للمدير عند وصول مدفوعة جديدة
@@ -354,32 +393,78 @@ export default function AdminPaymentsPage() {
       return;
     }
 
+    // التحقق من عدم إرسال إشعار مكرر
+    if (sentNotifications.has(payment.id)) {
+      console.log(`تم إرسال إشعار مسبقاً لمدفوعة: ${payment.id}`);
+      return;
+    }
+
+    // التحقق من أن المدفوعة جديدة فعلاً (تم إنشاؤها في آخر 10 دقائق)
+    const paymentTime = payment.createdAt?.toDate ? payment.createdAt.toDate() : new Date(payment.createdAt);
+    const now = new Date();
+    const timeDiff = now.getTime() - paymentTime.getTime();
+    const tenMinutes = 10 * 60 * 1000; // 10 دقائق بالميلي ثانية
+    
+    if (timeDiff > tenMinutes) {
+      console.log(`تجاهل إشعار لمدفوعة قديمة: ${payment.id} - تم إنشاؤها منذ ${Math.round(timeDiff / (60 * 1000))} دقيقة`);
+      return;
+    }
+
     try {
       const adminPhone = '01017799580';
-      const message = `💰 مدفوعة جديدة!\n\n👤 العميل: ${payment.playerName}\n💵 المبلغ: ${payment.amount?.toLocaleString()} ${payment.currency}\n📱 رقم الدفع: ${payment.playerPhone}\n🏦 المصدر: ${payment.paymentMethod}\n⏰ الوقت: ${new Date().toLocaleString('ar-EG')}`;
-
-      // إرسال SMS للمدير
-      await fetch('/api/notifications/sms/bulk', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          phoneNumbers: [adminPhone],
-          message: message
-        })
-      });
+      
+      // إنشاء رسالة SMS قصيرة
+      const smsData = createShortSMSMessage(payment);
+      
+      console.log(`رسالة SMS: ${smsData.message} (${smsData.length} حرف)`);
+      
+      // التحقق من طول الرسالة
+      if (smsData.length > 65) {
+        console.warn(`⚠️ الرسالة طويلة جداً: ${smsData.length} حرف`);
+        // إنشاء رسالة أقصر
+        const customerName = payment.playerName || payment.playerId || 'غير محدد';
+        const shortName = customerName.length > 5 ? customerName.substring(0, 4) + '..' : customerName;
+        const amount = payment.amount || 0;
+        const currency = payment.currency || 'EGP';
+        const shortMessage = `💰 مدفوعة جديدة!\n👤 ${shortName}\n💵 ${amount} ${currency}`;
+        
+        console.log(`رسالة مختصرة: ${shortMessage} (${shortMessage.length} حرف)`);
+        
+        await fetch('/api/beon/sms', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            singlePhone: adminPhone,
+            message: shortMessage
+          })
+        });
+      } else {
+        // إرسال SMS للمدير
+        await fetch('/api/beon/sms', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            singlePhone: adminPhone,
+            message: smsData.message
+          })
+        });
+      }
 
       // حفظ الإشعار في قاعدة البيانات
       await addDoc(collection(db, 'admin_notifications'), {
         type: 'new_payment',
         title: 'مدفوعة جديدة',
-        message: `مدفوعة جديدة من ${payment.playerName} بقيمة ${payment.amount?.toLocaleString()} ${payment.currency}`,
+        message: `مدفوعة جديدة من ${payment.playerName || payment.playerId || 'غير محدد'} بقيمة ${payment.amount?.toLocaleString()} ${payment.currency || 'EGP'}`,
         paymentId: payment.id,
         paymentData: payment,
         isRead: false,
         createdAt: new Date()
       });
 
-      console.log('تم إرسال إشعار للمدير');
+      // إضافة المدفوعة إلى قائمة الإشعارات المرسلة
+      setSentNotifications(prev => new Set([...prev, payment.id]));
+
+      console.log(`✅ تم إرسال إشعار للمدير لمدفوعة جديدة: ${payment.id}`);
     } catch (error) {
       console.error('خطأ في إرسال إشعار المدير:', error);
     }
@@ -491,6 +576,45 @@ export default function AdminPaymentsPage() {
     URL.revokeObjectURL(url);
   };
 
+  // إرسال إشعار عبر WhatsApp
+  const sendPaymentViaWhatsApp = (payment) => {
+    if (!payment.playerPhone || payment.playerPhone === 'غير محدد') {
+      toast.error('رقم الهاتف غير متوفر');
+      return;
+    }
+
+    let message = '';
+    
+    if (payment.status === 'completed' || payment.status === 'accepted' || payment.status === 'success') {
+      message = `✅ تم تأكيد دفعتك بنجاح!\n\n💰 المبلغ: ${payment.amount?.toLocaleString()} ${payment.currency}\n📅 التاريخ: ${new Date(payment.createdAt).toLocaleDateString('ar-EG')}\n\nشكراً لثقتك في El7lm Platform! 🎉`;
+    } else if (payment.status === 'pending') {
+      message = `⏳ دفعتك قيد المراجعة\n\n💰 المبلغ: ${payment.amount?.toLocaleString()} ${payment.currency}\n📅 التاريخ: ${new Date(payment.createdAt).toLocaleDateString('ar-EG')}\n\nسيتم تأكيدها قريباً! 🚀`;
+    } else if (payment.status === 'cancelled' || payment.status === 'failed') {
+      message = `❌ فشل في معالجة دفعتك\n\n💰 المبلغ: ${payment.amount?.toLocaleString()} ${payment.currency}\n📅 التاريخ: ${new Date(payment.createdAt).toLocaleDateString('ar-EG')}\n\nيرجى المحاولة مرة أخرى أو التواصل مع الدعم الفني.`;
+    } else {
+      message = `📋 تحديث على دفعتك\n\n💰 المبلغ: ${payment.amount?.toLocaleString()} ${payment.currency}\n📅 التاريخ: ${new Date(payment.createdAt).toLocaleDateString('ar-EG')}\n🔄 الحالة: ${payment.status}\n\nمن El7lm Platform`;
+    }
+    
+    const result = openWhatsAppShare(payment.playerPhone, message);
+    
+    if (result.success) {
+      toast.success('تم فتح WhatsApp بنجاح!');
+    } else {
+      toast.error(result.error || 'فشل في فتح WhatsApp');
+    }
+  };
+
+  // اختبار WhatsApp Share
+  const testWhatsAppShareFeature = () => {
+    const result = testWhatsAppShare('اختبار إشعارات المدفوعات من El7lm Platform');
+    
+    if (result.success) {
+      toast.success('تم فتح WhatsApp للاختبار!');
+    } else {
+      toast.error(result.error || 'فشل في اختبار WhatsApp');
+    }
+  };
+
   // إرسال إشعار للعميل
   const sendNotificationToCustomer = async (payment, status) => {
     try {
@@ -511,11 +635,11 @@ export default function AdminPaymentsPage() {
 
       if (notificationMessage) {
         // إرسال SMS
-        await fetch('/api/notifications/sms/bulk', {
+        await fetch('/api/beon/sms', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            phoneNumbers: [payment.playerPhone],
+            singlePhone: payment.playerPhone,
             message: notificationMessage
           })
         });
@@ -619,10 +743,10 @@ export default function AdminPaymentsPage() {
   const fetchAllMessages = async () => {
     try {
       const notificationsRef = collection(db, 'notifications');
+      // إزالة orderBy لتجنب مشكلة Firebase index
       const q = query(
         notificationsRef,
-        where('type', 'in', ['sms', 'whatsapp', 'payment_notification']),
-        orderBy('createdAt', 'desc')
+        where('type', 'in', ['sms', 'whatsapp', 'payment_notification'])
       );
       
       const snapshot = await getDocs(q);
@@ -632,9 +756,14 @@ export default function AdminPaymentsPage() {
         createdAt: doc.data().createdAt?.toDate?.() || new Date()
       }));
 
+      // ترتيب البيانات يدوياً لتجنب مشاكل Firebase Indexing
+      const sortedMessages = allMessages.sort((a, b) => 
+        b.createdAt.getTime() - a.createdAt.getTime()
+      );
+
       // تجميع الرسائل حسب رقم الهاتف
       const messagesByPhone = {};
-      allMessages.forEach((message: any) => {
+      sortedMessages.forEach((message: any) => {
         if (message.phoneNumber) {
           if (!messagesByPhone[message.phoneNumber]) {
             messagesByPhone[message.phoneNumber] = [];
@@ -644,7 +773,7 @@ export default function AdminPaymentsPage() {
       });
 
       setMessageHistory(messagesByPhone);
-      console.log('تم تحميل جميع الرسائل:', allMessages.length);
+      console.log('تم تحميل جميع الرسائل:', sortedMessages.length);
       
       return messagesByPhone;
     } catch (error) {
@@ -1113,7 +1242,18 @@ export default function AdminPaymentsPage() {
       if (newPayments.length > 0) {
         console.log(`إرسال إشعارات لـ ${newPayments.length} مدفوعة جديدة`);
         for (const newPayment of newPayments) {
-          await sendAdminNotification(newPayment);
+          // التحقق من أن المدفوعة جديدة فعلاً (تم إنشاؤها في آخر 5 دقائق)
+          const paymentTime = newPayment.createdAt?.toDate ? newPayment.createdAt.toDate() : new Date(newPayment.createdAt);
+          const now = new Date();
+          const timeDiff = now.getTime() - paymentTime.getTime();
+          const fiveMinutes = 5 * 60 * 1000; // 5 دقائق بالميلي ثانية
+          
+          if (timeDiff <= fiveMinutes) {
+            console.log(`إرسال إشعار لمدفوعة جديدة: ${newPayment.id} - ${newPayment.playerName}`);
+            await sendAdminNotification(newPayment);
+          } else {
+            console.log(`تجاهل مدفوعة قديمة: ${newPayment.id} - تم إنشاؤها منذ ${Math.round(timeDiff / (60 * 1000))} دقيقة`);
+          }
         }
       } else {
         console.log('لا توجد مدفوعات جديدة لإرسال إشعارات');
@@ -1168,11 +1308,11 @@ export default function AdminPaymentsPage() {
     }
 
     try {
-      await fetch('/api/notifications/sms/bulk', {
+      await fetch('/api/beon/sms', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          phoneNumbers: [selectedPayment.playerPhone],
+          singlePhone: selectedPayment.playerPhone,
           message: messageText
         })
       });
@@ -1217,9 +1357,16 @@ export default function AdminPaymentsPage() {
     }
 
     try {
-      const whatsappUrl = `https://wa.me/${selectedPayment.playerPhone.replace(/\D/g, '')}?text=${encodeURIComponent(messageText)}`;
-      window.open(whatsappUrl, '_blank');
-      toast.success('تم فتح WhatsApp بنجاح');
+      await fetch('/api/beon/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          singlePhone: selectedPayment.playerPhone,
+          message: messageText,
+          preferredMethod: 'whatsapp'
+        })
+      });
+      toast.success('تم إرسال الرسالة بنجاح (كـ SMS - BeOn V3 لا يدعم WhatsApp فعلياً)');
       
       // إغلاق الموديول وتنظيف النص بعد فتح WhatsApp
       setShowMessageDialog(false);
@@ -1317,6 +1464,16 @@ export default function AdminPaymentsPage() {
     setShowBulkActions(selectedRows.length > 0);
   }, [selectedRows]);
 
+  // تنظيف قائمة الإشعارات المرسلة كل ساعة
+  useEffect(() => {
+    const cleanupInterval = setInterval(() => {
+      setSentNotifications(new Set());
+      console.log('تم تنظيف قائمة الإشعارات المرسلة');
+    }, 60 * 60 * 1000); // كل ساعة
+
+    return () => clearInterval(cleanupInterval);
+  }, []);
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
@@ -1340,6 +1497,15 @@ export default function AdminPaymentsPage() {
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
             مراقبة وإدارة جميع عمليات الدفع مع إمكانية التواصل مع العملاء
           </p>
+          <div className="mt-4">
+            <button
+              onClick={testWhatsAppShareFeature}
+              className="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-lg font-medium transition-colors"
+              title="اختبار WhatsApp Share"
+            >
+              🧪 اختبار WhatsApp
+            </button>
+          </div>
         </div>
 
         {/* الإحصائيات السريعة */}
@@ -1409,6 +1575,9 @@ export default function AdminPaymentsPage() {
               <div className="text-2xl mb-2">{adminNotificationsEnabled ? '🔔' : '🔕'}</div>
               <p className="text-lg font-bold mb-1">{adminNotificationsEnabled ? 'مفعلة' : 'معطلة'}</p>
               <p className="text-xs opacity-90">إشعارات المدير</p>
+              <p className="text-xs opacity-75 mt-1">
+                {sentNotifications.size > 0 ? `تم إرسال ${sentNotifications.size} إشعار` : 'لا توجد إشعارات مرسلة'}
+              </p>
             </div>
           </div>
         </div>
@@ -1652,8 +1821,8 @@ export default function AdminPaymentsPage() {
                     <span className="text-gray-600 font-medium">📅 التاريخ:</span>
                     <span className="font-medium text-sm text-gray-700">
                       {payment.createdAt?.toDate ? 
-                        payment.createdAt.toDate().toLocaleDateString('ar-EG') :
-                        new Date(payment.createdAt).toLocaleDateString('ar-EG')
+                        payment.createdAt.toDate().toLocaleDateString('en-GB') :
+                        new Date(payment.createdAt).toLocaleDateString('en-GB')
                       }
                     </span>
                   </div>
@@ -1707,6 +1876,14 @@ export default function AdminPaymentsPage() {
                   >
                     <span>📄</span>
                     فاتورة PDF
+                  </button>
+                  <button 
+                    onClick={() => sendPaymentViaWhatsApp(payment)}
+                    className="bg-green-500 hover:bg-green-600 text-white px-3 py-2 rounded-lg text-xs font-medium transition-colors flex items-center justify-center gap-1"
+                    title="إرسال عبر WhatsApp"
+                  >
+                    <span>📱</span>
+                    WhatsApp
                   </button>
                   <button 
                     onClick={() => handleDeletePayment(payment)}
@@ -2139,8 +2316,8 @@ export default function AdminPaymentsPage() {
                       <span className="text-gray-600 font-medium">التاريخ:</span>
                       <p className="text-gray-700">
                         {selectedPayment.createdAt?.toDate ? 
-                          selectedPayment.createdAt.toDate().toLocaleDateString('ar-EG') :
-                          new Date(selectedPayment.createdAt).toLocaleDateString('ar-EG')
+                          selectedPayment.createdAt.toDate().toLocaleDateString('en-GB') :
+                          new Date(selectedPayment.createdAt).toLocaleDateString('en-GB')
                         }
                       </p>
                     </div>

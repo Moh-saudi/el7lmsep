@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import beonSMSService from '@/lib/beon/sms-service';
+import { beonSMSService } from '@/lib/beon/sms-service';
 import { storeOTP, getOTPStatus, getOTP } from '../otp-storage';
 import { rateLimiter, getClientIpFromHeaders } from '@/lib/security/rate-limit';
 

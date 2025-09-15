@@ -1,210 +1,159 @@
-import { BEON_CONFIG, getBeOnToken, getBeOnEndpoint, createBeOnHeaders } from './config';
+/**
+ * BeOn V3 WhatsApp Service
+ * خدمة WhatsApp BeOn V3
+ * 
+ * ⚠️ ملاحظة مهمة: BeOn V3 لا يدعم WhatsApp فعلياً
+ * جميع طلبات WhatsApp يتم إرسالها كـ SMS
+ * هذا هو السلوك المتوقع حسب الوثائق الرسمية
+ */
 
-interface WhatsAppResponse {
-  success: boolean;
-  message?: string;
-  error?: string;
-  method?: 'whatsapp' | 'sms';
-}
+import { BEON_V3_CONFIG, createBeOnHeaders, BeOnResponse, SMSBulkRequest } from './config';
 
-interface OTPResponse {
-  success: boolean;
-  otp?: string;
-  message?: string;
-  error?: string;
-  method?: 'whatsapp' | 'sms';
-}
-
-class BeOnWhatsAppService {
+export class BeOnWhatsAppService {
   private baseUrl: string;
   private token: string;
-  private senderName: string;
 
   constructor() {
-    this.baseUrl = BEON_CONFIG.ENDPOINTS.BASE_URL;
-    this.token = getBeOnToken('whatsapp');
-    this.senderName = BEON_CONFIG.DEFAULTS.SENDER_NAME;
+    this.baseUrl = BEON_V3_CONFIG.BASE_URL;
+    this.token = BEON_V3_CONFIG.TOKEN;
   }
 
-  // التحقق من صحة التكوين
-  private validateConfig(): boolean {
-    console.log('🔍 Validating WhatsApp config...');
-    console.log('🔍 Base URL:', this.baseUrl);
-    console.log('🔍 Token:', this.token ? '✅ Set' : '❌ Missing');
-    console.log('🔍 Sender Name:', this.senderName);
-    
-    return !!this.token;
-  }
-
-  // إرسال رسالة WhatsApp عادية
-  async sendMessage(phoneNumber: string, message: string): Promise<WhatsAppResponse> {
-    console.log('📱 sendMessage called with:', { phoneNumber, messageLength: message.length });
-    
-    if (!this.validateConfig()) {
-      return { success: false, error: 'WhatsApp configuration is missing' };
-    }
-
+  /**
+   * إرسال رسائل WhatsApp جماعية
+   * Send bulk WhatsApp messages
+   * ⚠️ تحذير: BeOn V3 يرسل جميع طلبات WhatsApp كـ SMS
+   */
+  async sendBulkWhatsApp(phoneNumbers: string[], message: string): Promise<BeOnResponse> {
     try {
-      const requestBody = {
-        name: this.senderName,
-        phoneNumber: phoneNumber,
-        message: message
-      };
-      
-      console.log('📱 WhatsApp request body:', requestBody);
-      console.log('📱 WhatsApp endpoint:', `${this.baseUrl}${getBeOnEndpoint('whatsapp')}`);
+      console.log('📱 إرسال WhatsApp جماعي (سيتم إرساله كـ SMS):', { phoneCount: phoneNumbers.length, messageLength: message.length });
 
-      const response = await fetch(`${this.baseUrl}${getBeOnEndpoint('whatsapp')}`, {
+      const requestBody: SMSBulkRequest = {
+        phoneNumbers,
+        message
+      };
+
+      const response = await fetch(`${this.baseUrl}${BEON_V3_CONFIG.ENDPOINTS.WHATSAPP}`, {
         method: 'POST',
         headers: createBeOnHeaders(this.token),
         body: JSON.stringify(requestBody)
       });
 
-      console.log('📱 WhatsApp response status:', response.status);
-
-      // BeOn API لا يرجع response body حسب الوثائق
-      if (response.ok) {
-        console.log('✅ WhatsApp message sent successfully to:', phoneNumber);
-        return { 
-          success: true, 
-          message: 'WhatsApp message sent successfully',
-          method: 'whatsapp'
-        };
-      } else {
-        console.error('❌ WhatsApp sending failed:', response.status, response.statusText);
-        return { 
-          success: false, 
-          error: `HTTP ${response.status}: ${response.statusText}`,
-          method: 'whatsapp'
-        };
-      }
-    } catch (error: any) {
-      console.error('❌ WhatsApp sending error:', error);
-      return { success: false, error: error.message, method: 'whatsapp' };
-    }
-  }
-
-  // إرسال OTP عبر WhatsApp
-  async sendOTP(phoneNumber: string, otp: string, name?: string): Promise<OTPResponse> {
-    console.log('📱 sendOTP called with:', { phoneNumber, otp, name });
-    
-    if (!this.validateConfig()) {
-      return { success: false, error: 'WhatsApp configuration is missing' };
-    }
-
-    try {
-      // إنشاء رسالة OTP
-      const message = this.createOTPMessage(otp, name);
-      
-      const requestBody = {
-        name: name || this.senderName,
-        phoneNumber: phoneNumber,
-        message: message
-      };
-      
-      console.log('📱 WhatsApp OTP request body:', requestBody);
-      console.log('📱 WhatsApp OTP endpoint:', `${this.baseUrl}${getBeOnEndpoint('whatsapp')}`);
-
-      const response = await fetch(`${this.baseUrl}${getBeOnEndpoint('whatsapp')}`, {
-        method: 'POST',
-        headers: createBeOnHeaders(this.token),
-        body: JSON.stringify(requestBody)
+      console.log('📱 استجابة WhatsApp جماعي:', {
+        status: response.status,
+        statusText: response.statusText
       });
 
-      console.log('📱 WhatsApp OTP response status:', response.status);
-
-      // BeOn API لا يرجع response body حسب الوثائق
       if (response.ok) {
-        console.log('✅ WhatsApp OTP sent successfully to:', phoneNumber);
-        return { 
-          success: true, 
-          otp: otp,
-          message: 'WhatsApp OTP sent successfully',
-          method: 'whatsapp'
+        const responseData = await response.json();
+        return {
+          success: true,
+          message: 'تم إرسال الرسائل بنجاح (كـ SMS - BeOn V3 لا يدعم WhatsApp فعلياً)',
+          data: {
+            phoneCount: phoneNumbers.length,
+            status: response.status,
+            actualMethod: 'SMS',
+            note: 'BeOn V3 يرسل جميع طلبات WhatsApp كـ SMS',
+            response: responseData,
+            timestamp: new Date().toISOString()
+          }
         };
       } else {
-        console.error('❌ WhatsApp OTP sending failed:', response.status, response.statusText);
-        
-        // إذا فشل WhatsApp، جرب SMS كبديل
-        console.log('📱 Trying SMS fallback...');
-        const smsResult = await this.sendOTPViaSMS(phoneNumber, otp, name);
-        if (smsResult.success) {
-          return { 
-            success: true, 
-            otp: smsResult.otp,
-            message: 'تم إرسال رمز التحقق عبر SMS (WhatsApp غير متاح)',
-            method: 'sms',
-            fallback: true
+        // معالجة محسنة للأخطاء حسب الوثائق
+        let errorData;
+        try {
+          errorData = await response.json();
+        } catch {
+          errorData = await response.text();
+        }
+
+        // معالجة Rate Limiting
+        if (response.status === 429) {
+          const retryAfter = response.headers.get('Retry-After');
+          return {
+            success: false,
+            error: 'تم تجاوز حد الطلبات المسموح',
+            code: 'RATE_LIMIT_EXCEEDED',
+            retryAfter: retryAfter ? parseInt(retryAfter) : 60,
+            data: errorData
           };
         }
-        
-        return { 
-          success: false, 
-          error: `HTTP ${response.status}: ${response.statusText}`,
+
+        // معالجة أخطاء المصادقة
+        if (response.status === 401) {
+          return {
+            success: false,
+            error: 'خطأ في المصادقة - تحقق من التوكن',
+            code: 'AUTHENTICATION_ERROR',
+            data: errorData
+          };
+        }
+
+        // معالجة أخطاء عامة
+        console.error('❌ خطأ في WhatsApp جماعي:', errorData);
+        return {
+          success: false,
+          error: `فشل في إرسال رسائل WhatsApp: ${response.status} ${response.statusText}`,
+          code: `HTTP_${response.status}`,
+          data: errorData
+        };
+      }
+    } catch (error) {
+      console.error('❌ خطأ في خدمة WhatsApp:', error);
+      return {
+        success: false,
+        error: 'حدث خطأ في إرسال رسائل WhatsApp',
+        data: error
+      };
+    }
+  }
+
+  /**
+   * إرسال رسالة WhatsApp واحدة
+   * Send single WhatsApp message
+   */
+  async sendSingleWhatsApp(phoneNumber: string, message: string): Promise<BeOnResponse> {
+    return this.sendBulkWhatsApp([phoneNumber], message);
+  }
+
+  /**
+   * إرسال رسالة WhatsApp مع fallback لـ SMS
+   * Send WhatsApp message with SMS fallback
+   */
+  async sendWhatsAppWithFallback(phoneNumber: string, message: string): Promise<BeOnResponse> {
+    try {
+      // محاولة إرسال WhatsApp أولاً
+      const whatsappResult = await this.sendSingleWhatsApp(phoneNumber, message);
+      
+      if (whatsappResult.success) {
+        return {
+          ...whatsappResult,
           method: 'whatsapp'
         };
       }
-    } catch (error: any) {
-      console.error('❌ WhatsApp OTP sending error:', error);
-      return { success: false, error: error.message, method: 'whatsapp' };
-    }
-  }
 
-  // إرسال OTP عبر SMS كبديل
-  private async sendOTPViaSMS(phoneNumber: string, otp: string, name?: string): Promise<OTPResponse> {
-    try {
-      const message = this.createOTPMessage(otp, name);
+      // إذا فشل WhatsApp، نرسل SMS كبديل
+      console.log('⚠️ فشل WhatsApp، محاولة إرسال SMS كبديل');
       
-      const requestBody = {
-        name: name || this.senderName,
-        phoneNumber: phoneNumber,
-        message: message
+      // استيراد خدمة SMS
+      const { beonSMSService } = await import('./sms-service');
+      const smsResult = await beonSMSService.sendSingleSMS(phoneNumber, message);
+      
+      return {
+        ...smsResult,
+        method: 'sms',
+        fallback: true,
+        originalMethod: 'whatsapp'
       };
-      
-      console.log('📱 SMS fallback request body:', requestBody);
-      console.log('📱 SMS fallback endpoint:', `${this.baseUrl}${getBeOnEndpoint('sms')}`);
-
-      const response = await fetch(`${this.baseUrl}${getBeOnEndpoint('sms')}`, {
-        method: 'POST',
-        headers: createBeOnHeaders(getBeOnToken('sms')),
-        body: JSON.stringify(requestBody)
-      });
-
-      console.log('📱 SMS fallback response status:', response.status);
-
-      if (response.ok) {
-        console.log('✅ SMS OTP sent successfully to:', phoneNumber);
-        return { 
-          success: true, 
-          otp: otp,
-          message: 'SMS OTP sent successfully',
-          method: 'sms'
-        };
-      } else {
-        console.error('❌ SMS fallback failed:', response.status, response.statusText);
-        return { 
-          success: false, 
-          error: `SMS fallback failed: ${response.status} ${response.statusText}`,
-          method: 'sms'
-        };
-      }
-    } catch (error: any) {
-      console.error('❌ SMS fallback error:', error);
-      return { success: false, error: error.message, method: 'sms' };
+    } catch (error) {
+      console.error('❌ خطأ في إرسال WhatsApp مع fallback:', error);
+      return {
+        success: false,
+        error: 'حدث خطأ في إرسال الرسالة',
+        data: error
+      };
     }
-  }
-
-  // إنشاء رسالة OTP
-  private createOTPMessage(otp: string, name?: string): string {
-    return `مرحباً ${name || 'عزيزي'}!
-
-رمز التحقق الخاص بك هو:
-*${otp}*
-
-لا تشارك هذا الرمز مع أي شخص.
-
-el7lm Team`;
   }
 }
 
-export default BeOnWhatsAppService;
+// Export singleton instance
+export const beonWhatsAppService = new BeOnWhatsAppService();

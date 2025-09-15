@@ -1,11 +1,11 @@
 import { supabase } from '@/lib/supabase/config';
 import { User } from 'firebase/auth';
 
-// ????? ????? buckets ??????? ?? Supabase ??? ??? ??????
+// تعريف أسماء buckets التخزين في Supabase حسب نوع الحساب (محدثة لتتطابق مع البوكتات الفعلية)
 const STORAGE_BUCKETS = {
   PROFILE_IMAGES: 'profile-images',
-  ADDITIONAL_IMAGES: 'avatars',
-  // ?????? ???????? ???????? ??? ??? ????
+  ADDITIONAL_IMAGES: 'avatars', // بوكت avatars للاعبين المستقلين
+  // بوكتات خاصة باللاعبين حسب نوع الحساب (أسماء صحيحة من Supabase)
   PLAYER_TRAINER: 'playertrainer',
   PLAYER_CLUB: 'playerclub', 
   PLAYER_AGENT: 'playeragent',
@@ -15,7 +15,7 @@ const STORAGE_BUCKETS = {
 };
 
 // ????? ???????? ????????
-export type AccountType = 'trainer' | 'club' | 'agent' | 'academy';
+export type AccountType = 'trainer' | 'club' | 'agent' | 'academy' | 'independent';
 
 // ???? ?????? ?????? ??????? ????? ??? ??? ??????
 function getPlayerBucket(accountType: AccountType): string {
@@ -28,8 +28,10 @@ function getPlayerBucket(accountType: AccountType): string {
       return STORAGE_BUCKETS.PLAYER_AGENT;
     case 'academy':
       return STORAGE_BUCKETS.PLAYER_ACADEMY;
+    case 'independent':
+      return STORAGE_BUCKETS.ADDITIONAL_IMAGES; // بوكت avatars للاعبين المستقلين
     default:
-      return STORAGE_BUCKETS.PLAYER_TRAINER; // ???????
+      return STORAGE_BUCKETS.ADDITIONAL_IMAGES; // افتراضي للاعبين المستقلين
   }
 }
 
@@ -41,8 +43,9 @@ function detectAccountTypeFromPath(): AccountType {
     if (path.includes('/agent/')) return 'agent';
     if (path.includes('/academy/')) return 'academy';
     if (path.includes('/trainer/')) return 'trainer';
+    if (path.includes('/player/')) return 'independent'; // اللاعبين المستقلين
   }
-  return 'trainer'; // ???????
+  return 'independent'; // افتراضي للاعبين المستقلين
 }
 
 export async function uploadProfileImage(file: File, user: User) {
@@ -125,7 +128,8 @@ export async function uploadPlayerProfileImage(
     bucket, 
     accountType: detectedAccountType,
     filePath, 
-    file: { name: file.name, size: file.size, type: file.type }
+    file: { name: file.name, size: file.size, type: file.type },
+    userId
   });
   
   try {
@@ -184,11 +188,12 @@ export async function uploadPlayerAdditionalImage(
   const detectedAccountType = accountType || detectAccountTypeFromPath();
   const bucket = getPlayerBucket(detectedAccountType);
   
-  console.log('?? ??? ???? ??????:', { 
+  console.log('رفع صورة إضافية للاعب:', { 
     bucket, 
     accountType: detectedAccountType,
     filePath, 
-    file: { name: file.name, size: file.size, type: file.type }
+    file: { name: file.name, size: file.size, type: file.type },
+    userId
   });
   
   try {
@@ -249,11 +254,12 @@ export async function uploadPlayerDocument(
   const detectedAccountType = accountType || detectAccountTypeFromPath();
   const bucket = getPlayerBucket(detectedAccountType);
   
-  console.log('??? ?????:', { 
+  console.log('رفع مستند اللاعب:', { 
     bucket, 
     accountType: detectedAccountType,
     filePath, 
-    file 
+    file,
+    userId
   });
   
   try {
@@ -311,11 +317,13 @@ export async function uploadPlayerVideo(
   const detectedAccountType = accountType || detectAccountTypeFromPath();
   const bucket = getPlayerBucket(detectedAccountType);
   
-  console.log('??? ?????:', { 
+  console.log('رفع فيديو اللاعب:', { 
     bucket, 
     accountType: detectedAccountType,
     filePath, 
-    file 
+    file,
+    ownerId,
+    playerId
   });
   
   try {

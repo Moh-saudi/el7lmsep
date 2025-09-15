@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/firebase/config';
 import { addDoc, collection, serverTimestamp, getDocs, query, where, updateDoc, doc } from 'firebase/firestore';
-import { sendWhatsAppMessage } from '@/lib/whatsapp/whatsapp-service';
+import { beonSMSService } from '@/lib/beon';
 
 export async function POST(req: Request) {
   try {
@@ -34,11 +34,11 @@ export async function POST(req: Request) {
       createdAt: serverTimestamp(),
     });
 
-    // Send WhatsApp message to the customer's WhatsApp number (if service configured)
+    // Send SMS message to the customer's phone number (BeOn V3 لا يدعم WhatsApp فعلياً)
     try {
-      await sendWhatsAppMessage(whatsapp, message);
+      await beonSMSService.sendBulkSMS([whatsapp], message);
     } catch (err) {
-      console.warn('WhatsApp send failed (non-blocking):', err);
+      console.warn('SMS send failed (non-blocking):', err);
     }
 
     // Also send the same confirmation into the in-app Message Center

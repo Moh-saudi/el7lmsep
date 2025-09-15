@@ -325,6 +325,15 @@ export default function GeideaPaymentModal({
     setState({ loading: true, error: null, isTestMode: false });
 
     try {
+      // التحقق من صحة المبلغ
+      if (!amount || amount <= 0) {
+        throw new Error('المبلغ يجب أن يكون أكبر من 0');
+      }
+
+      if (!customerEmail || !customerEmail.trim()) {
+        throw new Error('البريد الإلكتروني مطلوب');
+      }
+
       const orderId = merchantReferenceId || `EL7LM_${Date.now()}`;
       const payload = {
         amount: amount,

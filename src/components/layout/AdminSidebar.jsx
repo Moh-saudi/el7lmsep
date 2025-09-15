@@ -27,7 +27,8 @@ import {
   UserCog,
   Building,
   GraduationCap,
-  UserPlus
+  UserPlus,
+  Trophy
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { auth } from '@/lib/firebase/config';
@@ -91,6 +92,12 @@ const AdminSidebar = ({ isOpen, adminData, onToggle, isMobile }) => {
           href: '/dashboard/admin/users/agents', 
           icon: UserCog,
           description: 'إدارة حسابات الوكلاء والمدربين'
+        },
+        { 
+          title: 'ترحيل البريد الإلكتروني', 
+          href: '/dashboard/admin/email-migration', 
+          icon: Mail,
+          description: 'ترحيل البريد الإلكتروني الطويل إلى النظام الجديد'
         }
       ]
     },
@@ -132,9 +139,28 @@ const AdminSidebar = ({ isOpen, adminData, onToggle, isMobile }) => {
       subItems: [
         { title: 'الرسائل', href: '/dashboard/admin/messages', icon: MessageSquare },
         { title: 'إدارة الإشعارات', href: '/dashboard/admin/notifications', icon: MessageCircle },
+        { title: 'إدارة BeOn V3', href: '/dashboard/admin/beon-v3', icon: MessageSquare },
         { title: 'الدعم الفني', href: '/dashboard/admin/support', icon: Headphones },
         { title: 'إدارة العملاء', href: '/dashboard/admin/customer-management', icon: UserPlus }
       ]
+    },
+    {
+      title: 'إدارة البطولات',
+      icon: Trophy,
+      href: '/dashboard/admin/tournaments',
+      color: 'text-yellow-600'
+    },
+    {
+      title: 'إدارة الإعلانات',
+      icon: Monitor,
+      href: '/dashboard/admin/ads',
+      color: 'text-cyan-600'
+    },
+    {
+      title: 'إدارة الوظائف',
+      icon: Briefcase,
+      href: '/dashboard/admin/careers',
+      color: 'text-emerald-600'
     },
     {
       title: 'إعدادات النظام',

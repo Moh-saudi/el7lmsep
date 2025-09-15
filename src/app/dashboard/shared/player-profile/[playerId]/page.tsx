@@ -83,6 +83,7 @@ import { getPlayerOrganization, getOrganizationDetails } from '@/utils/player-or
 import PlayerResume from '@/components/player/PlayerResume';
 import { FileText } from 'lucide-react';
 import { PlayerFormData, Achievement, Injury, ContractHistory, AgentHistory } from '@/types/player';
+import { beonSMSService } from '@/lib/beon';
 // import { PlayerVideo } from '@/types/common';
 import 'dayjs/locale/ar';
 
@@ -1084,23 +1085,25 @@ function PlayerReportPage() {
       documents_length: player?.documents?.length || 0
     });
 
-    // تجميع كل الصور من مصادر مختلفة
+    // تجميع كل الصور من مصادر مختلفة مع إزالة التكرارات
     const allImages: { url: string; label: string; type: 'profile' | 'additional' }[] = [];
+    const seenUrls = new Set<string>();
     
     // إضافة الصورة الشخصية مع فلترة الروابط المكسورة
     if (player?.profile_image_url) {
       const validProfileImage = getValidImageUrl(player.profile_image_url);
-      if (validProfileImage !== '/images/default-avatar.png') {
+      if (validProfileImage !== '/images/default-avatar.png' && !seenUrls.has(validProfileImage)) {
         console.log('✅ [renderMedia] تم العثور على صورة شخصية صالحة:', validProfileImage);
         allImages.push({ url: validProfileImage, label: 'الصورة الشخصية', type: 'profile' });
+        seenUrls.add(validProfileImage);
       } else {
-        console.log('🚫 [renderMedia] صورة شخصية مكسورة تم فلترتها:', player.profile_image_url);
+        console.log('🚫 [renderMedia] صورة شخصية مكسورة أو مكررة تم فلترتها:', player.profile_image_url);
       }
     } else {
       console.log('❌ [renderMedia] لا توجد صورة شخصية');
     }
     
-    // إضافة الصور الإضافية مع تحقق محسن
+    // إضافة الصور الإضافية مع تحقق محسن وإزالة التكرارات
     if (player?.additional_images && player.additional_images.length > 0) {
       console.log('✅ [renderMedia] تم العثور على صور إضافية:', player.additional_images);
       player.additional_images.forEach((image, index) => {
@@ -1135,11 +1138,12 @@ function PlayerReportPage() {
           const isBrokenSupabaseUrl = imageUrl.includes('ekyerljzfokqimbabzxm.supabase.co') && 
                                      imageUrl.includes('/avatars/yf0b8T8xuuMfP8QAfvS9TLOJjVt2');
           
-          if (validImageUrl !== '/images/default-avatar.png' && !isBrokenSupabaseUrl) {
+          if (validImageUrl !== '/images/default-avatar.png' && !isBrokenSupabaseUrl && !seenUrls.has(validImageUrl)) {
             allImages.push({ url: validImageUrl, label: `صورة إضافية ${index + 1}`, type: 'additional' });
+            seenUrls.add(validImageUrl);
             console.log(`✅ تم إضافة الصورة ${index + 1} إلى المجموعة`);
           } else {
-            console.log(`🚫 صورة إضافية مكسورة تم فلترتها ${index + 1}:`, imageUrl);
+            console.log(`🚫 صورة إضافية مكسورة أو مكررة تم فلترتها ${index + 1}:`, imageUrl);
           }
         } else {
           console.log(`❌ رابط الصورة ${index + 1} فارغ أو غير صحيح`);
@@ -1196,7 +1200,7 @@ function PlayerReportPage() {
                     }}
                   />
                   {/* صورة افتراضية للصور المكسورة */}
-                  <div className="image-fallback hidden absolute inset-0 bg-gray-200 flex items-center justify-center">
+                  <div className="image-fallback absolute inset-0 bg-gray-200 items-center justify-center hidden">
                     <div className="text-center text-gray-500">
                       <svg className="w-12 h-12 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -2036,6 +2040,76 @@ function PlayerReportPage() {
       });
     }
   }, [player, targetPlayerId]);
+
+  // إرسال إشعار SMS للاعب عند مشاهدة ملفه
+  useEffect(() => {
+    const sendProfileViewNotification = async () => {
+      // التحقق من أن اللاعب موجود وأن المستخدم الحالي ليس اللاعب نفسه
+      if (player && user && player.id !== user.uid) {
+        try {
+          // التحقق من وجود رقم الهاتف
+          const playerPhone = player.phone || player.phoneNumber;
+          if (!playerPhone) {
+            console.log('📱 لا يوجد رقم هاتف للاعب، لن يتم إرسال SMS');
+            return;
+          }
+
+          // تحديد نوع المشاهد
+          let viewerType = 'نادي';
+          if (currentUserInfo?.type === 'academy') {
+            viewerType = 'أكاديمية';
+          } else if (currentUserInfo?.type === 'trainer') {
+            viewerType = 'مدرب';
+          } else if (currentUserInfo?.type === 'agent') {
+            viewerType = 'وكيل';
+          }
+
+          // إنشاء رسالة حماسية قصيرة
+          const motivationalMessages = [
+            `🔥 ${player.full_name || 'لاعبنا المميز'}، ${viewerType} يشاهد ملفك! استعد للفرصة القادمة!`,
+            `⚡ ${player.full_name || 'لاعبنا المميز'}، ${viewerType} مهتم بك! أظهر موهبتك!`,
+            `🚀 ${player.full_name || 'لاعبنا المميز'}، ${viewerType} يراقبك! كن جاهزاً للنجاح!`,
+            `⭐ ${player.full_name || 'لاعبنا المميز'}، ${viewerType} يتابعك! استعد للانطلاق!`,
+            `💪 ${player.full_name || 'لاعبنا المميز'}، ${viewerType} يبحث عنك! أظهر قوتك!`
+          ];
+
+          // اختيار رسالة عشوائية
+          const randomMessage = motivationalMessages[Math.floor(Math.random() * motivationalMessages.length)];
+          
+          // التأكد من أن الرسالة لا تتعدى 65 حرف
+          const finalMessage = randomMessage.length > 65 
+            ? `🔥 ${player.full_name || 'لاعبنا المميز'}، ${viewerType} يشاهد ملفك! استعد!`
+            : randomMessage;
+
+          console.log('📱 إرسال إشعار مشاهدة الملف للاعب:', {
+            playerName: player.full_name,
+            playerPhone,
+            viewerType,
+            viewerId: user.uid,
+            message: finalMessage,
+            messageLength: finalMessage.length
+          });
+
+          // إرسال SMS باستخدام النظام الموجود
+          const result = await beonSMSService.sendBulkSMS([playerPhone], finalMessage);
+
+          if (result.success) {
+            console.log('✅ تم إرسال إشعار SMS بنجاح:', result);
+            toast.success('تم إشعار اللاعب بمشاهدة ملفه');
+          } else {
+            console.log('❌ فشل في إرسال إشعار SMS:', result.error);
+          }
+        } catch (error) {
+          console.error('❌ خطأ في إرسال إشعار SMS:', error);
+        }
+      }
+    };
+
+    // إرسال الإشعار بعد تحميل بيانات اللاعب والمستخدم
+    if (player && user && currentUserInfo) {
+      sendProfileViewNotification();
+    }
+  }, [player, user, currentUserInfo]);
 
   // تم دمج هذه الـ useEffect في الـ useEffect السابق لتجنب التكرار
 

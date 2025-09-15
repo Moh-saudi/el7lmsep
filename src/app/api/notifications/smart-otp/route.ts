@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { sendSmartOTP } from '@/lib/whatsapp/smart-otp-service';
+import { beonSMSService } from '@/lib/beon';
 import { storeOTP, getOTP } from '../../sms/otp-storage';
 
 // تخزين مؤقت للطلبات لمنع الإرسال المتكرر

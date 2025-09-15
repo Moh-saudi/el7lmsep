@@ -107,6 +107,14 @@ const VideoManager: React.FC<VideoManagerProps> = ({
   const handleFileUpload = async (file: File) => {
     if (!file) return;
 
+    // التحقق من حجم الملف أولاً (100MB)
+    const maxSize = 100 * 1024 * 1024; // 100MB
+    if (file.size > maxSize) {
+      const fileSizeMB = (file.size / (1024 * 1024)).toFixed(2);
+      alert(`❌ حجم الفيديو كبير جداً!\n\nحجم الملف: ${fileSizeMB} ميجابايت\nالحد الأقصى المسموح: 100 ميجابايت\n\n💡 نصائح:\n• جرب ضغط الفيديو قبل الرفع\n• اختر فيديو أقصر مدة\n• استخدم برامج ضغط الفيديو مثل HandBrake`);
+      return;
+    }
+
     // التحقق من صحة الملف
     const { validateVideoFile } = await import('@/lib/supabase/video-storage');
     const validation = validateVideoFile(file, { allowedTypes });
@@ -142,6 +150,13 @@ const VideoManager: React.FC<VideoManagerProps> = ({
 
       if (!response.ok) {
         const errorData = await response.json();
+        
+        // معالجة خاصة لخطأ حجم الملف الكبير
+        if (response.status === 413 || errorData.error?.includes('حجم الفيديو كبير')) {
+          const fileSizeMB = (file.size / (1024 * 1024)).toFixed(2);
+          throw new Error(`❌ حجم الفيديو كبير جداً!\n\nحجم الملف: ${fileSizeMB} ميجابايت\nالحد الأقصى المسموح: 100 ميجابايت\n\n💡 نصائح:\n• جرب ضغط الفيديو قبل الرفع\n• اختر فيديو أقصر مدة\n• استخدم برامج ضغط الفيديو مثل HandBrake`);
+        }
+        
         throw new Error(errorData.error || 'فشل في رفع الفيديو');
       }
 
@@ -158,9 +173,17 @@ const VideoManager: React.FC<VideoManagerProps> = ({
       
       if (error instanceof Error) {
         errorMessage = error.message;
+        
+        // إذا كانت رسالة الخطأ تحتوي على نصائح، استخدم toast بدلاً من alert
+        if (errorMessage.includes('💡 نصائح:')) {
+          // يمكن استخدام toast library هنا إذا كان متوفراً
+          alert(errorMessage);
+        } else {
+          alert(errorMessage);
+        }
+      } else {
+        alert(errorMessage);
       }
-      
-      alert(errorMessage);
     } finally {
       setIsUploading(false);
       setUploadProgress(0);

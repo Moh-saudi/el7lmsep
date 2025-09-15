@@ -276,7 +276,7 @@ export default function AgentPlayersPage() {
         return 'غير محدد';
       }
       
-      return d.toLocaleDateString('ar-SA');
+      return d.toLocaleDateString('en-GB');
     } catch (error) {
       return 'غير محدد';
     }

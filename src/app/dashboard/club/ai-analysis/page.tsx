@@ -68,30 +68,63 @@ export default function AIAnalysisPage() {
       return;
     }
 
-    if (userData?.accountType !== 'club') {
+    if (!userData) {
+      // Wait for userData to load
+      return;
+    }
+
+    if (userData.accountType !== 'club') {
       router.push('/dashboard');
       return;
     }
 
-    fetchAnalyses();
+    // Only fetch analyses if we have all required data
+    if (userData.clubId) {
+      fetchAnalyses();
+    }
   }, [user, userData]);
 
   const fetchAnalyses = async () => {
     try {
       setLoading(true);
+      
+      // Check if userData and clubId are valid
+      if (!userData || !userData.clubId) {
+        console.warn('No userData or clubId available for fetching analyses');
+        setAnalyses([]);
+        return;
+      }
+      
+      console.log('🔍 Fetching analyses for clubId:', userData.clubId);
+      
       const analysesRef = collection(db, 'player_analyses');
-      const q = query(analysesRef, where('clubId', '==', userData?.clubId));
+      const q = query(analysesRef, where('clubId', '==', userData.clubId));
       const querySnapshot = await getDocs(q);
       
-      const analysesData = querySnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      })) as PlayerAnalysis[];
+      console.log('📊 Query results:', querySnapshot.size, 'documents found');
       
+      const analysesData = querySnapshot.docs.map(doc => {
+        const data = doc.data();
+        console.log('📋 Analysis document:', doc.id, data);
+        return {
+          id: doc.id,
+          ...data
+        };
+      }) as PlayerAnalysis[];
+      
+      console.log('✅ Final analyses data:', analysesData);
       setAnalyses(analysesData);
+      
+      // If no data found, show a helpful message
+      if (analysesData.length === 0) {
+        console.log('ℹ️ No analyses found for this club');
+        toast.info('لا توجد تحليلات متاحة حالياً. سيتم إضافة التحليلات قريباً.');
+      }
+      
     } catch (error) {
       console.error('Error fetching analyses:', error);
       toast.error('حدث خطأ أثناء جلب بيانات التحليلات');
+      setAnalyses([]);
     } finally {
       setLoading(false);
     }
@@ -121,6 +154,43 @@ export default function AIAnalysisPage() {
         <div className="text-center">
           <div className="w-16 h-16 mx-auto mb-4 border-4 border-blue-200 rounded-full border-t-blue-600 animate-spin"></div>
           <p className="text-gray-600">جاري تحميل التحليلات...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show empty state if no analyses found
+  if (analyses.length === 0) {
+    return (
+      <div className="min-h-screen bg-gray-50 p-6" dir="rtl">
+        {/* Header */}
+        <div className="mb-8">
+          <button
+            onClick={() => router.back()}
+            className="flex items-center gap-2 mb-4 text-gray-600 hover:text-gray-900"
+          >
+            <ArrowLeft className="w-5 h-5" />
+            العودة للوحة التحكم
+          </button>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">تحليل الأداء بالذكاء الاصطناعي</h1>
+          <p className="text-gray-600">تحليل متقدم لأداء اللاعبين باستخدام الذكاء الاصطناعي</p>
+        </div>
+
+        {/* Empty State */}
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="text-center">
+            <Brain className="w-24 h-24 mx-auto mb-6 text-gray-400" />
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">لا توجد تحليلات متاحة حالياً</h2>
+            <p className="text-gray-600 mb-6 max-w-md">
+              لم يتم إنشاء أي تحليلات للاعبين بعد. سيتم إضافة هذه الميزة قريباً لتوفير تحليلات متقدمة لأداء اللاعبين.
+            </p>
+            <div className="space-y-2 text-sm text-gray-500">
+              <p>• تحليل الأداء العام للاعبين</p>
+              <p>• توقعات الأداء في المباريات القادمة</p>
+              <p>• توصيات لتحسين الأداء</p>
+              <p>• تحليل عوامل المخاطر</p>
+            </div>
+          </div>
         </div>
       </div>
     );

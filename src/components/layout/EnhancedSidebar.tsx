@@ -166,6 +166,12 @@ export default function EnhancedSidebar({ accountType = 'player' }: EnhancedSide
           icon: BarChart3,
           href: '/dashboard/player/stats',
           color: 'text-indigo-400'
+        },
+        {
+          title: 'البطولات',
+          icon: Trophy,
+          href: '/tournaments/unified-registration',
+          color: 'text-yellow-400'
         }
       ],
       parent: [
@@ -186,6 +192,12 @@ export default function EnhancedSidebar({ accountType = 'player' }: EnhancedSide
           icon: MessageSquare,
           href: '/dashboard/parent/messages',
           color: 'text-pink-400'
+        },
+        {
+          title: 'البطولات',
+          icon: Trophy,
+          href: '/tournaments/unified-registration',
+          color: 'text-yellow-400'
         }
       ],
       coach: [
@@ -212,6 +224,18 @@ export default function EnhancedSidebar({ accountType = 'player' }: EnhancedSide
           icon: FileText,
           href: '/dashboard/coach/reports',
           color: 'text-orange-400'
+        },
+        {
+          title: 'البطولات',
+          icon: Trophy,
+          href: '/tournaments/unified-registration',
+          color: 'text-yellow-400'
+        },
+        {
+          title: 'الفيديوهات',
+          icon: Video,
+          href: '/dashboard/club/player-videos',
+          color: 'text-red-400'
         }
       ],
       club: [
@@ -244,6 +268,18 @@ export default function EnhancedSidebar({ accountType = 'player' }: EnhancedSide
           icon: BarChart3,
           href: '/dashboard/club/stats',
           color: 'text-indigo-400'
+        },
+        {
+          title: 'البطولات',
+          icon: Trophy,
+          href: '/tournaments/unified-registration',
+          color: 'text-yellow-400'
+        },
+        {
+          title: 'الفيديوهات',
+          icon: Video,
+          href: '/dashboard/club/player-videos',
+          color: 'text-red-400'
         }
       ],
       academy: [
@@ -264,6 +300,18 @@ export default function EnhancedSidebar({ accountType = 'player' }: EnhancedSide
           icon: FileText,
           href: '/dashboard/academy/reports',
           color: 'text-purple-400'
+        },
+        {
+          title: 'البطولات',
+          icon: Trophy,
+          href: '/tournaments/unified-registration',
+          color: 'text-yellow-400'
+        },
+        {
+          title: 'الفيديوهات',
+          icon: Video,
+          href: '/dashboard/academy/player-videos',
+          color: 'text-red-400'
         }
       ],
       agent: [
@@ -284,6 +332,18 @@ export default function EnhancedSidebar({ accountType = 'player' }: EnhancedSide
           icon: TrendingUp,
           href: '/dashboard/agent/opportunities',
           color: 'text-orange-400'
+        },
+        {
+          title: 'البطولات',
+          icon: Trophy,
+          href: '/tournaments/unified-registration',
+          color: 'text-yellow-400'
+        },
+        {
+          title: 'الفيديوهات',
+          icon: Video,
+          href: '/dashboard/agent/player-videos',
+          color: 'text-red-400'
         }
       ],
       admin: [
@@ -310,6 +370,18 @@ export default function EnhancedSidebar({ accountType = 'player' }: EnhancedSide
           icon: BarChart3,
           href: '/dashboard/admin/clarity',
           color: 'text-indigo-400'
+        },
+        {
+          title: 'البطولات',
+          icon: Trophy,
+          href: '/dashboard/admin/tournaments',
+          color: 'text-yellow-400'
+        },
+        {
+          title: 'الفيديوهات',
+          icon: Video,
+          href: '/dashboard/admin/videos',
+          color: 'text-red-400'
         }
       ]
     };

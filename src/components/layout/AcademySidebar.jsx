@@ -89,7 +89,7 @@ export default function AcademySidebar({ collapsed, setCollapsed }) {
     { title: 'sidebar.academy.teams', icon: <Target />, path: '/dashboard/academy/teams' },
     { title: 'sidebar.academy.trainers', icon: <GraduationCap />, path: '/dashboard/academy/coaches' },
     { title: 'sidebar.academy.schedule', icon: <Calendar />, path: '/dashboard/academy/schedule' },
-    { title: 'sidebar.academy.tournaments', icon: <Trophy />, path: '/dashboard/academy/tournaments' },
+    { title: 'sidebar.academy.tournaments', icon: <Trophy />, path: '/tournaments/unified-registration' },
     { title: 'sidebar.academy.performance', icon: <Star />, path: '/dashboard/academy/performance' },
     { title: 'sidebar.academy.reports', icon: <Award />, path: '/dashboard/academy/reports' },
     { title: 'sidebar.academy.facilities', icon: <MapPin />, path: '/dashboard/academy/facilities' },

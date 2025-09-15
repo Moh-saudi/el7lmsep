@@ -415,8 +415,10 @@ export function getAccountTypeFromPlayer(playerData: PlayerWithOrganization): Ac
       return 'trainer';
     case 'agent':
       return 'agent';
+    case 'independent':
+      return 'independent'; // اللاعبين المستقلين
     default:
-      return 'trainer'; // افتراضي
+      return 'independent'; // افتراضي للاعبين المستقلين
   }
 }
 

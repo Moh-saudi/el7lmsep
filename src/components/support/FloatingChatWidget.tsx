@@ -67,12 +67,20 @@ const FloatingChatWidget: React.FC = () => {
   const { user, userData } = useAuth();
   const pathname = usePathname();
   
-  console.log('🔧 FloatingChatWidget - Component loaded', { 
-    pathname, 
-    user: !!user, 
-    userData: !!userData,
-    accountType: userData?.accountType 
-  });
+  // تجنب console.log المتكرر
+  const [hasLogged, setHasLogged] = useState(false);
+  
+  useEffect(() => {
+    if (!hasLogged) {
+      console.log('🔧 FloatingChatWidget - Component loaded', { 
+        pathname, 
+        user: !!user, 
+        userData: !!userData,
+        accountType: userData?.accountType 
+      });
+      setHasLogged(true);
+    }
+  }, [pathname, user, userData, hasLogged]);
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
   const [message, setMessage] = useState('');

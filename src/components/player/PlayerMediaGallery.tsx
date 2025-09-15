@@ -9,18 +9,37 @@ const PlayerMediaGallery: React.FC<PlayerMediaGalleryProps> = ({ player }) => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
 
-  const allImages = [
-    ...(player?.profile_image ? [player.profile_image] : []),
-    ...(player?.additional_images || [])
-  ];
-
-  const allVideos = player?.videos || [];
-
   const getImageUrl = (image: any) => {
     if (typeof image === 'string') return image;
     if (image?.url) return image.url;
     return null;
   };
+
+  // تجميع الصور مع إزالة التكرارات
+  const allImages = [];
+  const seenUrls = new Set<string>();
+  
+  // إضافة الصورة الشخصية أولاً
+  if (player?.profile_image) {
+    const profileImageUrl = getImageUrl(player.profile_image);
+    if (profileImageUrl && !seenUrls.has(profileImageUrl)) {
+      allImages.push(player.profile_image);
+      seenUrls.add(profileImageUrl);
+    }
+  }
+  
+  // إضافة الصور الإضافية مع تجنب التكرار
+  if (player?.additional_images) {
+    player.additional_images.forEach(image => {
+      const imageUrl = getImageUrl(image);
+      if (imageUrl && !seenUrls.has(imageUrl)) {
+        allImages.push(image);
+        seenUrls.add(imageUrl);
+      }
+    });
+  }
+
+  const allVideos = player?.videos || [];
 
   const getVideoUrl = (video: any) => {
     if (typeof video === 'string') return video;

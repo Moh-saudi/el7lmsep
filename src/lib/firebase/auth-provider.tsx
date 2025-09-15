@@ -247,8 +247,15 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
   useEffect(() => {
     let isSubscribed = true;
     let userDocUnsubscribe: (() => void) | null = null;
+    let isInitialized = false;
 
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      // تجنب التكرار في التهيئة
+      if (isInitialized) {
+        console.log('🔄 AuthProvider - Skipping duplicate initialization');
+        return;
+      }
+      isInitialized = true;
       try {
         if (user && isSubscribed) {
           setUser(user);
@@ -261,6 +268,23 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
             
             if (userDoc.exists()) {
               const data = userDoc.data() as UserData;
+              
+              // Check if uid field is missing and fix it
+              if (!data.uid) {
+                console.log('🔧 AuthProvider - Missing uid field detected, fixing...');
+                try {
+                  await updateDoc(userRef, {
+                    uid: user.uid,
+                    updatedAt: new Date()
+                  });
+                  console.log('✅ AuthProvider - Successfully added uid field');
+                  // Update the data object with the uid
+                  data.uid = user.uid;
+                } catch (error) {
+                  console.error('❌ AuthProvider - Error adding uid field:', error);
+                }
+              }
+              
               console.log('📋 AuthProvider - User document found:', {
                 uid: user.uid,
                 email: data.email,
@@ -403,10 +427,15 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
 
     return () => {
       isSubscribed = false;
+      isInitialized = false;
       if (userDocUnsubscribe) {
         userDocUnsubscribe();
       }
-      unsubscribe();
+      try {
+        unsubscribe();
+      } catch (error) {
+        console.warn('⚠️ AuthProvider - Error during cleanup:', error);
+      }
     };
   }, []);
 

@@ -1140,6 +1140,62 @@ export default function BulkPaymentPage({ accountType }: BulkPaymentPageProps) {
   const finalPrice = subtotal - bulkDiscountAmount - paymentDiscountAmount; // السعر النهائي مع الخصومات
   const totalSavings = bulkDiscountAmount + paymentDiscountAmount; // إجمالي التوفير
 
+  // دالة إرسال إشعارات الموافقة على الاشتراك
+  const sendSubscriptionApprovalNotifications = async (players: any[], amount: number, packageType: string) => {
+    try {
+      console.log('📱 إرسال إشعارات الموافقة على الاشتراك...');
+      
+      const messageTemplates = {
+        subscriptionActivated: (player: any, amount: number, packageType: string) => 
+          `🎉 تهانينا ${player.name}! تم تفعيل اشتراكك في منصة الحلم بنجاح. المبلغ: ${amount} ريال. نوع الباقة: ${packageType}. استمتع بخدماتنا المميزة!`,
+        paymentPending: '⏳ جاري معالجة طلب الاشتراك الخاص بك. سنقوم بالتواصل معك قريباً.',
+        paymentFailed: '❌ عذراً، حدث خطأ في معالجة طلب الاشتراك. يرجى المحاولة مرة أخرى أو التواصل مع الدعم الفني.'
+      };
+
+      for (const player of players) {
+        try {
+          // إرسال SMS للموافقة
+          const notificationMessage = messageTemplates.subscriptionActivated(player, amount, packageType);
+          
+          if (player.phone && player.phone !== 'غير محدد') {
+            await fetch('/api/beon/sms', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                singlePhone: player.phone,
+                message: notificationMessage
+              })
+            });
+            console.log(`✅ تم إرسال إشعار الموافقة للاعب: ${player.name}`);
+          }
+
+          // حفظ الإشعار في قاعدة البيانات
+          const { addDoc, collection } = await import('firebase/firestore');
+          const { db } = await import('@/lib/firebase/config');
+          
+          await addDoc(collection(db, 'notifications'), {
+            userId: player.id,
+            type: 'subscription_approved',
+            title: 'تم تفعيل الاشتراك',
+            message: notificationMessage,
+            status: 'sent',
+            sentAt: new Date(),
+            sentVia: 'sms',
+            paymentAmount: amount,
+            packageType: packageType
+          });
+
+        } catch (playerError) {
+          console.error(`❌ خطأ في إرسال إشعار للاعب ${player.name}:`, playerError);
+        }
+      }
+      
+      console.log('✅ تم إرسال جميع إشعارات الموافقة');
+    } catch (error) {
+      console.error('❌ خطأ في إرسال إشعارات الموافقة:', error);
+    }
+  };
+
   // دالة معالجة نجاح الدفع - defined here after all variables are available
   const handlePaymentSuccess = async (paymentData: any) => {
     try {
@@ -1220,6 +1276,38 @@ export default function BulkPaymentPage({ accountType }: BulkPaymentPageProps) {
               createdAt: new Date(),
               updatedAt: new Date(),
             });
+
+            // إرسال إشعار للمستخدم نفسه إذا كان لاعب
+            try {
+              const userNotificationMessage = `🎉 تهانينا! تم تفعيل اشتراكك في منصة الحلم بنجاح. المبلغ: ${finalPrice} ${currentCurrency}. نوع الباقة: ${selectedPackage}. استمتع بخدماتنا المميزة!`;
+              
+              if (userData?.phone && userData.phone !== 'غير محدد') {
+                await fetch('/api/beon/sms', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    singlePhone: userData.phone,
+                    message: userNotificationMessage
+                  })
+                });
+                console.log('✅ تم إرسال إشعار الموافقة للمستخدم');
+              }
+
+              // حفظ إشعار المستخدم
+              await addDoc(collection(db, 'notifications'), {
+                userId: user.uid,
+                type: 'subscription_approved',
+                title: 'تم تفعيل الاشتراك',
+                message: userNotificationMessage,
+                status: 'sent',
+                sentAt: new Date(),
+                sentVia: 'sms',
+                paymentAmount: finalPrice,
+                packageType: selectedPackage
+              });
+            } catch (userNotificationError) {
+              console.error('❌ خطأ في إرسال إشعار المستخدم:', userNotificationError);
+            }
           } catch (e) {
             console.warn('⚠️ تعذر تحديث وثيقة المستخدم');
           }
@@ -1292,6 +1380,13 @@ export default function BulkPaymentPage({ accountType }: BulkPaymentPageProps) {
         }
 
         console.log('✅ تم تحديث حالة اشتراك اللاعبين بنجاح');
+        
+        // إرسال إشعارات للموافقة على الاشتراك
+        try {
+          await sendSubscriptionApprovalNotifications(selectedPlayers, finalPrice, selectedPackage);
+        } catch (notificationError) {
+          console.error('❌ خطأ في إرسال الإشعارات:', notificationError);
+        }
       } catch (subscriptionError) {
         console.error('❌ خطأ في تحديث اشتراكات اللاعبين:', subscriptionError);
       }

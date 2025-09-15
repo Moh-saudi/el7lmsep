@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { collection, query, orderBy, getDocs, where, doc, updateDoc, limit } from 'firebase/firestore';
 import { db } from '@/lib/firebase/config';
 import toast from 'react-hot-toast';
+import { openWhatsAppShare, testWhatsAppShare } from '@/lib/utils/whatsapp-share';
 
 export default function AdminNotificationsPage() {
   const [notifications, setNotifications] = useState([]);
@@ -126,6 +127,80 @@ export default function AdminNotificationsPage() {
     }).format(date);
   };
 
+  // إرسال إشعار عبر WhatsApp
+  const sendNotificationViaWhatsApp = (notification) => {
+    if (!notification.paymentData?.playerPhone) {
+      toast.error('رقم الهاتف غير متوفر');
+      return;
+    }
+
+    const message = `📢 إشعار من El7lm Platform\n\n${notification.title}\n\n${notification.message}`;
+    
+    const result = openWhatsAppShare(notification.paymentData.playerPhone, message);
+    
+    if (result.success) {
+      toast.success('تم فتح WhatsApp بنجاح!');
+    } else {
+      toast.error(result.error || 'فشل في فتح WhatsApp');
+    }
+  };
+
+  // اختبار WhatsApp Share
+  const testWhatsAppShareFeature = () => {
+    const result = testWhatsAppShare('اختبار إشعارات WhatsApp من El7lm Platform');
+    
+    if (result.success) {
+      toast.success('تم فتح WhatsApp للاختبار!');
+    } else {
+      toast.error(result.error || 'فشل في اختبار WhatsApp');
+    }
+  };
+
+  // اختبار رقم المستخدم الحالي مع محتوى الرسالة الفعلية
+  const testUserPhone = () => {
+    if (!selectedNotification) {
+      toast.error('يرجى اختيار إشعار أولاً');
+      return;
+    }
+
+    if (!selectedNotification.paymentData?.playerPhone) {
+      toast.error('رقم الهاتف غير متوفر في هذا الإشعار');
+      return;
+    }
+
+    console.log(`🔍 اختبار رقم المستخدم الحالي: "${selectedNotification.paymentData.playerPhone}"`);
+    
+    // إنشاء رسالة شاملة من بيانات الإشعار
+    const message = `📢 إشعار من El7lm Platform
+
+${selectedNotification.title}
+
+${selectedNotification.message}
+
+تفاصيل إضافية:
+- نوع الإشعار: ${selectedNotification.type || 'عام'}
+- تاريخ الإشعار: ${formatDate(selectedNotification.createdAt)}
+- حالة الدفع: ${selectedNotification.paymentData?.status || 'غير محدد'}
+- مبلغ الدفع: ${selectedNotification.paymentData?.amount || 'غير محدد'} ${selectedNotification.paymentData?.currency || 'ج.م'}
+
+شكراً لاستخدامك منصة العلم.
+
+مع تحيات فريق العمل`;
+
+    console.log(`📝 الرسالة المستخدمة: "${message}"`);
+    console.log(`📏 طول الرسالة: ${message.length} حرف`);
+
+    const result = openWhatsAppShare(selectedNotification.paymentData.playerPhone, message);
+    
+    if (result.success) {
+      toast.success('تم فتح WhatsApp برقم المستخدم مع الرسالة الفعلية!');
+      console.log(`✅ تم فتح WhatsApp برقم المستخدم مع الرسالة الفعلية!`);
+    } else {
+      toast.error(result.error || 'فشل في فتح WhatsApp');
+      console.error(`❌ فشل في فتح WhatsApp:`, result.error);
+    }
+  };
+
   useEffect(() => {
     fetchNotifications();
   }, [filter]);
@@ -148,6 +223,22 @@ export default function AdminNotificationsPage() {
                   {unreadCount} غير مقروء
                 </div>
               )}
+              <button
+                onClick={testWhatsAppShareFeature}
+                className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors w-full sm:w-auto"
+                title="اختبار WhatsApp Share برقم ثابت"
+              >
+                🧪 اختبار WhatsApp
+              </button>
+              
+              <button
+                onClick={testUserPhone}
+                className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors w-full sm:w-auto"
+                title="اختبار WhatsApp برقم المستخدم الحالي مع الرسالة الفعلية"
+                disabled={!selectedNotification}
+              >
+                📱 اختبار رقم المستخدم
+              </button>
               {unreadCount > 0 && (
                 <button
                   onClick={markAllAsRead}
@@ -245,10 +336,22 @@ export default function AdminNotificationsPage() {
                         {notification.message}
                       </p>
                       {notification.paymentData && (
-                        <div className="mt-2 text-xs text-gray-500">
-                          💰 {notification.paymentData.amount?.toLocaleString()} {notification.paymentData.currency} | 
-                          👤 {notification.paymentData.playerName} | 
-                          📱 {notification.paymentData.playerPhone}
+                        <div className="mt-2 flex items-center justify-between">
+                          <div className="text-xs text-gray-500">
+                            💰 {notification.paymentData.amount?.toLocaleString()} {notification.paymentData.currency} | 
+                            👤 {notification.paymentData.playerName} | 
+                            📱 {notification.paymentData.playerPhone}
+                          </div>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              sendNotificationViaWhatsApp(notification);
+                            }}
+                            className="bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded text-xs font-medium transition-colors"
+                            title="إرسال عبر WhatsApp"
+                          >
+                            📱 WhatsApp
+                          </button>
                         </div>
                       )}
                     </div>
@@ -327,6 +430,23 @@ export default function AdminNotificationsPage() {
             </div>
             
             <div className="flex justify-end gap-3 mt-6">
+              {selectedNotification.paymentData?.playerPhone && (
+                <>
+                  <button
+                    onClick={() => sendNotificationViaWhatsApp(selectedNotification)}
+                    className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
+                  >
+                    📱 إرسال عبر WhatsApp
+                  </button>
+                  <button
+                    onClick={testUserPhone}
+                    className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors"
+                    title="اختبار WhatsApp برقم المستخدم مع الرسالة الفعلية"
+                  >
+                    📱 اختبار رقم المستخدم
+                  </button>
+                </>
+              )}
               <button
                 onClick={() => setShowDetailsDialog(false)}
                 className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-colors"

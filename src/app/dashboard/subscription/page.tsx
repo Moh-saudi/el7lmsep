@@ -385,6 +385,21 @@ function SubscriptionStatusContent() {
     };
   }, [user]);
 
+  // تحديث فوري للبيانات كل 5 ثوان
+  useEffect(() => {
+    if (!user) return;
+
+    const interval = setInterval(async () => {
+      try {
+        await fetchSubscriptionStatus();
+      } catch (error) {
+        console.error('خطأ في التحديث الفوري:', error);
+      }
+    }, 5000); // تحديث كل 5 ثوان
+
+    return () => clearInterval(interval);
+  }, [user]);
+
   const detectUserCountry = async () => {
     try {
       const response = await fetch('https://ipapi.co/json/');

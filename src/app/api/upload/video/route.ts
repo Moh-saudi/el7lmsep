@@ -2,6 +2,11 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { cookies } from 'next/headers';
 
+// إعدادات لرفع الملفات الكبيرة - تم تحديثها للنسخة الجديدة من Next.js
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+export const maxDuration = 60;
+
 export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData();
@@ -34,9 +39,21 @@ export async function POST(request: NextRequest) {
     // التحقق من حجم الملف (100MB)
     const maxSize = 100 * 1024 * 1024;
     if (file.size > maxSize) {
+      const fileSizeMB = (file.size / (1024 * 1024)).toFixed(2);
+      const maxSizeMB = (maxSize / (1024 * 1024)).toFixed(0);
+      
       return NextResponse.json(
-        { error: 'حجم الملف كبير جداً. الحد الأقصى: 100MB' },
-        { status: 400 }
+        { 
+          error: `حجم الفيديو كبير جداً! حجم الملف: ${fileSizeMB} ميجابايت، الحد الأقصى المسموح: ${maxSizeMB} ميجابايت. يرجى اختيار فيديو أصغر أو ضغط الفيديو قبل الرفع.`,
+          details: {
+            fileSize: file.size,
+            fileSizeMB: parseFloat(fileSizeMB),
+            maxSize: maxSize,
+            maxSizeMB: parseInt(maxSizeMB),
+            fileName: file.name
+          }
+        },
+        { status: 413 } // 413 Payload Too Large
       );
     }
 
@@ -45,6 +62,27 @@ export async function POST(request: NextRequest) {
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
     );
+
+    // التأكد من وجود bucket videos
+    const { data: buckets } = await supabase.storage.listBuckets();
+    const videosBucket = buckets?.find(bucket => bucket.name === 'videos');
+    
+    if (!videosBucket) {
+      console.log('📦 إنشاء bucket videos...');
+      const { error: createError } = await supabase.storage.createBucket('videos', {
+        public: true,
+        allowedMimeTypes: ['video/mp4', 'video/webm', 'video/ogg', 'video/avi', 'video/mov'],
+        fileSizeLimit: 100 * 1024 * 1024 // 100MB
+      });
+      
+      if (createError) {
+        console.error('❌ خطأ في إنشاء bucket videos:', createError);
+        return NextResponse.json(
+          { error: 'فشل في إنشاء مجلد الفيديوهات' },
+          { status: 500 }
+        );
+      }
+    }
 
     // إنشاء اسم فريد للملف
     const timestamp = Date.now();
@@ -62,7 +100,7 @@ export async function POST(request: NextRequest) {
 
     // رفع الملف إلى Supabase
     const { data, error } = await supabase.storage
-      .from('avatars')
+      .from('videos')
       .upload(filePath, file, {
         cacheControl: '3600',
         upsert: false,
@@ -79,7 +117,7 @@ export async function POST(request: NextRequest) {
 
     // الحصول على الرابط العام
     const { data: urlData } = supabase.storage
-      .from('avatars')
+      .from('videos')
       .getPublicUrl(filePath);
 
     if (!urlData?.publicUrl) {

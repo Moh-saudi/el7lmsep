@@ -1,6 +1,44 @@
 import { NextRequest, NextResponse } from 'next/server';
-import whatsappService from '@/lib/whatsapp/whatsapp-service';
+import { beonSMSService } from '@/lib/beon';
 import { rateLimiter, getClientIpFromHeaders } from '@/lib/security/rate-limit';
+
+// تنسيق رقم الهاتف المصري
+const formatEgyptianPhone = (phone: string): string => {
+  let cleaned = phone.replace(/\s+/g, '').replace(/[^\d+]/g, '');
+  
+  if (cleaned.startsWith('0')) {
+    return '+20' + cleaned.substring(1);
+  }
+  
+  if (cleaned.startsWith('20')) {
+    return '+' + cleaned;
+  }
+  
+  if (cleaned.startsWith('+20')) {
+    return cleaned;
+  }
+  
+  if (cleaned.length === 11 && cleaned.startsWith('01')) {
+    return '+20' + cleaned.substring(1);
+  }
+  
+  if (cleaned.length === 10 && cleaned.startsWith('1')) {
+    return '+20' + cleaned;
+  }
+  
+  return cleaned;
+};
+
+// التحقق من صحة رقم الهاتف
+const validatePhoneNumber = (phone: string): boolean => {
+  const phoneRegex = /^\+20[0-9]{10}$/;
+  return phoneRegex.test(phone);
+};
+
+// إنشاء OTP
+const generateOTP = (): string => {
+  return Math.floor(1000 + Math.random() * 9000).toString();
+};
 
 // تخزين مؤقت للطلبات لمنع الإرسال المتكرر
 const requestCache = new Map<string, { timestamp: number; count: number; lastRequest: number }>();
@@ -33,10 +71,10 @@ export async function POST(request: NextRequest) {
     }
 
     // تنسيق رقم الهاتف
-    const formattedPhone = whatsappService.formatPhoneNumber(phoneNumber);
+    const formattedPhone = formatEgyptianPhone(phoneNumber);
     
     // التحقق من صحة رقم الهاتف
-    if (!whatsappService.validatePhoneNumber(formattedPhone)) {
+    if (!validatePhoneNumber(formattedPhone)) {
       return NextResponse.json(
         { success: false, error: 'رقم الهاتف غير صحيح' },
         { status: 400 }
@@ -107,28 +145,28 @@ export async function POST(request: NextRequest) {
     console.log('📱 Rate limit check passed for:', formattedPhone);
 
     // إنشاء OTP جديد
-    const otp = whatsappService.generateOTP();
+    const otp = generateOTP();
     
-    // إرسال OTP عبر WhatsApp
-    const whatsappResult = await whatsappService.sendOTP(formattedPhone, otp, name, serviceType);
+    // إرسال OTP عبر SMS (BeOn V3 لا يدعم WhatsApp فعلياً)
+    const smsResult = await beonSMSService.sendBulkSMS([formattedPhone], `رمز التحقق الخاص بك هو: ${otp}`);
 
-    if (whatsappResult.success) {
-      console.log('📱 WhatsApp OTP sent successfully to:', formattedPhone);
+    if (smsResult.success) {
+      console.log('📱 SMS OTP sent successfully to:', formattedPhone);
       
       return NextResponse.json({
         success: true,
-        message: 'تم إرسال رمز التحقق عبر WhatsApp بنجاح',
+        message: 'تم إرسال رمز التحقق عبر SMS بنجاح (BeOn V3 لا يدعم WhatsApp فعلياً)',
         phoneNumber: formattedPhone,
         // لا نرسل OTP في الاستجابة لأمان
         otpLength: otp.length
       });
     } else {
-      console.error('❌ Failed to send WhatsApp OTP:', whatsappResult.error);
+      console.error('❌ Failed to send SMS OTP:', smsResult.error);
       
       return NextResponse.json(
         { 
           success: false, 
-          error: whatsappResult.error || 'فشل في إرسال رمز التحقق عبر WhatsApp' 
+          error: smsResult.error || 'فشل في إرسال رمز التحقق عبر SMS' 
         },
         { status: 500 }
       );

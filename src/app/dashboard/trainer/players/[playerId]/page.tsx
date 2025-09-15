@@ -967,28 +967,59 @@ const PlayerReportView: React.FC<PlayerReportViewProps> = ({ player }) => {
           الصور
         </h3>
         <div className="flex flex-wrap gap-4">
-          {player?.profile_image && (
-            <div className="relative">
-              <img 
-                src={typeof player.profile_image === 'string' 
-                  ? player.profile_image 
-                  : (player.profile_image as { url: string })?.url} 
-                alt="الصورة الشخصية" 
-                className="w-32 h-32 object-cover rounded-lg shadow-md border-2 border-purple-200" 
-              />
-              <div className="absolute -top-2 -right-2 bg-purple-600 text-white text-xs px-2 py-1 rounded-full">
-                رئيسية
+          {(() => {
+            // تجميع الصور مع إزالة التكرارات
+            const allImages = [];
+            const seenUrls = new Set<string>();
+            
+            // إضافة الصورة الشخصية أولاً
+            if (player?.profile_image) {
+              const profileImageUrl = typeof player.profile_image === 'string' 
+                ? player.profile_image 
+                : (player.profile_image as { url: string })?.url;
+              
+              if (profileImageUrl && !seenUrls.has(profileImageUrl)) {
+                allImages.push({
+                  url: profileImageUrl,
+                  alt: "الصورة الشخصية",
+                  className: "w-32 h-32 object-cover rounded-lg shadow-md border-2 border-purple-200",
+                  isProfile: true
+                });
+                seenUrls.add(profileImageUrl);
+              }
+            }
+            
+            // إضافة الصور الإضافية مع تجنب التكرار
+            if (player?.additional_images && player.additional_images.length > 0) {
+              player.additional_images.forEach((img, idx) => {
+                const imageUrl = typeof img === 'string' ? img : img.url;
+                if (imageUrl && !seenUrls.has(imageUrl)) {
+                  allImages.push({
+                    url: imageUrl,
+                    alt: `صورة إضافية ${idx + 1}`,
+                    className: "w-24 h-24 object-cover rounded-lg shadow-md border border-gray-200",
+                    isProfile: false
+                  });
+                  seenUrls.add(imageUrl);
+                }
+              });
+            }
+            
+            return allImages.map((image, idx) => (
+              <div key={idx} className="relative">
+                <img 
+                  src={image.url} 
+                  alt={image.alt} 
+                  className={image.className} 
+                />
+                {image.isProfile && (
+                  <div className="absolute -top-2 -right-2 bg-purple-600 text-white text-xs px-2 py-1 rounded-full">
+                    رئيسية
+                  </div>
+                )}
               </div>
-            </div>
-          )}
-          {player?.additional_images && player.additional_images.length > 0 && player.additional_images.map((img, idx) => (
-            <img 
-              key={idx} 
-              src={typeof img === 'string' ? img : img.url} 
-              alt={`صورة إضافية ${idx + 1}`} 
-              className="w-24 h-24 object-cover rounded-lg shadow-md border border-gray-200" 
-            />
-          ))}
+            ));
+          })()}
         </div>
       </div>
 

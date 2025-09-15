@@ -26,6 +26,9 @@ export default function Comments({ videoId, isOpen, onClose, inline = false }: C
   const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState('');
   const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState('');
+  const [message, setMessage] = useState('');
   const { user } = useAuth();
 
   useEffect(() => {
@@ -69,7 +72,7 @@ export default function Comments({ videoId, isOpen, onClose, inline = false }: C
       return;
     }
 
-    if (!comment.trim()) {
+    if (!newComment.trim()) {
       setError('يرجى إدخال تعليق');
       return;
     }
@@ -86,8 +89,8 @@ export default function Comments({ videoId, isOpen, onClose, inline = false }: C
         },
         body: JSON.stringify({
           videoId: videoId,
-          comment: comment,
-          userId: userId
+          comment: newComment,
+          userId: user?.uid
         })
       });
 
@@ -96,7 +99,7 @@ export default function Comments({ videoId, isOpen, onClose, inline = false }: C
       if (result.success) {
         setMessage('تم إرسال التعليق بنجاح!');
         setComments(prev => [...prev, result.comment]);
-        setComment('');
+        setNewComment('');
       } else {
         setError(result.error || 'فشل في إرسال التعليق');
       }

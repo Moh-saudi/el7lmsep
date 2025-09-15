@@ -110,6 +110,9 @@ export default function SendNotificationsPage() {
   const [showTemplates, setShowTemplates] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [isTargetListExpanded, setIsTargetListExpanded] = useState(false);
+  const [whatsappLinks, setWhatsappLinks] = useState<string[]>([]);
+  const [showWhatsappLinks, setShowWhatsappLinks] = useState(false);
+  const [originalMessage, setOriginalMessage] = useState<string>('');
   // Date filter state
   const [dateFilterType, setDateFilterType] = useState<'all' | 'today' | 'this_month' | 'range'>('all');
   const [dateStart, setDateStart] = useState<string>('');
@@ -391,10 +394,15 @@ export default function SendNotificationsPage() {
        return;
      }
 
-     if (form.message.length > 160) {
-       toast.error('الرسالة تتجاوز الحد الأقصى للحروف (160 حرف)');
-       return;
-     }
+    if (form.message.length > 1000) {
+      toast.error('الرسالة تتجاوز الحد الأقصى للحروف (1000 حرف)');
+      return;
+    }
+
+    // إعادة تعيين روابط WhatsApp
+    setWhatsappLinks([]);
+    setShowWhatsappLinks(false);
+    setOriginalMessage('');
 
     const targetUsers = getTargetUsers();
     if (targetUsers.length === 0) {
@@ -437,37 +445,66 @@ export default function SendNotificationsPage() {
         // حفظ في Firebase
         await addDoc(collection(db, 'notifications'), notification);
 
-        // إرسال SMS إذا كان مفعلاً
+        // إرسال SMS إذا كان مفعلاً (باستخدام API الموحد)
         if (form.sendMethods.sms && targetUser.phone) {
           try {
-            await fetch('/api/notifications/sms/bulk', {
+            const res = await fetch('/api/beon/messages', {
               method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
+              headers: { 'Content-Type': 'application/json; charset=utf-8' },
               body: JSON.stringify({
-                phoneNumbers: [targetUser.phone],
-                message: `${form.title}\n\n${form.message}`
+                singlePhone: targetUser.phone,
+                message: `${form.title}\n\n${form.message}`,
+                preferredMethod: 'sms'
               })
             });
+            if (!res.ok) {
+              console.error('❌ فشل إرسال SMS:', await res.text());
+            }
           } catch (error) {
             console.error('خطأ في إرسال SMS:', error);
           }
         }
 
-        // إرسال WhatsApp إذا كان مفعلاً
+        // إرسال WhatsApp إذا كان مفعلاً (إنشاء روابط الشير)
         if (form.sendMethods.whatsapp && targetUser.phone) {
           try {
-            // استخدام WhatsApp Web API (فتح WhatsApp في المتصفح)
-            const whatsappUrl = `https://wa.me/${targetUser.phone.replace(/\D/g, '')}?text=${encodeURIComponent(`${form.title}\n\n${form.message}`)}`;
-            window.open(whatsappUrl, '_blank');
+            const res = await fetch('/api/beon/messages', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                singlePhone: targetUser.phone,
+                message: `${form.title}\n\n${form.message}`,
+                preferredMethod: 'whatsapp'
+              })
+            });
+            
+            if (res.ok) {
+              const result = await res.json();
+              if (result.success && result.data?.whatsappLinks) {
+                console.log('📱 تم إنشاء رابط WhatsApp:', result.data.whatsappLinks[0]);
+                // جمع روابط WhatsApp
+                setWhatsappLinks(prev => [...prev, ...result.data.whatsappLinks]);
+                // حفظ الرسالة الأصلية
+                if (result.data.originalMessage) {
+                  setOriginalMessage(result.data.originalMessage);
+                }
+              }
+            }
           } catch (error) {
-            console.error('خطأ في إرسال WhatsApp:', error);
+            console.error('خطأ في إنشاء رابط WhatsApp:', error);
           }
         }
       });
 
       await Promise.all(notificationPromises);
 
-      toast.success(`تم إرسال الإشعار بنجاح إلى ${targetUsers.length} مستخدم`);
+      // عرض روابط WhatsApp إذا كانت متوفرة
+      if (whatsappLinks.length > 0) {
+        setShowWhatsappLinks(true);
+        toast.success(`تم إرسال الإشعار بنجاح إلى ${targetUsers.length} مستخدم. تم إنشاء ${whatsappLinks.length} رابط WhatsApp`);
+      } else {
+        toast.success(`تم إرسال الإشعار بنجاح إلى ${targetUsers.length} مستخدم`);
+      }
       
       // إعادة تعيين النموذج
       setForm({
@@ -1124,22 +1161,22 @@ export default function SendNotificationsPage() {
                      <label className="text-sm font-medium text-gray-700">
                        رسالة الإشعار *
                      </label>
-                     <span className={`text-xs ${form.message.length > 160 ? 'text-red-600' : 'text-gray-500'}`}>
-                       {form.message.length}/160 حرف
+                     <span className={`text-xs ${form.message.length > 1000 ? 'text-red-600' : 'text-gray-500'}`}>
+                       {form.message.length}/1000 حرف
                      </span>
                    </div>
                    <Textarea
-                     placeholder="أدخل رسالة الإشعار (الحد الأقصى 160 حرف)"
+                     placeholder="أدخل رسالة الإشعار (الحد الأقصى 1000 حرف)"
                      value={form.message}
                      onChange={(e) => {
-                       if (e.target.value.length <= 160) {
+                       if (e.target.value.length <= 1000) {
                          handleFormChange('message', e.target.value);
                        }
                      }}
                      rows={4}
-                     className={form.message.length > 160 ? 'border-red-500' : ''}
+                     className={form.message.length > 1000 ? 'border-red-500' : ''}
                    />
-                   {form.message.length > 160 && (
+                   {form.message.length > 1000 && (
                      <p className="text-xs text-red-600 mt-1">
                        تجاوزت الحد الأقصى للحروف. يرجى تقصير الرسالة.
                      </p>
@@ -1589,6 +1626,144 @@ export default function SendNotificationsPage() {
                 </div>
               </CardContent>
             </Card>
+
+            {/* WhatsApp Links Display */}
+            {showWhatsappLinks && whatsappLinks.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <MessageSquare className="w-5 h-5 text-green-600" />
+                    روابط WhatsApp
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {/* تعليمات الاستخدام */}
+                    <div className="bg-blue-50 p-3 rounded-lg">
+                      <h4 className="font-semibold text-blue-800 mb-2">📋 تعليمات الاستخدام:</h4>
+                      <ol className="text-sm text-blue-700 space-y-1">
+                        <li>1. انقر على أي رابط لفتح WhatsApp</li>
+                        <li>2. تأكد من أن الرقم صحيح في WhatsApp</li>
+                        <li>3. انقر على "إرسال" لإرسال الرسالة</li>
+                      </ol>
+                      <p className="text-xs text-blue-600 mt-2">
+                        💡 إذا لم يفتح WhatsApp، تأكد من تثبيت التطبيق
+                      </p>
+                    </div>
+
+                    {/* عرض الروابط */}
+                    <div>
+                      <p className="text-sm text-gray-600 mb-3">
+                        تم إنشاء {whatsappLinks.length} رابط WhatsApp:
+                      </p>
+                      <div className="space-y-2 max-h-60 overflow-y-auto">
+                        {whatsappLinks.map((link, index) => (
+                          <div key={index} className="flex items-center gap-2 p-3 bg-green-50 rounded-lg border border-green-200">
+                            <span className="text-sm text-gray-600 w-8 font-semibold">#{index + 1}</span>
+                            <div className="flex-1">
+                              <a
+                                href={link}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-sm text-green-600 hover:text-green-800 underline break-all"
+                              >
+                                {link}
+                              </a>
+                              <p className="text-xs text-gray-500 mt-1">
+                                انقر لفتح WhatsApp
+                              </p>
+                            </div>
+                            <div className="flex gap-1">
+                              <button
+                                onClick={() => navigator.clipboard.writeText(link)}
+                                className="p-1 text-gray-500 hover:text-gray-700"
+                                title="نسخ الرابط"
+                              >
+                                📋
+                              </button>
+                              <button
+                                onClick={() => {
+                                  // فتح الرابط في نافذة جديدة
+                                  window.open(link, '_blank');
+                                }}
+                                className="p-1 text-green-500 hover:text-green-700"
+                                title="فتح في WhatsApp"
+                              >
+                                📱
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* الرسالة الأصلية */}
+                    {originalMessage && (
+                      <div className="bg-gray-50 p-3 rounded-lg">
+                        <h4 className="font-semibold text-gray-800 mb-2">📝 الرسالة الأصلية:</h4>
+                        <div className="bg-white p-3 rounded border">
+                          <p className="text-sm text-gray-700 whitespace-pre-wrap">{originalMessage}</p>
+                        </div>
+                        <button
+                          onClick={() => {
+                            navigator.clipboard.writeText(originalMessage);
+                            toast.success('تم نسخ الرسالة');
+                          }}
+                          className="mt-2 px-3 py-1 text-xs bg-gray-100 text-gray-600 rounded hover:bg-gray-200"
+                        >
+                          📋 نسخ الرسالة
+                        </button>
+                      </div>
+                    )}
+
+                    {/* استكشاف الأخطاء */}
+                    <div className="bg-yellow-50 p-3 rounded-lg">
+                      <h4 className="font-semibold text-yellow-800 mb-2">🔧 استكشاف الأخطاء:</h4>
+                      <div className="text-sm text-yellow-700 space-y-1">
+                        <p><strong>المشكلة:</strong> الرابط لا يفتح WhatsApp</p>
+                        <p><strong>الحل:</strong> تأكد من تثبيت WhatsApp على الجهاز</p>
+                        <p className="mt-2"><strong>المشكلة:</strong> الرسالة لا تظهر</p>
+                        <p><strong>الحل:</strong> انسخ الرسالة من النص الأصلي أعلاه وألصقها في WhatsApp</p>
+                        <p className="mt-2"><strong>المشكلة:</strong> الرقم غير صحيح</p>
+                        <p><strong>الحل:</strong> تحقق من رقم الهاتف في قاعدة البيانات</p>
+                      </div>
+                    </div>
+
+                    {/* أزرار التحكم */}
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => setShowWhatsappLinks(false)}
+                        className="px-3 py-1 text-sm bg-gray-100 text-gray-600 rounded hover:bg-gray-200"
+                      >
+                        إخفاء
+                      </button>
+                      <button
+                        onClick={() => {
+                          const allLinks = whatsappLinks.join('\n');
+                          navigator.clipboard.writeText(allLinks);
+                          toast.success('تم نسخ جميع الروابط');
+                        }}
+                        className="px-3 py-1 text-sm bg-green-100 text-green-600 rounded hover:bg-green-200"
+                      >
+                        نسخ الكل
+                      </button>
+                      <button
+                        onClick={() => {
+                          // فتح جميع الروابط في نوافذ جديدة
+                          whatsappLinks.forEach(link => {
+                            window.open(link, '_blank');
+                          });
+                          toast.success('تم فتح جميع الروابط');
+                        }}
+                        className="px-3 py-1 text-sm bg-blue-100 text-blue-600 rounded hover:bg-blue-200"
+                      >
+                        فتح الكل
+                      </button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
 
                          {/* Templates Stats */}
              <Card>

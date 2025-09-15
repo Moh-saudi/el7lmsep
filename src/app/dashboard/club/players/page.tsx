@@ -111,8 +111,16 @@ export default function ClubPlayersPage() {
     try {
       const requests = await organizationReferralService.getOrganizationJoinRequests(user!.uid, 'pending');
       setJoinRequests(requests);
-    } catch (error) {
-      console.error('خطأ في تحميل طلبات الانضمام:', error);
+    } catch (error: any) {
+      // تحسين معالجة الأخطاء
+      if (error?.code === 'failed-precondition' && error?.message?.includes('index')) {
+        console.warn('⚠️ Firebase index is still building for join requests. This is normal and will resolve automatically.');
+        // لا نعرض رسالة خطأ للمستخدم لأن هذا مؤقت
+        setJoinRequests([]);
+      } else {
+        console.error('خطأ في تحميل طلبات الانضمام:', error);
+        toast.error('فشل في تحميل طلبات الانضمام');
+      }
     }
   };
 
@@ -280,7 +288,7 @@ export default function ClubPlayersPage() {
         return 'غير محدد';
       }
       
-      return d.toLocaleDateString('ar-SA');
+      return d.toLocaleDateString('en-GB');
     } catch (error) {
       return 'غير محدد';
     }

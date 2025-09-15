@@ -100,7 +100,6 @@ const getAgeCategory = (birthDate: any): string => {
 };
 
 export default function PlayerVideosPage({ accountType }: PlayerVideosPageProps) {
-  console.log('🎬 PlayerVideosPage initialized with accountType:', accountType);
   
   const [videos, setVideos] = useState<Video[]>([]);
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);

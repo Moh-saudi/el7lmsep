@@ -288,16 +288,18 @@ const ModernEnhancedSidebar: React.FC<ModernEnhancedSidebarProps> = ({
         { id: 'users', label: 'المستخدمين', icon: Users, href: `/dashboard/admin/users`, color: 'text-purple-600', bgColor: 'bg-purple-50' },
         { id: 'convert-players', label: 'تحويل اللاعبين التابعين', icon: User, href: `/dashboard/admin/convert-dependent-players`, color: 'text-orange-600', bgColor: 'bg-orange-50' },
         { id: 'employees', label: 'الموظفين', icon: User, href: `/dashboard/admin/employees`, color: 'text-blue-600', bgColor: 'bg-blue-50' },
+        { id: 'email-migration', label: 'ترحيل البريد الإلكتروني', icon: Mail, href: `/dashboard/admin/email-migration`, color: 'text-orange-600', bgColor: 'bg-orange-50' },
         { id: 'reports', label: 'التقارير', icon: FileText, href: `/dashboard/admin/reports`, color: 'text-orange-600', bgColor: 'bg-orange-50' },
         { id: 'clarity', label: 'Clarity Analytics', icon: BarChart3, href: `/dashboard/admin/clarity`, color: 'text-indigo-600', bgColor: 'bg-indigo-50' },
         { id: 'payments', label: 'المدفوعات', icon: Target, href: `/dashboard/admin/payments`, color: 'text-green-600', bgColor: 'bg-green-50' },
         { id: 'subscriptions', label: 'الاشتراكات', icon: Star, href: `/dashboard/admin/subscriptions`, color: 'text-yellow-600', bgColor: 'bg-yellow-50' },
         { id: 'support', label: 'الدعم الفني', icon: Shield, href: `/dashboard/admin/support`, color: 'text-red-600', bgColor: 'bg-red-50' },
         { id: 'system', label: 'النظام', icon: Settings, href: `/dashboard/admin/system`, color: 'text-slate-600', bgColor: 'bg-slate-50' },
+        { id: 'beon-v3', label: 'إدارة BeOn V3', icon: MessageSquare, href: `/dashboard/admin/beon-v3`, color: 'text-emerald-600', bgColor: 'bg-emerald-50' },
         { id: 'email-migration', label: 'ترحيل البريد الإلكتروني', icon: Globe, href: `/dashboard/admin/email-migration`, color: 'text-indigo-600', bgColor: 'bg-indigo-50' },
         { id: 'dream-academy-categories', label: 'فئات الأكاديمية (ديناميكي)', icon: GraduationCap, href: `/dashboard/admin/dream-academy/categories`, color: 'text-indigo-600', bgColor: 'bg-indigo-50' },
         { id: 'dream-academy', label: 'أكاديمية الحلم', icon: GraduationCap, href: `/dashboard/dream-academy`, color: 'text-orange-600', bgColor: 'bg-orange-50' },
-        { id: 'referrals', label: 'الإحالات والمكافآت', icon: Users, href: `/dashboard/admin/referrals`, color: 'text-pink-600', bgColor: 'bg-pink-50' },
+        { id: 'referrals', label: 'الإحالات والمكافآت', icon: Users, href: `/dashboard/admin/users/referrals`, color: 'text-pink-600', bgColor: 'bg-pink-50' },
       ]
     };
     

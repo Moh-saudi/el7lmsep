@@ -33,7 +33,8 @@ import {
   Target,
   Zap,
   Globe,
-  TrendingUp
+  TrendingUp,
+  Mail
 } from 'lucide-react';
 
 interface SimpleSidebarProps {
@@ -148,7 +149,6 @@ const SimpleSidebar: React.FC<SimpleSidebarProps> = ({
       ],
       'club': [
         { icon: Shield, label: 'الفريق', href: '/dashboard/club/team' },
-        { icon: Trophy, label: 'البطولات', href: '/dashboard/club/tournaments' },
         { icon: Calendar, label: 'المباريات', href: '/dashboard/club/matches' },
         { icon: BarChart3, label: 'الإحصائيات', href: '/dashboard/club/stats' },
       ],
@@ -160,9 +160,11 @@ const SimpleSidebar: React.FC<SimpleSidebarProps> = ({
       ],
       'admin': [
         { icon: Shield, label: 'المستخدمين', href: '/dashboard/admin/users' },
+        { icon: Mail, label: 'ترحيل البريد الإلكتروني', href: '/dashboard/admin/email-migration' },
         { icon: Settings, label: 'الإعدادات', href: '/dashboard/admin/settings' },
         { icon: BarChart3, label: 'التقارير', href: '/dashboard/admin/reports' },
         { icon: BarChart3, label: 'Clarity Analytics', href: '/dashboard/admin/clarity' },
+        { icon: MessageSquare, label: 'إدارة BeOn V3', href: '/dashboard/admin/beon-v3' },
         { icon: Globe, label: 'النظام', href: '/dashboard/admin/system' },
       ]
     };

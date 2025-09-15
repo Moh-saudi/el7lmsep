@@ -232,8 +232,11 @@ export default function AdminAdsPage() {
      
      // Check if the URL is one of our predefined options
      const predefinedUrls = [
-       '/auth/register', '/auth/login', '/dashboard', '/pricing', 
-       '/about', '/contact', '/features', '/testimonials', '/blog', '/support'
+       '/auth/register', '/auth/login', '/dashboard', '/dashboard/player', 
+       '/dashboard/club', '/dashboard/academy', '/dashboard/trainer', '/dashboard/agent',
+       '/pricing', '/about', '/contact', '/features', '/testimonials', 
+       '/blog', '/support', '/careers', '/platform', '/dashboard/dream-academy', 
+       '/dashboard/player/referrals'
      ];
      
      if (ctaUrl && !predefinedUrls.includes(ctaUrl)) {
@@ -821,7 +824,7 @@ export default function AdminAdsPage() {
                          وجهة الزر
                        </Label>
                        <p className="text-xs lg:text-sm text-gray-600 -mt-1">
-                         اختر وجهة الزر أو اختر "رابط مخصص" لإدخال رابط خارجي
+                         اختر وجهة الزر أو اختر "رابط مخصص" لإدخال رابط خارجي (WhatsApp، مواقع خارجية، إلخ)
                        </p>
                        <Select 
                          value={formData.ctaUrl} 
@@ -834,6 +837,11 @@ export default function AdminAdsPage() {
                            <SelectItem value="/auth/register">📝 التسجيل</SelectItem>
                            <SelectItem value="/auth/login">🔑 تسجيل الدخول</SelectItem>
                            <SelectItem value="/dashboard">🏠 لوحة التحكم</SelectItem>
+                           <SelectItem value="/dashboard/player">⚽ لوحة اللاعب</SelectItem>
+                           <SelectItem value="/dashboard/club">🏟️ لوحة النادي</SelectItem>
+                           <SelectItem value="/dashboard/academy">🎓 لوحة الأكاديمية</SelectItem>
+                           <SelectItem value="/dashboard/trainer">👨‍🏫 لوحة المدرب</SelectItem>
+                           <SelectItem value="/dashboard/agent">🤝 لوحة الوكيل</SelectItem>
                            <SelectItem value="/pricing">💰 الأسعار</SelectItem>
                            <SelectItem value="/about">ℹ️ من نحن</SelectItem>
                            <SelectItem value="/contact">📞 اتصل بنا</SelectItem>
@@ -841,6 +849,10 @@ export default function AdminAdsPage() {
                            <SelectItem value="/testimonials">💬 آراء العملاء</SelectItem>
                            <SelectItem value="/blog">📰 المدونة</SelectItem>
                            <SelectItem value="/support">🆘 الدعم الفني</SelectItem>
+                           <SelectItem value="/careers">💼 الوظائف</SelectItem>
+                           <SelectItem value="/platform">📋 شرح المنصة</SelectItem>
+                           <SelectItem value="/dashboard/dream-academy">🎯 مدرسة الحلم</SelectItem>
+                           <SelectItem value="/dashboard/player/referrals">🔗 نظام الإحالات</SelectItem>
                            <SelectItem value="custom">🔗 رابط مخصص</SelectItem>
                          </SelectContent>
                        </Select>
@@ -854,13 +866,13 @@ export default function AdminAdsPage() {
                          الرابط المخصص
                        </Label>
                        <p className="text-xs lg:text-sm text-gray-600 -mt-1">
-                         أدخل الرابط الكامل مع https:// أو http://
+                         أدخل الرابط الكامل مع https:// أو http:// (مثال: https://example.com أو https://wa.me/1234567890)
                        </p>
                       <Input
                         id="customUrl"
                         value={formData.customUrl || ''}
                         onChange={(e) => setFormData(prev => ({...prev, customUrl: e.target.value}))}
-                        placeholder="https://example.com"
+                        placeholder="https://example.com أو https://wa.me/1234567890"
                         className="h-14 lg:h-16 border-gray-300 focus:border-orange-500 focus:ring-orange-500 bg-white text-base lg:text-lg px-4 lg:px-6 py-3 lg:py-4"
                       />
                     </div>

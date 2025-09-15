@@ -36,21 +36,34 @@ export const getSupabaseImageUrl = (path: string, bucket: string = 'avatars') =>
 
 // دالة للتحقق من وجود الصورة في Supabase
 export const checkImageExists = async (path: string, bucket: string = 'avatars') => {
+  if (!path) return false;
+  
   try {
     const { data, error } = await supabase.storage.from(bucket).list('', {
-      search: path
+      search: path,
+      limit: 1
     });
     
     if (error) {
       console.error(`❌ Error checking image existence:`, error);
+      // إذا كان الخطأ من نوع StorageUnknownError، إرجاع false بدلاً من إثارة خطأ
+      if (error.message && error.message.includes('Unexpected token')) {
+        console.warn(`⚠️ Storage service error for ${path}, assuming file does not exist`);
+        return false;
+      }
       return false;
     }
     
-    const exists = data.some(file => file.name === path);
+    const exists = data && data.some(file => file.name === path);
     console.log(`🔍 Image ${path} exists in ${bucket}:`, exists);
     return exists;
-  } catch (error) {
+  } catch (error: any) {
     console.error(`❌ Error checking image existence:`, error);
+    // إذا كان الخطأ يحتوي على HTML response، فهذا يعني مشكلة في الخادم
+    if (error.message && error.message.includes('Unexpected token')) {
+      console.warn(`⚠️ Storage service returned HTML error for ${path}, assuming file does not exist`);
+      return false;
+    }
     return false;
   }
 };
@@ -71,19 +84,35 @@ export const getUserAvatarFromSupabase = async (userId: string, accountType: str
       try {
         const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(fileName);
         
-        // تحقق من وجود الصورة
-        const { data: fileExists, error } = await supabase.storage.from('avatars').list('', {
-          search: fileName
-        });
-        
-        if (error) {
-          console.error(`❌ Error checking file existence for ${fileName}:`, error);
+        // تحقق من وجود الصورة مع معالجة أفضل للأخطاء
+        try {
+          const { data: fileExists, error } = await supabase.storage.from('avatars').list('', {
+            search: fileName,
+            limit: 1
+          });
+          
+          if (error) {
+            console.error(`❌ Error checking file existence for ${fileName}:`, error);
+            // إذا كان الخطأ من نوع StorageUnknownError أو خطأ في الشبكة، تجاهل الملف
+            if (error.message && error.message.includes('Unexpected token')) {
+              console.warn(`⚠️ Skipping ${fileName} due to storage service error`);
+              continue;
+            }
+            continue;
+          }
+          
+          if (fileExists && fileExists.length > 0) {
+            console.log(`✅ Found avatar: ${fileName}`);
+            return publicUrl;
+          }
+        } catch (listError: any) {
+          console.error(`❌ Error listing files for ${fileName}:`, listError);
+          // إذا كان الخطأ يحتوي على HTML response، فهذا يعني مشكلة في الخادم
+          if (listError.message && listError.message.includes('Unexpected token')) {
+            console.warn(`⚠️ Storage service returned HTML error for ${fileName}, skipping`);
+            continue;
+          }
           continue;
-        }
-        
-        if (fileExists && fileExists.length > 0) {
-          console.log(`✅ Found avatar: ${fileName}`);
-          return publicUrl;
         }
       } catch (error) {
         console.error(`❌ Error checking ${fileName}:`, error);

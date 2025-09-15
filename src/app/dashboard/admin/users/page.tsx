@@ -300,6 +300,34 @@ export default function UsersManagement() {
     })();
   }, []);
 
+  // Resolve orderBy field per collection (best-effort)
+  const resolveOrderFieldForCollection = (collectionName: string, field: string): string | null => {
+    const f = field.trim();
+    // Common aliases per collection
+    const createdAtCandidates = ['createdAt', 'created_at', 'created_at_ts'];
+    const nameCandidates = ['name', 'full_name', 'displayName'];
+    const lastLoginCandidates = ['lastLogin', 'last_login', 'lastSeen', 'last_seen'];
+    const accountTypeCandidates = ['accountType'];
+    const isActiveCandidates = ['isActive', 'active'];
+
+    const pick = (cands: string[]) => cands[0]; // Prefer first; individual orderBy doesn't need composite index
+
+    switch (f) {
+      case 'createdAt':
+        return pick(createdAtCandidates);
+      case 'name':
+        return pick(nameCandidates);
+      case 'lastLogin':
+        return pick(lastLoginCandidates);
+      case 'accountType':
+        return pick(accountTypeCandidates);
+      case 'isActive':
+        return pick(isActiveCandidates);
+      default:
+        return null;
+    }
+  };
+
   const last7DailyRegs = useMemo(() => {
     const rows = analytics?.users?.dailyRegistrations || [];
     return rows.slice(-7);
@@ -351,13 +379,30 @@ export default function UsersManagement() {
         'marketers', 'marketer',
         'parents', 'parent'
       ];
-      const allDocsPromises = collectionsToFetch.map(col => getDocs(collection(db, col)));
+      const allDocsPromises = collectionsToFetch.map(col => {
+        const colRef = collection(db, col);
+        const orderField = resolveOrderFieldForCollection(col, sortBy);
+        try {
+          if (orderField) {
+            return getDocs(query(colRef, orderBy(orderField as any, sortOrder)));
+          }
+        } catch (e) {
+          // Fallback without order if Firestore rejects ordering for this collection
+          console.warn(`orderBy(${orderField}) failed for ${col}, falling back to client sort`, e);
+        }
+        return getDocs(colRef);
+      });
       const allDocsSnapshots = await Promise.all(allDocsPromises);
 
       // Attempt to include affiliated players from subcollections using collection group
       let playersGroupSnapshot: any = null;
       try {
-        playersGroupSnapshot = await getDocs(collectionGroup(db, 'players'));
+        const orderField = resolveOrderFieldForCollection('players', sortBy);
+        if (orderField) {
+          playersGroupSnapshot = await getDocs(query(collectionGroup(db, 'players'), orderBy(orderField as any, sortOrder)));
+        } else {
+          playersGroupSnapshot = await getDocs(collectionGroup(db, 'players'));
+        }
       } catch (err) {
         console.warn('collectionGroup(players) not available or failed:', err);
       }
@@ -497,13 +542,27 @@ export default function UsersManagement() {
         return u;
       });
       
-      // Manual sorting after combining
-      combinedUsers.sort((a, b) => {
-          const aVal = a[sortBy as keyof typeof a] as any;
-          const bVal = b[sortBy as keyof typeof b] as any;
-          if (aVal < bVal) return sortOrder === 'asc' ? -1 : 1;
-          if (aVal > bVal) return sortOrder === 'asc' ? 1 : -1;
-          return 0;
+      // Final global sort (ensures cross-collection ordering)
+      combinedUsers.sort((a: any, b: any) => {
+        const aVal = a[sortBy];
+        const bVal = b[sortBy];
+
+        // Normalize dates
+        const norm = (v: any) => {
+          if (v instanceof Date) return v.getTime();
+          if (v && typeof v.toDate === 'function') return v.toDate().getTime();
+          if (typeof v === 'string' && (sortBy === 'createdAt' || sortBy === 'lastLogin')) {
+            const t = Date.parse(v);
+            return isNaN(t) ? 0 : t;
+          }
+          return v ?? 0;
+        };
+
+        const av = norm(aVal);
+        const bv = norm(bVal);
+        if (av < bv) return sortOrder === 'asc' ? -1 : 1;
+        if (av > bv) return sortOrder === 'asc' ? 1 : -1;
+        return 0;
       });
 
       setUsers(combinedUsers);
@@ -1447,6 +1506,37 @@ export default function UsersManagement() {
                   مسح التاريخ
                 </Button>
               </div>
+            </div>
+
+            {/* Sort by */}
+            <div>
+              <Label>الترتيب حسب</Label>
+              <Select value={sortBy} onValueChange={(v) => setSortBy(v)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="اختر الحقل" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="createdAt">تاريخ التسجيل</SelectItem>
+                  <SelectItem value="name">الاسم</SelectItem>
+                  <SelectItem value="accountType">نوع الحساب</SelectItem>
+                  <SelectItem value="lastLogin">آخر دخول</SelectItem>
+                  <SelectItem value="isActive">الحالة</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Sort order */}
+            <div>
+              <Label>اتجاه الترتيب</Label>
+              <Select value={sortOrder} onValueChange={(v) => setSortOrder(v as 'asc' | 'desc')}>
+                <SelectTrigger>
+                  <SelectValue placeholder="اختر الاتجاه" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="desc">تنازلي (الأحدث/الأكبر أولاً)</SelectItem>
+                  <SelectItem value="asc">تصاعدي (الأقدم/الأصغر أولاً)</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
             <div className="xl:col-span-2">

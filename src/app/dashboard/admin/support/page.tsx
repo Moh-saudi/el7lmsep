@@ -34,6 +34,7 @@ import {
 import { toast } from 'sonner';
 import { formatDistanceToNow } from 'date-fns';
 import { ar } from 'date-fns/locale';
+import { openWhatsAppShare, testWhatsAppShare } from '@/lib/utils/whatsapp-share';
 
 interface SupportConversation {
   id: string;
@@ -274,8 +275,55 @@ const AdminSupportPage: React.FC = () => {
     }
   };
 
+  // إرسال رد عبر WhatsApp
+  const sendSupportViaWhatsApp = (conversation: SupportConversation) => {
+    if (!conversation.userId) {
+      toast.error('معلومات المستخدم غير متوفرة');
+      return;
+    }
+
+    const message = `🎧 رد من فريق الدعم الفني - El7lm Platform\n\nمرحباً ${conversation.userName}!\n\nنشكرك على تواصلك معنا. نحن هنا لمساعدتك في حل مشكلتك.\n\n📋 تفاصيل طلبك:\n• النوع: ${conversation.category}\n• الأولوية: ${conversation.priority}\n• الحالة: ${conversation.status}\n\nسيتم الرد عليك قريباً عبر النظام أو يمكنك التواصل معنا مباشرة.\n\nفريق الدعم الفني - El7lm Platform 🚀`;
+    
+    // استخدام رقم افتراضي للاختبار
+    const testPhone = '201017799580';
+    
+    const result = openWhatsAppShare(testPhone, message);
+    
+    if (result.success) {
+      toast.success('تم فتح WhatsApp بنجاح!');
+    } else {
+      toast.error(result.error || 'فشل في فتح WhatsApp');
+    }
+  };
+
+  // اختبار WhatsApp Share
+  const testWhatsAppShareFeature = () => {
+    const result = testWhatsAppShare('اختبار خدمة الدعم الفني من El7lm Platform');
+    
+    if (result.success) {
+      toast.success('تم فتح WhatsApp للاختبار!');
+    } else {
+      toast.error(result.error || 'فشل في اختبار WhatsApp');
+    }
+  };
+
   return (
     <div className="p-6 space-y-6">
+      {/* العنوان وزر الاختبار */}
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-800">🎧 الدعم الفني</h1>
+          <p className="text-gray-600">إدارة طلبات الدعم والمساعدة</p>
+        </div>
+        <button
+          onClick={testWhatsAppShareFeature}
+          className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+          title="اختبار WhatsApp Share"
+        >
+          🧪 اختبار WhatsApp
+        </button>
+      </div>
+
       {/* الإحصائيات */}
       <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
         <Card>
@@ -381,13 +429,15 @@ const AdminSupportPage: React.FC = () => {
                 {conversations.map((conversation) => (
                   <div
                     key={conversation.id}
-                    onClick={() => setSelectedConversation(conversation)}
-                    className={`p-4 border-b cursor-pointer hover:bg-gray-50 transition-colors ${
+                    className={`p-4 border-b hover:bg-gray-50 transition-colors ${
                       selectedConversation?.id === conversation.id ? 'bg-blue-50 border-blue-200' : ''
                     }`}
                   >
                     <div className="flex items-start justify-between">
-                      <div className="flex items-start gap-2">
+                      <div 
+                        className="flex items-start gap-2 flex-1 cursor-pointer"
+                        onClick={() => setSelectedConversation(conversation)}
+                      >
                         <span className="text-lg">{getUserTypeIcon(conversation.userType)}</span>
                         <div className="flex-1">
                           <div className="flex items-center gap-2">
@@ -418,6 +468,16 @@ const AdminSupportPage: React.FC = () => {
                           </div>
                         </div>
                       </div>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          sendSupportViaWhatsApp(conversation);
+                        }}
+                        className="bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded text-xs font-medium transition-colors"
+                        title="إرسال عبر WhatsApp"
+                      >
+                        📱
+                      </button>
                     </div>
                   </div>
                 ))}

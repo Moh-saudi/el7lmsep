@@ -93,6 +93,9 @@ export default function EmailMigration() {
           const snapshot = await getDocs(collection(db, collectionName));
           console.log(`📊 Email Migration - Found ${snapshot.docs.length} documents in ${collectionName}`);
           
+          // تحميل دالة إنشاء البريد الإلكتروني مرة واحدة
+          const { generateTypedFirebaseEmail } = await import('@/lib/utils/firebase-email-generator');
+          
           snapshot.docs.forEach(doc => {
             const data = doc.data();
             const email = data.email || '';
@@ -102,15 +105,17 @@ export default function EmailMigration() {
                                email.includes('@0199999999') ||
                                /^\d+@/.test(email) || // يبدأ بأرقام
                                email.includes('temp@') ||
-                               email.includes('placeholder@');
+                               email.includes('placeholder@') ||
+                               (email.includes('user_') && email.includes('_') && email.includes('@el7lm.com') && email.length > 30); // البريد الإلكتروني الطويل
             
-            // اقتراح إيميل جديد
+            // اقتراح إيميل جديد باستخدام النظام الجديد
             let newEmail = '';
             if (needsUpdate) {
               if (data.phone) {
-                // استخدام رقم الهاتف لإنشاء إيميل
-                const cleanPhone = data.phone.replace(/\D/g, '');
-                newEmail = `user${cleanPhone}@el7lm.com`;
+                // استخدام النظام الجديد لإنشاء إيميل قصير
+                const accountType = data.accountType || collectionName.slice(0, -1);
+                const countryCode = data.countryCode || '+20'; // افتراضي لمصر
+                newEmail = generateTypedFirebaseEmail(data.phone, countryCode, accountType);
               } else {
                 // استخدام الاسم لإنشاء إيميل
                 const cleanName = data.name?.toLowerCase().replace(/\s+/g, '').replace(/[^a-zA-Z0-9]/g, '') || 'user';
@@ -162,15 +167,26 @@ export default function EmailMigration() {
 
   const updateUserEmail = async (userId: string, newEmail: string, accountType: string) => {
     try {
-      // تحديث في مجموعة users
-      await updateDoc(doc(db, 'users', userId), {
-        email: newEmail,
-        emailUpdated: true,
-        emailUpdatedAt: new Date(),
-        oldEmail: users.find(u => u.id === userId)?.currentEmail
+      // استخدام API الجديد لترحيل البريد الإلكتروني
+      const response = await fetch('/api/admin/migrate-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId,
+          collectionName: 'users', // نبدأ بمجموعة users الرئيسية
+          newEmail
+        })
       });
 
-      // تحديث في المجموعة الخاصة بنوع الحساب
+      const result = await response.json();
+      
+      if (!result.success) {
+        throw new Error(result.error || 'فشل في تحديث البريد الإلكتروني');
+      }
+
+      // تحديث في المجموعة الخاصة بنوع الحساب أيضاً
       const roleCollection = accountType === 'player' ? 'players' : 
                             accountType === 'club' ? 'clubs' :
                             accountType === 'agent' ? 'agents' :
@@ -181,6 +197,7 @@ export default function EmailMigration() {
         try {
           await updateDoc(doc(db, roleCollection, userId), {
             email: newEmail,
+            firebaseEmail: newEmail,
             emailUpdated: true,
             emailUpdatedAt: new Date()
           });
@@ -194,6 +211,55 @@ export default function EmailMigration() {
       console.error(`Error updating user ${userId}:`, error);
       return { success: false, error: (error as Error).message };
     }
+  };
+
+  // دالة للترحيل التلقائي لجميع المستخدمين الذين يحتاجون تحديث
+  const autoMigrateAllUsers = async () => {
+    const usersToMigrate = users.filter(u => u.needsUpdate && u.status === 'pending');
+    
+    if (usersToMigrate.length === 0) {
+      toast.info('لا يوجد مستخدمين يحتاجون ترحيل');
+      return;
+    }
+
+    setUpdating(true);
+    let successCount = 0;
+    let errorCount = 0;
+
+    toast.info(`بدء ترحيل ${usersToMigrate.length} مستخدم...`);
+
+    for (const user of usersToMigrate) {
+      if (!user.newEmail) continue;
+
+      const result = await updateUserEmail(user.id, user.newEmail, user.accountType);
+      
+      setUsers(prev => prev.map(u => 
+        u.id === user.id ? { 
+          ...u, 
+          status: result.success ? 'updated' as const : 'error' as const,
+          error: result.success ? undefined : result.error,
+          currentEmail: result.success ? user.newEmail : u.currentEmail
+        } : u
+      ));
+
+      if (result.success) {
+        successCount++;
+      } else {
+        errorCount++;
+      }
+
+      // تأخير صغير لتجنب الضغط على الخادم
+      await new Promise(resolve => setTimeout(resolve, 100));
+    }
+
+    setUpdating(false);
+    
+    toast.success(`تم ترحيل ${successCount} مستخدم بنجاح`);
+    if (errorCount > 0) {
+      toast.error(`فشل ترحيل ${errorCount} مستخدم`);
+    }
+    
+    updateStats(users);
   };
 
   const updateSingleUser = async (userId: string) => {
@@ -416,7 +482,20 @@ export default function EmailMigration() {
               ) : (
                 <Upload className="w-4 h-4 ml-2" />
               )}
-              تحديث الكل ({stats.needsUpdate})
+              تحديث المحدد ({selectedUsers.length})
+            </Button>
+            
+            <Button 
+              onClick={autoMigrateAllUsers}
+              disabled={updating || stats.needsUpdate === 0}
+              className="bg-green-600 hover:bg-green-700"
+            >
+              {updating ? (
+                <Loader2 className="w-4 h-4 ml-2 animate-spin" />
+              ) : (
+                <RefreshCcw className="w-4 h-4 ml-2" />
+              )}
+              ترحيل تلقائي ({stats.needsUpdate})
             </Button>
           </div>
         </div>

@@ -22,6 +22,7 @@ import { EmailService } from '@/lib/emailjs/service';
 import { getInvalidAccountMessage, getContactInfo } from '@/lib/support-contact';
 // تم حذف الترجمة
 import SMSOTPVerification from '@/components/shared/SMSOTPVerification';
+import toast, { Toaster } from 'react-hot-toast';
 
 export default function LoginPage() {
   const { login, logout, user, userData, loading: authLoading } = useAuth();
@@ -167,6 +168,7 @@ export default function LoginPage() {
   // دالة للتعامل مع الحسابات المعطلة أو غير المحددة
   const handleInvalidAccount = (accountType: string | undefined) => {
     const errorMessage = getInvalidAccountMessage(accountType);
+    toast.error(errorMessage, { id: 'login', duration: 6000 });
     setError(errorMessage);
     setLoading(false);
   };
@@ -227,12 +229,14 @@ export default function LoginPage() {
       if (loginMethod === 'email') {
         // التحقق من البريد الإلكتروني
         if (!formData.email.trim()) {
+          toast.error('يرجى إدخال البريد الإلكتروني', { duration: 3000 });
           setError('يرجى إدخال البريد الإلكتروني');
           setLoading(false);
           return;
         }
 
         if (!/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(formData.email)) {
+          toast.error('يرجى إدخال بريد إلكتروني صالح', { duration: 3000 });
           setError('يرجى إدخال بريد إلكتروني صالح');
           setLoading(false);
           return;
@@ -242,6 +246,7 @@ export default function LoginPage() {
       } else {
         // التحقق من رقم الهاتف
         if (!formData.phone.trim()) {
+          toast.error('يرجى إدخال رقم الهاتف', { duration: 3000 });
           setError('يرجى إدخال رقم الهاتف');
           setLoading(false);
           return;
@@ -250,7 +255,9 @@ export default function LoginPage() {
         // التحقق من صحة تنسيق رقم الهاتف حسب الدولة
         const phoneRegex = new RegExp(selectedCountry.phonePattern);
         if (!phoneRegex.test(formData.phone)) {
-          setError(`يرجى إدخال رقم هاتف صحيح مكون من ${selectedCountry.phoneLength} أرقام للدولة ${selectedCountry.name}`);
+          const phoneError = `يرجى إدخال رقم هاتف صحيح مكون من ${selectedCountry.phoneLength} أرقام للدولة ${selectedCountry.name}`;
+          toast.error(phoneError, { duration: 4000 });
+          setError(phoneError);
           setLoading(false);
           return;
         }
@@ -261,7 +268,9 @@ export default function LoginPage() {
         
         const firebaseEmail = await findFirebaseEmailByPhone(fullPhone);
         if (!firebaseEmail) {
-          setError(`رقم الهاتف غير مسجل في النظام. يرجى إنشاء حساب جديد أو التحقق من صحة الرقم.`);
+          const phoneNotFoundError = `رقم الهاتف غير مسجل في النظام. يرجى إنشاء حساب جديد أو التحقق من صحة الرقم.`;
+          toast.error(phoneNotFoundError, { duration: 5000 });
+          setError(phoneNotFoundError);
           setLoading(false);
           return;
         }
@@ -269,12 +278,13 @@ export default function LoginPage() {
       }
 
       secureConsole.log('🔐 محاولة تسجيل الدخول...');
-      setMessage('جاري التحقق من البيانات...');
+      toast.loading('جاري التحقق من البيانات...', { id: 'login' });
       
       // محاولة تسجيل الدخول مباشرة
       const result = await login(loginEmail, formData.password);
       
       secureConsole.log('✅ تم تسجيل الدخول بنجاح');
+      toast.success('تم تسجيل الدخول بنجاح!', { id: 'login' });
       
       // التحقق من وجود accountType
       if (!result.userData.accountType) {
@@ -300,7 +310,7 @@ export default function LoginPage() {
         localStorage.setItem('accountType', result.userData.accountType);
       }
       
-      setMessage('تم تسجيل الدخول بنجاح! جاري تحويلك...');
+      toast.success('تم تسجيل الدخول بنجاح! جاري تحويلك...', { duration: 2000 });
       
       // توجيه مباشر للوحة التحكم المناسبة
       const dashboardRoute = getDashboardRoute(result.userData.accountType);
@@ -329,6 +339,7 @@ export default function LoginPage() {
 • قم بإنشاء حساب جديد إذا لم يكن لديك حساب
 • تواصل مع الدعم الفني إذا كنت متأكداً من صحة الرقم`;
         
+        toast.error(noAccountError, { id: 'login', duration: 6000 });
         setError(noAccountError);
       } else if (err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') {
         const wrongPasswordError = `كلمة المرور غير صحيحة
@@ -340,6 +351,7 @@ export default function LoginPage() {
 • تأكد من عدم تفعيل Caps Lock`;
         
         console.log('Setting error:', wrongPasswordError); // للتأكد من تعيين الخطأ
+        toast.error(wrongPasswordError, { id: 'login', duration: 6000 });
         setError(wrongPasswordError);
       } else if (err.code === 'auth/too-many-requests') {
         const tooManyRequestsError = `تم تجاوز عدد المحاولات المسموح بها
@@ -349,6 +361,7 @@ export default function LoginPage() {
 • استخدم "نسيت كلمة المرور" لإعادة تعيينها
 • تواصل مع الدعم الفني إذا استمرت المشكلة`;
         
+        toast.error(tooManyRequestsError, { id: 'login', duration: 6000 });
         setError(tooManyRequestsError);
       } else if (err.code === 'auth/network-request-failed') {
         const networkError = `خطأ في الاتصال
@@ -358,6 +371,7 @@ export default function LoginPage() {
 • حاول إعادة تحميل الصفحة
 • تأكد من استقرار الاتصال`;
         
+        toast.error(networkError, { id: 'login', duration: 5000 });
         setError(networkError);
       } else if (err.code === 'auth/invalid-email') {
         const invalidEmailError = `صيغة البريد الإلكتروني غير صحيحة
@@ -367,10 +381,13 @@ export default function LoginPage() {
 • تأكد من وجود @ و . في البريد
 • مثال: user@example.com`;
         
+        toast.error(invalidEmailError, { id: 'login', duration: 5000 });
         setError(invalidEmailError);
       } else {
         // أخطاء أخرى
-        setError(`خطأ في تسجيل الدخول: ${err.message || 'حدث خطأ غير متوقع'}`);
+        const genericError = `خطأ في تسجيل الدخول: ${err.message || 'حدث خطأ غير متوقع'}`;
+        toast.error(genericError, { id: 'login', duration: 5000 });
+        setError(genericError);
       }
       
       setMessage(''); 
@@ -382,7 +399,7 @@ export default function LoginPage() {
     setShowEmailVerification(false);
     setPendingEmail(null);
     localStorage.removeItem('pendingEmailVerification');
-    setMessage('✅ تم التحقق من البريد الإلكتروني بنجاح! سيتم تحويلك للوحة التحكم.');
+    toast.success('✅ تم التحقق من البريد الإلكتروني بنجاح! سيتم تحويلك للوحة التحكم.', { duration: 3000 });
     setTimeout(() => {
       if (userData) {
         const dashboardRoute = getDashboardRoute(userData.accountType);
@@ -395,13 +412,16 @@ export default function LoginPage() {
     setShowEmailVerification(false);
     setPendingEmail(null);
     localStorage.removeItem('pendingEmailVerification');
-    setError(error || 'فشل التحقق من البريد الإلكتروني.');
+    const errorMessage = error || 'فشل التحقق من البريد الإلكتروني.';
+    toast.error(errorMessage, { duration: 5000 });
+    setError(errorMessage);
   };
 
   const handleEmailVerificationCancel = () => {
     setShowEmailVerification(false);
     setPendingEmail(null);
     localStorage.removeItem('pendingEmailVerification');
+    toast.error('تم إلغاء التحقق من البريد الإلكتروني.', { duration: 3000 });
     setError('تم إلغاء التحقق من البريد الإلكتروني.');
   };
 
@@ -553,10 +573,12 @@ export default function LoginPage() {
                 onClick={() => {
                   // تسجيل خروج والبقاء في صفحة الدخول
                   logout().then(() => {
+                    toast.success('تم تسجيل الخروج بنجاح', { duration: 2000 });
                     setMessage('تم تسجيل الخروج بنجاح');
                     setError('');
                   }).catch((error) => {
                     console.error('خطأ في تسجيل الخروج:', error);
+                    toast.error('حدث خطأ أثناء تسجيل الخروج', { duration: 3000 });
                     setError('حدث خطأ أثناء تسجيل الخروج');
                   });
                 }}
@@ -575,7 +597,7 @@ export default function LoginPage() {
       <div
         className={`flex items-center justify-center min-h-screen p-2 bg-gradient-to-br from-blue-600 to-purple-700 ${isClient && isRTL ? 'dir-rtl' : 'dir-ltr'}`}
       >
-      <div className="w-full max-w-xs overflow-hidden transition-all duration-500 transform bg-white shadow-2xl rounded-xl hover:scale-102">
+        <div className="w-full max-w-xs overflow-hidden transition-all duration-500 transform bg-white shadow-2xl rounded-xl hover:scale-102">
         {/* Header */}
         <div className="p-3 text-center text-white bg-gradient-to-r from-blue-500 to-purple-600">
           <div className="flex justify-center mb-2">
@@ -673,6 +695,8 @@ export default function LoginPage() {
                       value={selectedCountry.code}
                       onChange={handleCountryChange}
                       className="w-full py-2 pl-3 pr-8 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      title="اختر البلد"
+                      aria-label="اختر البلد"
                     >
                       {countries.map((country) => (
                         <option key={country.code} value={country.code}>
@@ -768,6 +792,8 @@ export default function LoginPage() {
                   checked={formData.rememberMe}
                   onChange={handleInputChange}
                   className="w-3 h-3 text-blue-600 rounded"
+                  title="تذكرني"
+                  aria-label="تذكرني"
                 />
                 <label className="text-xs text-gray-600">تذكرني</label>
               </div>
@@ -835,7 +861,63 @@ export default function LoginPage() {
             onCancel={handleEmailVerificationCancel}
           />
         )}
-      </div>
+        </div>
+      
+      {/* Toast Notifications */}
+      <Toaster
+        position="top-center"
+        reverseOrder={false}
+        gutter={8}
+        containerClassName=""
+        containerStyle={{}}
+        toastOptions={{
+          // Default options for all toasts
+          duration: 4000,
+          style: {
+            background: '#363636',
+            color: '#fff',
+            direction: 'rtl',
+            textAlign: 'right',
+            fontFamily: 'Arial, sans-serif',
+            fontSize: '14px',
+            maxWidth: '400px',
+            padding: '12px 16px',
+            borderRadius: '8px',
+            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+          },
+          // Success toast styling
+          success: {
+            duration: 3000,
+            style: {
+              background: '#10B981',
+              color: '#fff',
+            },
+            iconTheme: {
+              primary: '#fff',
+              secondary: '#10B981',
+            },
+          },
+          // Error toast styling
+          error: {
+            duration: 5000,
+            style: {
+              background: '#EF4444',
+              color: '#fff',
+            },
+            iconTheme: {
+              primary: '#fff',
+              secondary: '#EF4444',
+            },
+          },
+          // Loading toast styling
+          loading: {
+            style: {
+              background: '#3B82F6',
+              color: '#fff',
+            },
+          },
+        }}
+      />
       </div>
   );
 }

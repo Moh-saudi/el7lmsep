@@ -662,7 +662,7 @@ const SendMessageButton: React.FC<SendMessageButtonProps> = ({
     >
       <DialogTrigger asChild>
         <Button
-          className={`flex items-center gap-2 ${className}`}
+          className={`flex items-center gap-2 font-semibold ${className}`}
           variant={buttonVariant}
           size={buttonSize}
           disabled={sending}

@@ -55,6 +55,11 @@ const nextConfig = {
     // تحسين الأداء العام
     compress: true,
     poweredByHeader: false,
+    // تحسين CSS - تم إزالة cssModules لأنه غير مدعوم في Next.js 14
+    // تحسين معالجة CSS
+    sassOptions: {
+        includePaths: ['./src'],
+    },
     // تحسين الأداء
     swcMinify: true,
     // تحسين التوجيه والتخزين المؤقت
@@ -62,20 +67,35 @@ const nextConfig = {
     trailingSlash: false,
     // تحسين الأداء
     reactStrictMode: false,
-    // إعدادات إضافية لمنع مشاكل الـ hydration
-    experimental: {
-        // تحسين الأداء: إلغاء optimizeCss لتفادي الاعتماد على critters في بيئة Vercel
-        // optimizeCss: true,
-        optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],
-        serverComponentsExternalPackages: ['firebase-admin'],
-        scrollRestoration: true,
-        serverActions: {
-            bodySizeLimit: '2mb',
-        },
+    // إصلاح مشاكل webpack
+    webpack5: true,
+    // تحسين التعامل مع الملفات
+    assetPrefix: '',
+    // تحسين الأداء
+    optimizeFonts: false, // تعطيل تحسين الخطوط لتجنب مشاكل التحميل
         // إعدادات إضافية لمنع مشاكل الـ hydration
-        optimizeCss: false,
-        forceSwcTransforms: true,
-    },
+        experimental: {
+            // تحسين الأداء: تم إزالة optimizeCss لتجنب مشاكل critters
+            optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],
+            serverComponentsExternalPackages: ['firebase-admin'],
+            scrollRestoration: true,
+            serverActions: {
+                bodySizeLimit: '100mb',
+            },
+            // إعدادات إضافية لمنع مشاكل الـ hydration
+            forceSwcTransforms: true,
+            // تحسين تحميل الملفات
+            esmExternals: 'loose',
+            // تحسين الأداء
+            turbo: {
+                rules: {
+                    '*.svg': {
+                        loaders: ['@svgr/webpack'],
+                        as: '*.js',
+                    },
+                },
+            },
+        },
 
     // تحسين إعدادات الخطوط
     webpack: (config, { isServer }) => {
@@ -91,6 +111,49 @@ const nextConfig = {
             fs: false,
             net: false,
             tls: false,
+        };
+        
+        // إصلاح مشاكل webpack
+        config.watchOptions = {
+            poll: 1000,
+            aggregateTimeout: 300,
+            ignored: /node_modules/,
+        };
+        
+        // تحسين التعامل مع الملفات
+        config.resolve.symlinks = false;
+        
+        // تحسين الأداء
+        config.performance = {
+            hints: false,
+            maxEntrypointSize: 512000,
+            maxAssetSize: 512000,
+        };
+        
+        // إصلاح مشاكل التحميل
+        config.optimization = {
+            ...config.optimization,
+            splitChunks: {
+                chunks: 'all',
+                cacheGroups: {
+                    default: false,
+                    vendors: false,
+                    // تجميع مكتبات React
+                    react: {
+                        name: 'react',
+                        chunks: 'all',
+                        test: /[\\/]node_modules[\\/](react|react-dom)[\\/]/,
+                        priority: 20,
+                    },
+                    // تجميع مكتبات Next.js
+                    nextjs: {
+                        name: 'nextjs',
+                        chunks: 'all',
+                        test: /[\\/]node_modules[\\/](next)[\\/]/,
+                        priority: 20,
+                    },
+                },
+            },
         };
         
         // Integrate Sentry (tree-shaking safe if not enabled)
@@ -156,7 +219,11 @@ const nextConfig = {
                     { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
                     {
                         key: 'Content-Security-Policy',
-                        value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.merchant.geidea.net https://accosa-ivs.s3.ap-south-1.amazonaws.com https://secure-acs2ui-b1.wibmo.com https://www.gstatic.com https://securetoken.googleapis.com https://www.googletagmanager.com https://www.google-analytics.com https://www.youtube.com https://s.ytimg.com https://apis.google.com https://translate.google.com https://translate.googleapis.com https://translate-pa.googleapis.com https://www.clarity.ms https://www.googleadservices.com; script-src-elem 'self' 'unsafe-inline' 'unsafe-eval' https://www.merchant.geidea.net https://accosa-ivs.s3.ap-south-1.amazonaws.com https://secure-acs2ui-b1.wibmo.com https://www.gstatic.com https://securetoken.googleapis.com https://www.googletagmanager.com https://www.google-analytics.com https://www.youtube.com https://s.ytimg.com https://apis.google.com https://translate.google.com https://translate.googleapis.com https://translate-pa.googleapis.com https://www.clarity.ms https://www.googleadservices.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com https://www.gstatic.com; font-src 'self' https://fonts.gstatic.com data: blob:; img-src 'self' data: https: blob:; media-src 'self' https: blob:; connect-src 'self' https: wss: https://*.geidea.net https://*.wibmo.com https://*.amazonaws.com https://www.clarity.ms https://www.google-analytics.com https://analytics.google.com; frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com https://www.merchant.geidea.net https://secure-acs2ui-b1.wibmo.com https://*.firebaseapp.com https://translate.google.com https://www.googletagmanager.com; object-src 'none'; frame-ancestors 'self';",
+                        value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.merchant.geidea.net https://accosa-ivs.s3.ap-south-1.amazonaws.com https://secure-acs2ui-b1.wibmo.com https://www.gstatic.com https://securetoken.googleapis.com https://www.googletagmanager.com https://www.google-analytics.com https://www.youtube.com https://s.ytimg.com https://apis.google.com https://translate.google.com https://translate.googleapis.com https://translate-pa.googleapis.com https://www.clarity.ms https://www.googleadservices.com https://scripts.clarity.ms; script-src-elem 'self' 'unsafe-inline' 'unsafe-eval' https://www.merchant.geidea.net https://accosa-ivs.s3.ap-south-1.amazonaws.com https://secure-acs2ui-b1.wibmo.com https://www.gstatic.com https://securetoken.googleapis.com https://www.googletagmanager.com https://www.google-analytics.com https://www.youtube.com https://s.ytimg.com https://apis.google.com https://translate.google.com https://translate.googleapis.com https://translate-pa.googleapis.com https://www.clarity.ms https://www.googleadservices.com https://scripts.clarity.ms; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com https://www.gstatic.com; font-src 'self' https://fonts.gstatic.com data: blob:; img-src 'self' data: https: blob:; media-src 'self' https: blob:; connect-src 'self' https: wss: https://*.geidea.net https://*.wibmo.com https://*.amazonaws.com https://www.clarity.ms https://www.google-analytics.com https://analytics.google.com; frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com https://www.merchant.geidea.net https://secure-acs2ui-b1.wibmo.com https://*.firebaseapp.com https://translate.google.com https://www.googletagmanager.com; object-src 'self' data:; frame-ancestors 'self';",
+                    },
+                    {
+                        key: 'X-Content-Type-Options',
+                        value: 'nosniff',
                     },
                 ],
             },

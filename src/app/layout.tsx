@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import { Inter, Cairo } from 'next/font/google';
 import './globals.css';
 import { Providers } from './providers';
 import { Toaster } from 'react-hot-toast';
@@ -10,20 +9,10 @@ import ClarityProvider from '@/components/analytics/ClarityProvider';
 import ClarityUserTracker from '@/components/analytics/ClarityUserTracker';
 import GoogleTagManager from '@/components/analytics/GoogleTagManager';
 import GTMDataLayer from '@/components/analytics/GTMDataLayer';
+import { inter, cairo, optimizeFontLoading } from '@/lib/fonts';
+import { handleRuntimeErrors } from '@/lib/runtime-error-handler';
 import '@mantine/core/styles.css';
 import 'react-toastify/dist/ReactToastify.css';
-
-const inter = Inter({ 
-  subsets: ['latin'],
-  variable: '--font-inter',
-  display: 'swap',
-});
-
-const cairo = Cairo({ 
-  subsets: ['arabic'],
-  variable: '--font-cairo',
-  display: 'swap',
-});
 
 export const metadata: Metadata = {
   title: 'El7lm - منصة كرة القدم المتكاملة',
@@ -108,17 +97,20 @@ export default function RootLayout({
         <link rel="icon" href="/favicon.ico" />
         <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
         <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         
         {/* Preconnect to external domains */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://firestore.googleapis.com" />
         <link rel="preconnect" href="https://identitytoolkit.googleapis.com" />
         
         {/* DNS Prefetch */}
-        <link rel="dns-prefetch" href="//fonts.googleapis.com" />
         <link rel="dns-prefetch" href="//firestore.googleapis.com" />
         <link rel="dns-prefetch" href="//identitytoolkit.googleapis.com" />
+        
+        {/* Font loading with fallback */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
         
         {/* Security Headers */}
         <meta httpEquiv="X-Content-Type-Options" content="nosniff" />
@@ -127,6 +119,63 @@ export default function RootLayout({
         <GoogleTagManager gtmId={process.env.NEXT_PUBLIC_GTM_ID || ''} />
       </head>
       <body className={`${cairo.className} antialiased`}>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              // تحسين تحميل الخطوط مع معالجة الأخطاء
+              (function() {
+                try {
+                  // التحقق من وجود الخطوط المحلية أولاً
+                  const testFont = (fontFamily) => {
+                    const canvas = document.createElement('canvas');
+                    const context = canvas.getContext('2d');
+                    context.font = '16px ' + fontFamily;
+                    return context.font.indexOf(fontFamily) !== -1;
+                  };
+                  
+                  // إذا لم تكن الخطوط متوفرة محلياً، قم بتحميلها من Google Fonts
+                  if (!testFont('Cairo') || !testFont('Inter')) {
+                    const link = document.createElement('link');
+                    link.rel = 'stylesheet';
+                    link.href = 'https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800;900&display=swap';
+                    link.onerror = function() {
+                      console.warn('فشل في تحميل الخطوط من Google Fonts، سيتم استخدام الخطوط المحلية');
+                    };
+                    document.head.appendChild(link);
+                  }
+                } catch (error) {
+                  console.warn('خطأ في تحميل الخطوط:', error);
+                }
+              })();
+              
+              // معالج أخطاء Runtime
+              (function() {
+                const originalConsoleError = console.error;
+                console.error = function(...args) {
+                  const message = args.join(' ');
+                  
+                  // تجاهل أخطاء message port غير الحرجة
+                  if (message.includes('message port closed before a response was received')) {
+                    return;
+                  }
+                  
+                  // تجاهل أخطاء Chrome DevTools
+                  if (message.includes('DevTools')) {
+                    return;
+                  }
+                  
+                  // تجاهل أخطاء Extensions
+                  if (message.includes('extension') || message.includes('chrome-extension')) {
+                    return;
+                  }
+                  
+                  // طباعة الأخطاء الأخرى
+                  originalConsoleError.apply(console, args);
+                };
+              })();
+            `,
+          }}
+        />
         <Providers>
           <ClarityProvider projectId={process.env.NEXT_PUBLIC_CLARITY_PROJECT_ID || ''}>
             <ClarityUserTracker />
@@ -162,4 +211,4 @@ export default function RootLayout({
       </body>
     </html>
   );
-} 
+}

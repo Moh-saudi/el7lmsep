@@ -109,7 +109,7 @@ export default function NotificationDetailsModal({
   const getFullDate = (timestamp: any) => {
     try {
       const date = timestamp?.toDate?.() || new Date(timestamp);
-      return date.toLocaleDateString('ar-EG', {
+      return date.toLocaleDateString('en-GB', {
         year: 'numeric',
         month: 'long',
         day: 'numeric',

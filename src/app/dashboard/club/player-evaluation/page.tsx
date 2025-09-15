@@ -83,30 +83,70 @@ export default function PlayerEvaluationPage() {
   const [selectedLevel, setSelectedLevel] = useState<string[]>([]);
 
   useEffect(() => {
-    if (!user || !userData || !userData.clubId) {
-      setLoading(false);
+    if (!user) {
+      router.push('/auth/login');
       return;
     }
 
-    fetchEvaluations();
+    if (!userData) {
+      // Wait for userData to load
+      return;
+    }
+
+    if (userData.accountType !== 'club') {
+      router.push('/dashboard');
+      return;
+    }
+
+    // Only fetch evaluations if we have all required data
+    if (userData.clubId) {
+      fetchEvaluations();
+    } else {
+      setLoading(false);
+    }
   }, [user, userData]);
 
   const fetchEvaluations = async () => {
     try {
       setLoading(true);
+      
+      // Check if userData and clubId are valid
+      if (!userData || !userData.clubId) {
+        console.warn('No userData or clubId available for fetching evaluations');
+        setEvaluations([]);
+        return;
+      }
+      
+      console.log('🔍 Fetching evaluations for clubId:', userData.clubId);
+      
       const evaluationsRef = collection(db, 'player_evaluations');
-      const q = query(evaluationsRef, where('clubId', '==', userData?.clubId));
+      const q = query(evaluationsRef, where('clubId', '==', userData.clubId));
       const querySnapshot = await getDocs(q);
       
-      const evaluationsData = querySnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      })) as PlayerEvaluation[];
+      console.log('📊 Query results:', querySnapshot.size, 'documents found');
       
+      const evaluationsData = querySnapshot.docs.map(doc => {
+        const data = doc.data();
+        console.log('📋 Evaluation document:', doc.id, data);
+        return {
+          id: doc.id,
+          ...data
+        };
+      }) as PlayerEvaluation[];
+      
+      console.log('✅ Final evaluations data:', evaluationsData);
       setEvaluations(evaluationsData);
+      
+      // If no data found, show a helpful message
+      if (evaluationsData.length === 0) {
+        console.log('ℹ️ No evaluations found for this club');
+        toast.info('لا توجد تقييمات متاحة حالياً. سيتم إضافة التقييمات قريباً.');
+      }
+      
     } catch (error) {
       console.error('Error fetching evaluations:', error);
       toast.error('حدث خطأ أثناء جلب بيانات التقييمات');
+      setEvaluations([]);
     } finally {
       setLoading(false);
     }

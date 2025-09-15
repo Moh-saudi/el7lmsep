@@ -62,7 +62,9 @@ import {
   ChevronUp,
   ShoppingBag,
   Brain,
-  Send
+  Send,
+  Mail,
+  Trophy
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -407,6 +409,23 @@ const ResponsiveSidebar: React.FC<ResponsiveSidebarProps> = ({ accountType: prop
       ]
     };
 
+    const tournamentsGroup = {
+      id: 'tournaments',
+      title: 'البطولات',
+      icon: Trophy,
+      items: [
+        {
+          id: 'unified-tournament-registration',
+          label: 'البطولات',
+          icon: Trophy,
+          href: `/tournaments/unified-registration`,
+          color: 'text-white',
+          bgColor: 'bg-gradient-to-r from-yellow-500 to-orange-500',
+          isHighlighted: true
+        }
+      ]
+    };
+
     // إضافة قوائم مخصصة حسب نوع الحساب - الصفحات الموجودة فعلياً
     const accountSpecificGroups = [];
 
@@ -481,14 +500,22 @@ const ResponsiveSidebar: React.FC<ResponsiveSidebarProps> = ({ accountType: prop
             color: 'text-green-600',
             bgColor: 'bg-green-50'
           },
-          {
-            id: 'player-shared-videos',
-            label: 'فيديوهات اللاعبين المشتركة',
-            icon: Play,
-            href: `/dashboard/player/shared-videos`,
-            color: 'text-purple-600',
-            bgColor: 'bg-purple-50'
-          }
+        {
+          id: 'player-shared-videos',
+          label: 'فيديوهات اللاعبين المشتركة',
+          icon: Play,
+          href: `/dashboard/player/shared-videos`,
+          color: 'text-purple-600',
+          bgColor: 'bg-purple-50'
+        },
+        {
+          id: 'player-tournaments',
+          label: 'البطولات',
+          icon: Award,
+          href: `/tournaments/unified-registration`,
+          color: 'text-yellow-600',
+          bgColor: 'bg-yellow-50'
+        },
         ]
       });
 
@@ -563,7 +590,15 @@ const ResponsiveSidebar: React.FC<ResponsiveSidebarProps> = ({ accountType: prop
             href: `/dashboard/club/player-evaluation`,
             color: 'text-orange-600',
             bgColor: 'bg-orange-50'
-          }
+          },
+          {
+            id: 'club-tournaments',
+            label: 'البطولات',
+            icon: Award,
+            href: `/tournaments/unified-registration`,
+            color: 'text-yellow-600',
+            bgColor: 'bg-yellow-50'
+          },
         ]
       });
 
@@ -662,7 +697,15 @@ const ResponsiveSidebar: React.FC<ResponsiveSidebarProps> = ({ accountType: prop
             href: `/dashboard/trainer/referrals`,
             color: 'text-pink-600',
             bgColor: 'bg-pink-50'
-          }
+          },
+          {
+            id: 'trainer-tournaments',
+            label: 'البطولات',
+            icon: Award,
+            href: `/tournaments/unified-registration`,
+            color: 'text-yellow-600',
+            bgColor: 'bg-yellow-50'
+          },
         ]
       });
     }
@@ -705,7 +748,15 @@ const ResponsiveSidebar: React.FC<ResponsiveSidebarProps> = ({ accountType: prop
             href: `/dashboard/academy/referrals`,
             color: 'text-pink-600',
             bgColor: 'bg-pink-50'
-          }
+          },
+          {
+            id: 'academy-tournaments',
+            label: 'البطولات',
+            icon: Award,
+            href: `/tournaments/unified-registration`,
+            color: 'text-yellow-600',
+            bgColor: 'bg-yellow-50'
+          },
         ]
       });
     }
@@ -748,7 +799,15 @@ const ResponsiveSidebar: React.FC<ResponsiveSidebarProps> = ({ accountType: prop
             href: `/dashboard/agent/referrals`,
             color: 'text-pink-600',
             bgColor: 'bg-pink-50'
-          }
+          },
+          {
+            id: 'agent-tournaments',
+            label: 'البطولات',
+            icon: Award,
+            href: `/tournaments/unified-registration`,
+            color: 'text-yellow-600',
+            bgColor: 'bg-yellow-50'
+          },
         ]
       });
     }
@@ -775,6 +834,14 @@ const ResponsiveSidebar: React.FC<ResponsiveSidebarProps> = ({ accountType: prop
             href: `/dashboard/admin/employees`,
             color: 'text-teal-600',
             bgColor: 'bg-teal-50'
+          },
+          {
+            id: 'admin-email-migration',
+            label: 'ترحيل البريد الإلكتروني',
+            icon: Mail,
+            href: `/dashboard/admin/email-migration`,
+            color: 'text-orange-600',
+            bgColor: 'bg-orange-50'
           }
         ]
       });
@@ -882,6 +949,22 @@ const ResponsiveSidebar: React.FC<ResponsiveSidebarProps> = ({ accountType: prop
             bgColor: 'bg-yellow-50'
           },
           {
+            id: 'admin-beon-v3',
+            label: 'إدارة BeOn V3',
+            icon: MessageSquare,
+            href: `/dashboard/admin/beon-v3`,
+            color: 'text-emerald-600',
+            bgColor: 'bg-emerald-50'
+          },
+          {
+            id: 'admin-tournaments',
+            label: 'إدارة البطولات',
+            icon: Award,
+            href: `/dashboard/admin/tournaments`,
+            color: 'text-yellow-600',
+            bgColor: 'bg-yellow-50'
+          },
+          {
             id: 'admin-system',
             label: 'النظام',
             icon: Settings,
@@ -909,7 +992,7 @@ const ResponsiveSidebar: React.FC<ResponsiveSidebarProps> = ({ accountType: prop
             id: 'admin-videos',
             label: 'إدارة الفيديوهات',
             icon: Video,
-            href: `/dashboard/admin/videos`,
+            href: `/dashboard/admin/media`,
             color: 'text-purple-600',
             bgColor: 'bg-purple-50'
           }
@@ -979,7 +1062,15 @@ const ResponsiveSidebar: React.FC<ResponsiveSidebarProps> = ({ accountType: prop
             href: `/dashboard/marketer/search`,
             color: 'text-indigo-600',
             bgColor: 'bg-indigo-50'
-          }
+          },
+          {
+            id: 'marketer-tournaments',
+            label: 'البطولات',
+            icon: Award,
+            href: `/tournaments/unified-registration`,
+            color: 'text-yellow-600',
+            bgColor: 'bg-yellow-50'
+          },
         ]
       });
 
@@ -1063,19 +1154,27 @@ const ResponsiveSidebar: React.FC<ResponsiveSidebarProps> = ({ accountType: prop
         title: 'لوحة الوالد',
         icon: User,
         items: [
-          {
-            id: 'parent-main',
-            label: 'لوحة الوالد',
-            icon: BarChart3,
-            href: `/dashboard/parent`,
-            color: 'text-blue-600',
-            bgColor: 'bg-blue-50'
-          }
+        {
+          id: 'parent-main',
+          label: 'لوحة الوالد',
+          icon: BarChart3,
+          href: `/dashboard/parent`,
+          color: 'text-blue-600',
+          bgColor: 'bg-blue-50'
+        },
+        {
+          id: 'parent-tournaments',
+          label: 'البطولات',
+          icon: Award,
+          href: `/tournaments/unified-registration`,
+          color: 'text-yellow-600',
+          bgColor: 'bg-yellow-50'
+        },
         ]
       });
     }
 
-    return [baseGroup, subscriptionGroup, academyGroup, sharedGroup, ...accountSpecificGroups];
+    return [baseGroup, subscriptionGroup, academyGroup, tournamentsGroup, sharedGroup, ...accountSpecificGroups];
   };
 
   const menuGroups = useMemo(() => getMenuGroups(), [accountType]);
@@ -1083,9 +1182,24 @@ const ResponsiveSidebar: React.FC<ResponsiveSidebarProps> = ({ accountType: prop
   const sidebarWidth = useMemo(() => getSidebarWidth(), [isMobile, isTablet, isSidebarCollapsed]);
 
   const getUserAvatar = () => {
-    if (userData?.photoURL) return userData.photoURL;
-    if (userData?.avatar) return userData.avatar;
-    if (userData?.profileImage) return userData.profileImage;
+    // التحقق من photoURL
+    if (userData?.photoURL) {
+      if (typeof userData.photoURL === 'string') return userData.photoURL;
+      if (typeof userData.photoURL === 'object' && userData.photoURL?.url) return userData.photoURL.url;
+    }
+    
+    // التحقق من avatar
+    if (userData?.avatar) {
+      if (typeof userData.avatar === 'string') return userData.avatar;
+      if (typeof userData.avatar === 'object' && userData.avatar?.url) return userData.avatar.url;
+    }
+    
+    // التحقق من profileImage
+    if (userData?.profileImage) {
+      if (typeof userData.profileImage === 'string') return userData.profileImage;
+      if (typeof userData.profileImage === 'object' && userData.profileImage?.url) return userData.profileImage.url;
+    }
+    
     return null;
   };
 
@@ -1331,10 +1445,10 @@ const ResponsiveSidebar: React.FC<ResponsiveSidebarProps> = ({ accountType: prop
                                     }`}
                                   >
                                     <div className={`p-1 rounded-md transition-colors ${
-                                      isActive ? item.bgColor : 'bg-white/10'
+                                      isActive ? item.bgColor : (item.isHighlighted ? 'bg-gradient-to-r from-yellow-500/20 to-orange-500/20' : 'bg-white/10')
                                     }`}>
                                       <IconComponent className={`w-3 h-3 ${
-                                        isActive ? item.color : 'text-white'
+                                        isActive ? item.color : (item.isHighlighted ? 'text-yellow-300' : 'text-white')
                                       }`} />
                                     </div>
                                     
@@ -1344,7 +1458,9 @@ const ResponsiveSidebar: React.FC<ResponsiveSidebarProps> = ({ accountType: prop
                                           initial={{ opacity: 0, x: -10 }}
                                           animate={{ opacity: 1, x: 0 }}
                                           exit={{ opacity: 0, x: -10 }}
-                                          className="text-xs font-medium"
+                                          className={`text-xs font-medium ${
+                                            isActive ? 'text-gray-900' : (item.isHighlighted ? 'text-yellow-300 font-bold' : 'text-white')
+                                          }`}
                                         >
                                           {item.label}
                                         </motion.span>
@@ -1426,6 +1542,28 @@ const ResponsiveHeader: React.FC = () => {
 
   const getUserDisplayName = () => {
     return userData?.displayName || userData?.name || user?.displayName || user?.email?.split('@')[0] || 'مستخدم';
+  };
+
+  const getUserAvatar = () => {
+    // التحقق من photoURL
+    if (userData?.photoURL) {
+      if (typeof userData.photoURL === 'string') return userData.photoURL;
+      if (typeof userData.photoURL === 'object' && userData.photoURL?.url) return userData.photoURL.url;
+    }
+    
+    // التحقق من avatar
+    if (userData?.avatar) {
+      if (typeof userData.avatar === 'string') return userData.avatar;
+      if (typeof userData.avatar === 'object' && userData.avatar?.url) return userData.avatar.url;
+    }
+    
+    // التحقق من profileImage
+    if (userData?.profileImage) {
+      if (typeof userData.profileImage === 'string') return userData.profileImage;
+      if (typeof userData.profileImage === 'object' && userData.profileImage?.url) return userData.profileImage.url;
+    }
+    
+    return null;
   };
 
   // تحديد margin للهيدر ليتناسق مع السايدبار - أحجام مصغرة
@@ -1959,7 +2097,7 @@ const ResponsiveHeader: React.FC = () => {
           {/* صورة المستخدم */}
           <div className="flex gap-2 items-center">
             <Avatar className="w-8 h-8 transition-transform duration-500 ease-out cursor-pointer hover:scale-105">
-            <AvatarImage src={userData?.photoURL || '/default-avatar.png'} alt={getUserDisplayName()} />
+            <AvatarImage src={getUserAvatar() || '/default-avatar.png'} alt={getUserDisplayName()} />
             <AvatarFallback className="font-bold text-blue-600 bg-blue-100">
               {getUserDisplayName().slice(0, 2).toUpperCase()}
             </AvatarFallback>
