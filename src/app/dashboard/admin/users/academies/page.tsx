@@ -841,6 +841,7 @@ export default function AcademiesManagement() {
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   placeholder="بحث بالاسم، البريد، الهاتف..."
+                  aria-label="البحث في الأكاديميات"
                   className="pr-10"
                 />
               </div>

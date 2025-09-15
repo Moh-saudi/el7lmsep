@@ -114,7 +114,7 @@ export default function FinancialReports() {
   
   // حالات التحكم
   const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
+  const [refreshing] = useState(false);
   const [dateFilter, setDateFilter] = useState<string>('all');
   const [currencyFilter, setCurrencyFilter] = useState<string>('all');
 

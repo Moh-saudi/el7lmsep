@@ -785,6 +785,7 @@ const SendMessageButton: React.FC<SendMessageButtonProps> = ({
                 checked={includeContactInfo}
                 onChange={(e) => setIncludeContactInfo(e.target.checked)}
                 aria-labelledby="label-includeContact"
+                aria-label="تضمين بيانات التواصل في الرسالة"
               />
               <Label id="label-includeContact" htmlFor="includeContact" className="cursor-pointer text-purple-900">
                 إرفاق بيانات التواصل تلقائياً (الهاتف/البريد/المدينة/الجنسية)

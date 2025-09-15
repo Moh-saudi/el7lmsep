@@ -3,8 +3,26 @@ import crypto from 'crypto';
 import { rateLimiter, getClientIpFromHeaders } from '@/lib/security/rate-limit';
 import { db } from '@/lib/firebase/config';
 import { addDoc, collection } from 'firebase/firestore';
+import { safeExecute, createResponseHandler, validateInput } from '@/lib/utils/complexity-reducer';
 
-// إنشاء توقيع للطلب حسب الوثائق الرسمية
+// إعدادات Geidea
+const GEIDEA_CONFIG = {
+  merchantPublicKey: process.env.GEIDEA_MERCHANT_PUBLIC_KEY || '3448c010-87b1-41e7-9771-cac444268cfb',
+  apiPassword: process.env.GEIDEA_API_PASSWORD || 'edfd5eee-fd1b-4932-9ee1-d6d9ba7599f0',
+  baseUrl: process.env.GEIDEA_BASE_URL || 'https://api.merchant.geidea.net'
+};
+
+// معالج الاستجابة
+const responseHandler = createResponseHandler();
+
+// قواعد التحقق من البيانات
+const validationRules = {
+  amount: (amount: any) => amount && !isNaN(parseFloat(amount)) && parseFloat(amount) > 0,
+  orderId: (orderId: any) => orderId && typeof orderId === 'string',
+  customerEmail: (email: any) => email && typeof email === 'string' && email.includes('@')
+};
+
+// إنشاء توقيع للطلب
 function generateSignature(
   merchantPublicKey: string,
   amount: number,
@@ -21,348 +39,270 @@ function generateSignature(
     .digest('base64');
 }
 
-export async function POST(request: NextRequest) {
-  try {
-    // Global and per-merchantReference/IP rate limits
-    const clientIp = getClientIpFromHeaders(request.headers);
-    const ipCheck = rateLimiter.check(`geidea:create:${clientIp}`, { windowMs: 60_000, max: 20, minIntervalMs: 300 });
-    if (!ipCheck.allowed) {
-      return NextResponse.json(
+// التحقق من Rate Limiting
+function checkRateLimit(clientIp: string) {
+  const ipCheck = rateLimiter.check(`geidea:create:${clientIp}`, { 
+    windowMs: 60_000, 
+    max: 20, 
+    minIntervalMs: 300 
+  });
+  
+  if (!ipCheck.allowed) {
+    return {
+      allowed: false,
+      response: NextResponse.json(
         { error: 'Too many requests. Please try again later.' },
         { status: 429, headers: { 'Retry-After': String(Math.ceil(ipCheck.retryAfterMs / 1000)) } }
-      );
-    }
-    console.log('🚀 [Geidea API] POST request received');
-    
-    // قراءة البيانات من الطلب
-    let body;
-    try {
-      body = await request.json();
-      console.log('📥 [Geidea API] Received body:', body);
-    } catch (err) {
-      console.error('❌ [Geidea API] Failed to parse JSON body:', err);
-      return NextResponse.json(
-        { error: 'Invalid JSON body', details: err instanceof Error ? err.message : 'Unknown error' },
-        { status: 400 }
-      );
-    }
-
-    const { amount, currency = 'EGP', orderId: originalOrderId, customerEmail, customerName, players } = body;
-    
-    // تنظيف وتنسيق orderId ليكون صالحاً لجيديا
-    const orderId = originalOrderId || `ORDER${Date.now()}`;
-
-    // التحقق من وجود البيانات المطلوبة
-    if (!amount || !orderId || !customerEmail) {
-      console.error('❌ [Geidea API] Missing required fields:', { amount, orderId, customerEmail });
-      return NextResponse.json(
-        { error: 'Missing required fields: amount, orderId, customerEmail', details: { amount, orderId, customerEmail } },
-        { status: 400 }
-      );
-    }
-
-    // التحقق من بيانات اللاعبين إذا كانت موجودة
-    let playersData = [];
-    if (players && Array.isArray(players) && players.length > 0) {
-      playersData = players.map(player => ({
-        userId: player.userId || 'unknown',
-        playerName: player.playerName || 'Unknown Player',
-        playerEmail: player.playerEmail || customerEmail,
-        playerPhone: player.playerPhone || null,
-        amount: player.amount || (amount / players.length), // تقسيم المبلغ على عدد اللاعبين
-        packageType: player.packageType || 'subscription_3months',
-        notes: player.notes || ''
-      }));
-    }
-
-    // قراءة متغيرات البيئة - PRODUCTION MODE
-    const merchantPublicKey = process.env.GEIDEA_MERCHANT_PUBLIC_KEY || '3448c010-87b1-41e7-9771-cac444268cfb';
-    const apiPassword = process.env.GEIDEA_API_PASSWORD || 'edfd5eee-fd1b-4932-9ee1-d6d9ba7599f0';
-    const geideaApiUrl = process.env.GEIDEA_BASE_URL || 'https://api.merchant.geidea.net';
-
-    console.log('🔍 [Geidea Debug] Using PRODUCTION credentials:', {
-      merchantPublicKey: `${merchantPublicKey.substring(0, 8)}...`,
-      apiPassword: `${apiPassword.substring(0, 8)}...`,
-      geideaApiUrl: geideaApiUrl,
-      hasValidCredentials: true,
-      isProductionMode: true
-    });
-
-    console.log('✅ [Geidea API] Using PRODUCTION credentials from Geidea dashboard');
-
-    // إنشاء timestamp حسب الوثائق الرسمية
-    const timestamp = new Date().toISOString();
-    
-    // إنشاء merchantReferenceId قصير وفريد أولاً
-    const shortTimestamp = Date.now().toString().slice(-6); // آخر 6 أرقام فقط
-    const merchantReferenceId = `BULK${shortTimestamp}`;
-
-    // إنشاء توقيع حسب الوثائق الرسمية باستخدام merchantReferenceId الجديد
-    const signature = generateSignature(
-      merchantPublicKey,
-      parseFloat(amount),
-      currency,
-      merchantReferenceId, // استخدام merchantReferenceId الجديد بدلاً من orderId
-      apiPassword,
-      timestamp
-    );
-
-    console.log('🔍 [Geidea Debug] Signature generation:', {
-      merchantPublicKey: merchantPublicKey ? `${merchantPublicKey.substring(0, 8)}...` : 'NOT SET',
-      amount: parseFloat(amount),
-      currency: currency,
-      merchantReferenceId: merchantReferenceId, // استخدام merchantReferenceId الجديد
-      timestamp: timestamp,
-      signature: signature.substring(0, 8) + '...'
-    });
-
-    // تحضير بيانات الجلسة حسب الوثائق الرسمية
-    const sessionData: any = {
-      amount: parseFloat(amount),
-      currency: currency,
-      timestamp: timestamp,
-      merchantReferenceId: merchantReferenceId,
-      signature: signature,
-      language: "ar",
-      paymentOperation: "Pay"
+      )
     };
+  }
+  
+  return { allowed: true };
+}
 
-    // إضافة callbackUrl وreturnUrl حسب الوثائق الرسمية
-    const appBaseUrl = process.env.NEXT_PUBLIC_BASE_URL || 
-                      (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000');
-    
-    // callbackUrl مطلوب ويجب أن يكون HTTPS
-    // للتطوير المحلي، نستخدم webhook.site جديد
-    let callbackUrl;
-    if (appBaseUrl.includes('localhost')) {
-      // للتطوير المحلي، نستخدم webhook.site جديد
-      callbackUrl = 'https://webhook.site/test-geidea-callback-2025';
-    } else {
-      // للإنتاج، نستخدم webhook حقيقي على الدومين
-      callbackUrl = 'https://www.el7lm.com/api/geidea/webhook';
-    }
-    
-    sessionData.callbackUrl = callbackUrl;
-    
-    // returnUrl اختياري - للعودة بعد الدفع
-    // للتطوير المحلي، لا نضع returnUrl لأن جيديا لا يقبل localhost
-    if (!appBaseUrl.includes('localhost')) {
-      let returnUrl = `${appBaseUrl}/dashboard/player/billing?payment=success`;
-      sessionData.returnUrl = returnUrl;
-    }
+// معالجة بيانات اللاعبين
+function processPlayersData(players: any[], amount: number, customerEmail: string) {
+  if (!players || !Array.isArray(players) || players.length === 0) {
+    return [];
+  }
 
-    console.log('🚀 💳 Creating Geidea session according to official docs:', {
-      amount: sessionData.amount,
-      currency: sessionData.currency,
-      merchantReferenceId: sessionData.merchantReferenceId,
-      callbackUrl: sessionData.callbackUrl,
-      returnUrl: sessionData.returnUrl,
-      language: sessionData.language,
-      paymentOperation: sessionData.paymentOperation,
-      signature: signature.substring(0, 8) + '...'
-    });
+  return players.map(player => ({
+    userId: player.userId || 'unknown',
+    playerName: player.playerName || 'Unknown Player',
+    playerEmail: player.playerEmail || customerEmail,
+    playerPhone: player.playerPhone || null,
+    amount: player.amount || (amount / players.length),
+    packageType: player.packageType || 'subscription_3months',
+    notes: player.notes || ''
+  }));
+}
 
-    // إرسال طلب إنشاء الجلسة إلى Geidea
-    const geideaEndpoint = `${geideaApiUrl}/payment-intent/api/v2/direct/session`;
-    console.log('🌐 [Geidea API] Sending request to:', geideaEndpoint);
-    console.log('🔐 [Geidea API] Using real credentials for production');
-    console.log('💳 [Geidea API] Creating real payment session');
-    
-    const response = await fetch(geideaEndpoint, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'Authorization': `Basic ${Buffer.from(`${merchantPublicKey}:${apiPassword}`).toString('base64')}`
-      },
-      body: JSON.stringify(sessionData)
-    });
+// إنشاء بيانات الجلسة
+function createSessionData(amount: number, currency: string, merchantReferenceId: string, timestamp: string, signature: string) {
+  const appBaseUrl = process.env.NEXT_PUBLIC_BASE_URL || 
+                    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000');
+  
+  const sessionData: any = {
+    amount: parseFloat(amount),
+    currency: currency,
+    timestamp: timestamp,
+    merchantReferenceId: merchantReferenceId,
+    signature: signature,
+    language: "ar",
+    paymentOperation: "Pay"
+  };
 
-    console.log('📨 [Geidea API] Response status:', response.status);
-    console.log('📨 [Geidea API] Response headers:', Object.fromEntries(response.headers.entries()));
+  // إعداد URLs
+  if (appBaseUrl.includes('localhost')) {
+    sessionData.callbackUrl = 'https://webhook.site/test-geidea-callback-2025';
+  } else {
+    sessionData.callbackUrl = 'https://www.el7lm.com/api/geidea/webhook';
+    sessionData.returnUrl = `${appBaseUrl}/dashboard/player/billing?payment=success`;
+  }
 
-    const responseData = await response.json();
+  return sessionData;
+}
 
-    console.log('📨 Geidea response:', {
-      status: response.status,
-      responseCode: responseData.responseCode,
-      sessionId: responseData.session?.id,
-      error: responseData.detailedResponseMessage || responseData.responseMessage,
-      isTestMode: true,
-      isTestPayment: true
-    });
+// إرسال طلب إلى Geidea
+async function sendGeideaRequest(sessionData: any) {
+  const geideaEndpoint = `${GEIDEA_CONFIG.baseUrl}/payment-intent/api/v2/direct/session`;
+  
+  console.log('🌐 [Geidea API] Sending request to:', geideaEndpoint);
+  
+  const response = await fetch(geideaEndpoint, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'Authorization': `Basic ${Buffer.from(`${GEIDEA_CONFIG.merchantPublicKey}:${GEIDEA_CONFIG.apiPassword}`).toString('base64')}`
+    },
+    body: JSON.stringify(sessionData)
+  });
 
-    if (!response.ok) {
-      console.error('❌ Geidea API error:', responseData);
-      
-      // إذا كان خطأ 401 (مصادقة فاشلة)، أعطِ رسالة واضحة
-      if (response.status === 401) {
-              return NextResponse.json(
+  const responseData = await response.json();
+  
+  console.log('📨 Geidea response:', {
+    status: response.status,
+    responseCode: responseData.responseCode,
+    sessionId: responseData.session?.id,
+    error: responseData.detailedResponseMessage || responseData.responseMessage
+  });
+
+  return { response, responseData };
+}
+
+// معالجة استجابة Geidea
+function handleGeideaResponse(response: Response, responseData: any) {
+  if (!response.ok) {
+    if (response.status === 401) {
+      return NextResponse.json(
         { 
           error: 'Authentication failed',
           details: 'Merchant credentials are invalid or missing. Please check your Geidea configuration.',
           status: response.status,
-          solution: 'Please verify your Geidea TEST credentials in .env.local file',
-          responseData: responseData,
-          isTestMode: true,
-          isTestPayment: true
+          responseData: responseData
         },
         { status: 401 }
       );
-      }
-      
-      return NextResponse.json(
-        { 
-          error: 'Failed to create payment session',
-          details: responseData.detailedResponseMessage || responseData.responseMessage || 'Unknown error',
-          status: response.status,
-          responseData: responseData,
-          isTestMode: true,
-          isTestPayment: true
-        },
-        { status: response.status }
-      );
     }
+    
+    return NextResponse.json(
+      { 
+        error: 'Failed to create payment session',
+        details: responseData.detailedResponseMessage || responseData.responseMessage || 'Unknown error',
+        status: response.status,
+        responseData: responseData
+      },
+      { status: response.status }
+    );
+  }
 
-    if (responseData.responseCode !== '000') {
-      console.error('❌ Geidea API error:', responseData);
-      
-      // إذا كان خطأ مصادقة، أعطِ رسالة واضحة
-      if (responseData.responseCode === '100' && responseData.detailedResponseCode === '023') {
-              return NextResponse.json(
+  if (responseData.responseCode !== '000') {
+    if (responseData.responseCode === '100' && responseData.detailedResponseCode === '023') {
+      return NextResponse.json(
         { 
           error: 'Authentication failed',
           details: 'Merchant authentication failed. Please check your Geidea credentials.',
           responseCode: responseData.responseCode,
           detailedResponseCode: responseData.detailedResponseCode,
-          solution: 'Please verify your Geidea credentials in .env.local file',
-          responseData: responseData,
-          isProduction: true,
-          isRealPayment: true
+          responseData: responseData
         },
         { status: 401 }
       );
-      }
-      
-      return NextResponse.json(
-        { 
-          error: 'Payment session creation failed',
-          details: responseData.detailedResponseMessage || responseData.responseMessage || 'Unknown error',
-          responseCode: responseData.responseCode,
-          detailedResponseCode: responseData.detailedResponseCode,
-          responseData: responseData,
-          isProduction: true,
-          isRealPayment: true
-        },
-        { status: 400 }
-      );
-    }
-
-    // إرجاع بيانات الجلسة الناجحة حسب الوثائق الرسمية
-    console.log('✅ 💳 TEST MODE: Payment session created successfully!');
-    console.log('📋 Full Geidea response:', responseData);
-    
-    // التحقق من وجود session.id حسب الوثائق الرسمية
-    if (!responseData.session?.id) {
-      console.error('❌ Geidea response missing session.id:', responseData);
-      return NextResponse.json(
-        { 
-          error: 'Invalid Geidea response',
-          details: 'Session ID not found in Geidea response',
-          responseData: responseData,
-          isTestMode: true,
-          isTestPayment: true
-        },
-        { status: 400 }
-      );
-    }
-
-    // حفظ بيانات الدفعة في قاعدة البيانات عند إنشائها
-    try {
-      // استخراج userId من merchantReferenceId
-      let userId: string | undefined = undefined;
-      if (merchantReferenceId && merchantReferenceId.startsWith('BULK')) {
-        const parts = merchantReferenceId.split('_');
-        if (parts.length >= 2) {
-          userId = parts[0].replace('BULK', '') || parts[1];
-        }
-      }
-
-      // إنشاء سجل الدفعة في bulk_payments
-      const bulkPaymentData = {
-        userId: userId || 'unknown',
-        orderId: merchantReferenceId, // استخدام merchantReferenceId كـ orderId
-        sessionId: responseData.session.id,
-        amount: parseFloat(amount),
-        currency: currency || 'EGP',
-        customerEmail: customerEmail,
-        customerName: customerName || 'Customer',
-        paymentStatus: 'pending',
-        statusMessage: 'في انتظار إتمام الدفع',
-        merchantReferenceId: merchantReferenceId,
-        // بيانات اللاعبين المتعددة
-        players: playersData.length > 0 ? playersData : [{
-          userId: userId || 'unknown',
-          playerName: customerName || 'Customer',
-          playerEmail: customerEmail,
-          playerPhone: null,
-          amount: parseFloat(amount),
-          packageType: 'subscription_3months',
-          notes: 'دفعة فردية'
-        }],
-        totalPlayers: playersData.length > 0 ? playersData.length : 1,
-        isMultiPlayerPayment: playersData.length > 1,
-        geideaSessionData: {
-          sessionId: responseData.session.id,
-          amount: parseFloat(amount),
-          currency: currency || 'EGP',
-          merchantReferenceId: merchantReferenceId,
-          callbackUrl: sessionData.callbackUrl,
-          returnUrl: sessionData.returnUrl,
-          language: sessionData.language,
-          paymentOperation: sessionData.paymentOperation,
-          isTestMode: true
-        },
-        createdAt: new Date().toISOString(),
-        lastUpdated: new Date().toISOString(),
-        isTest: true
-      };
-
-      // حفظ في bulk_payments collection
-      await addDoc(collection(db, 'bulk_payments'), bulkPaymentData);
-
-      console.log('✅ [Geidea] Bulk payment record created:', {
-        orderId: merchantReferenceId,
-        sessionId: responseData.session.id,
-        userId: userId
-      });
-
-    } catch (dbError) {
-      console.error('❌ [Geidea] Failed to save bulk payment record:', dbError);
-      // لا نوقف العملية إذا فشل حفظ البيانات
     }
     
-    // إرجاع sessionId فقط حسب الوثائق الرسمية
-    return NextResponse.json({
-      success: true,
-      sessionId: responseData.session.id, // هذا هو المطلوب حسب الوثائق
-      message: '💳 TEST MODE: Payment session created successfully',
-      isTestMode: true,
-      isTestPayment: true,
-      merchantReferenceId: merchantReferenceId, // إضافة للتوضيح
-      fullResponse: responseData
-    });
-
-  } catch (error) {
-    console.error('💥 Error creating Geidea session:', error);
     return NextResponse.json(
       { 
-        error: 'Internal server error', 
-        details: error instanceof Error ? error.message : 'Unknown error',
-        isProduction: true,
-        isRealPayment: true
+        error: 'Payment session creation failed',
+        details: responseData.detailedResponseMessage || responseData.responseMessage || 'Unknown error',
+        responseCode: responseData.responseCode,
+        responseData: responseData
       },
-      { status: 500 }
+      { status: 400 }
     );
   }
-} 
+
+  return null; // نجح
+}
+
+// حفظ بيانات الدفع
+async function savePaymentData(sessionData: any, responseData: any, playersData: any[]) {
+  try {
+    const paymentData = {
+      sessionId: responseData.session?.id,
+      merchantReferenceId: sessionData.merchantReferenceId,
+      amount: sessionData.amount,
+      currency: sessionData.currency,
+      customerEmail: sessionData.customerEmail,
+      customerName: sessionData.customerName,
+      players: playersData,
+      status: 'pending',
+      createdAt: new Date(),
+      geideaResponse: responseData
+    };
+
+    await addDoc(collection(db, 'payments'), paymentData);
+    console.log('💾 Payment data saved to Firestore');
+  } catch (error) {
+    console.error('❌ Failed to save payment data:', error);
+    // لا نوقف العملية إذا فشل الحفظ
+  }
+}
+
+// الدالة الرئيسية
+export async function POST(request: NextRequest) {
+  return safeExecute(async () => {
+    const clientIp = getClientIpFromHeaders(request.headers);
+    
+    // التحقق من Rate Limiting
+    const rateLimitCheck = checkRateLimit(clientIp);
+    if (!rateLimitCheck.allowed) {
+      return rateLimitCheck.response;
+    }
+
+    console.log('🚀 [Geidea API] POST request received');
+    
+    // قراءة البيانات من الطلب
+    const body = await request.json();
+    console.log('📥 [Geidea API] Received body:', body);
+
+    const { amount, currency = 'EGP', orderId: originalOrderId, customerEmail, customerName, players } = body;
+    
+    // تنظيف وتنسيق orderId
+    const orderId = originalOrderId || `ORDER${Date.now()}`;
+
+    // التحقق من البيانات المطلوبة
+    const validation = validateInput({ amount, orderId, customerEmail }, validationRules);
+    if (!validation.isValid) {
+      return NextResponse.json(
+        responseHandler.error(validation.error || 'Missing required fields: amount, orderId, customerEmail'),
+        { status: 400 }
+      );
+    }
+
+    // معالجة بيانات اللاعبين
+    const playersData = processPlayersData(players, amount, customerEmail);
+
+    console.log('🔍 [Geidea Debug] Using PRODUCTION credentials');
+
+    // إنشاء timestamp و merchantReferenceId
+    const timestamp = new Date().toISOString();
+    const shortTimestamp = Date.now().toString().slice(-6);
+    const merchantReferenceId = `BULK${shortTimestamp}`;
+
+    // إنشاء التوقيع
+    const signature = generateSignature(
+      GEIDEA_CONFIG.merchantPublicKey,
+      parseFloat(amount),
+      currency,
+      merchantReferenceId,
+      GEIDEA_CONFIG.apiPassword,
+      timestamp
+    );
+
+    // إنشاء بيانات الجلسة
+    const sessionData = createSessionData(amount, currency, merchantReferenceId, timestamp, signature);
+    sessionData.customerEmail = customerEmail;
+    sessionData.customerName = customerName;
+
+    console.log('🚀 💳 Creating Geidea session:', {
+      amount: sessionData.amount,
+      currency: sessionData.currency,
+      merchantReferenceId: sessionData.merchantReferenceId,
+      callbackUrl: sessionData.callbackUrl,
+      returnUrl: sessionData.returnUrl
+    });
+
+    // إرسال طلب إلى Geidea
+    const { response, responseData } = await sendGeideaRequest(sessionData);
+
+    // معالجة الاستجابة
+    const errorResponse = handleGeideaResponse(response, responseData);
+    if (errorResponse) {
+      return errorResponse;
+    }
+
+    // حفظ بيانات الدفع
+    await savePaymentData(sessionData, responseData, playersData);
+
+    // إرجاع النجاح
+    return NextResponse.json(responseHandler.success({
+      sessionId: responseData.session?.id,
+      merchantReferenceId: sessionData.merchantReferenceId,
+      amount: sessionData.amount,
+      currency: sessionData.currency,
+      paymentUrl: responseData.session?.url,
+      players: playersData
+    }, 'Payment session created successfully'));
+
+  }, 'Geidea Create Session API').then(result => {
+    if (result.success) {
+      return result.data;
+    } else {
+      return NextResponse.json(
+        responseHandler.error(result.error || 'خطأ في الخادم. يرجى المحاولة مرة أخرى.'),
+        { status: 500 }
+      );
+    }
+  });
+}

@@ -37,14 +37,14 @@ export default function AdminPaymentsPage() {
   });
 
   // عرض البيانات
-  const [viewMode, setViewMode] = useState('cards'); // 'cards' أو 'table'
-  const [selectedRows, setSelectedRows] = useState([]);
-  const [showBulkActions, setShowBulkActions] = useState(false);
+  const [viewMode] = useState('cards'); // 'cards' أو 'table'
+  const [selectedRows] = useState([]);
+  const [showBulkActions] = useState(false);
 
   // صفحات البيانات
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [totalPages, setTotalPages] = useState(0);
+  const [totalPages] = useState(0);
 
   // تحديث حالة المدفوعات
   const [showStatusUpdateDialog, setShowStatusUpdateDialog] = useState(false);

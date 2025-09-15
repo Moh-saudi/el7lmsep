@@ -624,6 +624,7 @@ export default function PlayersManagement() {
                   placeholder="اسم، بريد، هاتف، مركز..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
+                  aria-label="البحث في اللاعبين"
                   className="pl-10"
                 />
               </div>

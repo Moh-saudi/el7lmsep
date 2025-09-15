@@ -1,4 +1,4 @@
-import { collection, addDoc, serverTimestamp, doc, updateDoc, increment, getDoc } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp, doc, updateDoc, increment, getDoc, query, where, orderBy, limit, getDocs, Timestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase/config';
 
 export interface InteractionNotification {
@@ -29,6 +29,9 @@ export interface InteractionNotification {
 }
 
 class InteractionNotificationService {
+  // ذاكرة تخزين مؤقت للتحقق من الإشعارات الحديثة
+  private recentNotificationsCache = new Map<string, { timestamp: number; notificationId: string }>();
+  private readonly CACHE_DURATION = 5 * 60 * 1000; // 5 دقائق
   // إرسال إشعار مشاهدة الملف الشخصي
   async sendProfileViewNotification(
     profileOwnerId: string,
@@ -130,6 +133,9 @@ class InteractionNotificationService {
         notificationId: docRef.id
       });
 
+      // تحديث الذاكرة المؤقتة
+      this.updateCache(profileOwnerId, viewerId, 'profile_view', docRef.id);
+
       return docRef.id;
     } catch (error) {
       console.error('❌ خطأ في إرسال إشعار مشاهدة الملف الشخصي:', error);
@@ -186,6 +192,9 @@ class InteractionNotificationService {
       ...notification,
       createdAt: serverTimestamp(),
     });
+
+    // تحديث الذاكرة المؤقتة
+    this.updateCache(videoOwnerId, actorId, type, docRef.id);
 
     return docRef.id;
   }
@@ -316,6 +325,9 @@ class InteractionNotificationService {
         notificationId: docRef.id
       });
 
+      // تحديث الذاكرة المؤقتة
+      this.updateCache(profileOwnerId, viewerId, 'search_result', docRef.id);
+
       return docRef.id;
     } catch (error) {
       console.error('❌ خطأ في إرسال إشعار نتيجة البحث:', error);
@@ -382,6 +394,9 @@ class InteractionNotificationService {
         requesterName,
         notificationId: docRef.id
       });
+
+      // تحديث الذاكرة المؤقتة
+      this.updateCache(targetUserId, requesterId, 'connection_request', docRef.id);
 
       return docRef.id;
     } catch (error) {
@@ -452,10 +467,61 @@ class InteractionNotificationService {
         notificationId: docRef.id
       });
 
+      // تحديث الذاكرة المؤقتة
+      this.updateCache(receiverId, senderId, 'message_sent', docRef.id);
+
       return docRef.id;
     } catch (error) {
       console.error('❌ خطأ في إرسال إشعار رسالة جديدة:', error);
       throw error;
+    }
+  }
+
+  // إنشاء مفتاح فريد للتحقق من الإشعارات المكررة
+  private createNotificationKey(userId: string, viewerId: string, type: string): string {
+    return `${userId}_${viewerId}_${type}`;
+  }
+
+  // التحقق من الذاكرة المؤقتة أولاً
+  private checkCacheForRecentNotification(
+    userId: string,
+    viewerId: string,
+    type: string,
+    timeWindow: number
+  ): string | null {
+    const key = this.createNotificationKey(userId, viewerId, type);
+    const cached = this.recentNotificationsCache.get(key);
+    
+    if (cached && (Date.now() - cached.timestamp) < timeWindow) {
+      console.log('📋 تم العثور على إشعار حديث في الذاكرة المؤقتة:', {
+        notificationId: cached.notificationId,
+        timeDiff: Date.now() - cached.timestamp
+      });
+      return cached.notificationId;
+    }
+    
+    return null;
+  }
+
+  // تحديث الذاكرة المؤقتة
+  private updateCache(userId: string, viewerId: string, type: string, notificationId: string): void {
+    const key = this.createNotificationKey(userId, viewerId, type);
+    this.recentNotificationsCache.set(key, {
+      timestamp: Date.now(),
+      notificationId
+    });
+    
+    // تنظيف الذاكرة المؤقتة من العناصر القديمة
+    this.cleanupCache();
+  }
+
+  // تنظيف الذاكرة المؤقتة
+  private cleanupCache(): void {
+    const now = Date.now();
+    for (const [key, value] of this.recentNotificationsCache.entries()) {
+      if (now - value.timestamp > this.CACHE_DURATION) {
+        this.recentNotificationsCache.delete(key);
+      }
     }
   }
 
@@ -467,11 +533,60 @@ class InteractionNotificationService {
     timeWindow: number
   ): Promise<string | null> {
     try {
-      // يمكن إضافة منطق للتحقق من الإشعارات الحديثة هنا
-      // حالياً نرجع null للسماح بإرسال جميع الإشعارات
+      console.log('🔍 فحص الإشعارات الحديثة:', {
+        userId,
+        viewerId,
+        type,
+        timeWindow: `${timeWindow / 1000 / 60} دقيقة`
+      });
+
+      // التحقق من الذاكرة المؤقتة أولاً
+      const cachedResult = this.checkCacheForRecentNotification(userId, viewerId, type, timeWindow);
+      if (cachedResult) {
+        return cachedResult;
+      }
+
+      // حساب الوقت المحدد للبحث
+      const cutoffTime = new Date(Date.now() - timeWindow);
+      
+      // إنشاء استعلام للبحث عن الإشعارات الحديثة
+      const notificationsRef = collection(db, 'interaction_notifications');
+      const recentQuery = query(
+        notificationsRef,
+        where('userId', '==', userId),
+        where('viewerId', '==', viewerId),
+        where('type', '==', type),
+        where('createdAt', '>=', Timestamp.fromDate(cutoffTime)),
+        orderBy('createdAt', 'desc'),
+        limit(1)
+      );
+
+      const querySnapshot = await getDocs(recentQuery);
+      
+      if (!querySnapshot.empty) {
+        const recentNotification = querySnapshot.docs[0];
+        const notificationId = recentNotification.id;
+        
+        console.log('⚠️ تم العثور على إشعار حديث في قاعدة البيانات:', {
+          notificationId,
+          createdAt: recentNotification.data().createdAt,
+          timeDiff: Date.now() - recentNotification.data().createdAt.toMillis()
+        });
+        
+        // تحديث الذاكرة المؤقتة
+        this.updateCache(userId, viewerId, type, notificationId);
+        
+        // إرجاع معرف الإشعار الموجود بدلاً من إنشاء إشعار جديد
+        return notificationId;
+      }
+
+      console.log('✅ لا توجد إشعارات حديثة - يمكن إرسال إشعار جديد');
       return null;
     } catch (error) {
       console.error('❌ خطأ في التحقق من الإشعارات الحديثة:', error);
+      
+      // في حالة حدوث خطأ، نسمح بإرسال الإشعار لتجنب فقدان الإشعارات المهمة
+      console.warn('⚠️ السماح بإرسال الإشعار رغم وجود خطأ في الفحص');
       return null;
     }
   }
@@ -507,11 +622,56 @@ class InteractionNotificationService {
   // حذف الإشعارات منتهية الصلاحية
   async cleanupExpiredNotifications(): Promise<void> {
     try {
-      // يمكن إضافة منطق لحذف الإشعارات منتهية الصلاحية هنا
-      console.log('✅ تم تنظيف الإشعارات منتهية الصلاحية');
+      console.log('🧹 بدء تنظيف الإشعارات منتهية الصلاحية...');
+      
+      const now = new Date();
+      const notificationsRef = collection(db, 'interaction_notifications');
+      const expiredQuery = query(
+        notificationsRef,
+        where('expiresAt', '<=', now),
+        limit(100) // معالجة 100 إشعار في كل مرة لتجنب timeout
+      );
+
+      const querySnapshot = await getDocs(expiredQuery);
+      
+      if (!querySnapshot.empty) {
+        const batch = [];
+        querySnapshot.docs.forEach((doc) => {
+          batch.push(doc.ref);
+        });
+
+        // حذف الإشعارات منتهية الصلاحية
+        for (const docRef of batch) {
+          await docRef.delete();
+        }
+
+        console.log(`✅ تم حذف ${batch.length} إشعار منتهي الصلاحية`);
+      } else {
+        console.log('✅ لا توجد إشعارات منتهية الصلاحية');
+      }
     } catch (error) {
       console.error('❌ خطأ في تنظيف الإشعارات منتهية الصلاحية:', error);
     }
+  }
+
+  // إحصائيات الذاكرة المؤقتة
+  getCacheStats(): { size: number; entries: Array<{ key: string; timestamp: number; age: number }> } {
+    const entries = Array.from(this.recentNotificationsCache.entries()).map(([key, value]) => ({
+      key,
+      timestamp: value.timestamp,
+      age: Date.now() - value.timestamp
+    }));
+
+    return {
+      size: this.recentNotificationsCache.size,
+      entries
+    };
+  }
+
+  // مسح الذاكرة المؤقتة يدوياً
+  clearCache(): void {
+    this.recentNotificationsCache.clear();
+    console.log('🧹 تم مسح الذاكرة المؤقتة للإشعارات');
   }
 }
 

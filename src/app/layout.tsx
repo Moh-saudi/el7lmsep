@@ -1,10 +1,11 @@
 import type { Metadata } from 'next';
+import '@/lib/polyfills';
 import './globals.css';
 import { Providers } from './providers';
 import { Toaster } from 'react-hot-toast';
 import { MantineProvider, ColorSchemeScript } from '@mantine/core';
 import { ToastContainer } from 'react-toastify';
-import { Analytics } from '@vercel/analytics/react';
+// import { Analytics } from '@vercel/analytics/react';
 import ClarityProvider from '@/components/analytics/ClarityProvider';
 import ClarityUserTracker from '@/components/analytics/ClarityUserTracker';
 import GoogleTagManager from '@/components/analytics/GoogleTagManager';
@@ -82,6 +83,7 @@ export default function RootLayout({
   return (
     <html lang="ar" dir="rtl" className={`${inter.variable} ${cairo.variable}`}>
       <head>
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -97,7 +99,6 @@ export default function RootLayout({
         <link rel="icon" href="/favicon.ico" />
         <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
         <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         
         {/* Preconnect to external domains */}
         <link rel="preconnect" href="https://firestore.googleapis.com" />
@@ -116,7 +117,8 @@ export default function RootLayout({
         <meta httpEquiv="X-Content-Type-Options" content="nosniff" />
         <meta httpEquiv="X-XSS-Protection" content="1; mode=block" />
         <meta httpEquiv="Referrer-Policy" content="strict-origin-when-cross-origin" />
-        <GoogleTagManager gtmId={process.env.NEXT_PUBLIC_GTM_ID || ''} />
+        
+        <GoogleTagManager gtmId={process.env['NEXT_PUBLIC_GTM_ID'] || ''} />
       </head>
       <body className={`${cairo.className} antialiased`}>
         <script
@@ -177,7 +179,7 @@ export default function RootLayout({
           }}
         />
         <Providers>
-          <ClarityProvider projectId={process.env.NEXT_PUBLIC_CLARITY_PROJECT_ID || ''}>
+          <ClarityProvider projectId={process.env['NEXT_PUBLIC_CLARITY_PROJECT_ID'] || ''}>
             <ClarityUserTracker />
             <GTMDataLayer />
             {children}

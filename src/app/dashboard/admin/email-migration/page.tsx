@@ -627,6 +627,7 @@ export default function EmailMigration() {
                     <Input
                       value={user.newEmail}
                       onChange={(e) => updateNewEmail(user.id, e.target.value)}
+                      aria-label="البريد الإلكتروني الجديد"
                       className="text-sm"
                       disabled={user.status === 'updated'}
                     />

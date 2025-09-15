@@ -1342,6 +1342,7 @@ export default function EmployeesManagement() {
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   placeholder="بحث بالاسم، البريد، القسم..."
+                  aria-label="البحث في الموظفين"
                   className="pr-10"
                 />
               </div>

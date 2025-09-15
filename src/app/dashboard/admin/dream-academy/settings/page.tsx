@@ -85,6 +85,7 @@ export default function AdminDreamAcademySettingsPage() {
                   <label className="text-sm">السعر الأساسي (USD)</label>
                   <Input type="number" value={cat.basePriceUSD}
                     onChange={(e) => setCategories(cs => cs.map((c, i) => i === idx ? { ...c, basePriceUSD: Number(e.target.value) } : c))}
+                    aria-label="السعر الأساسي بالدولار"
                   />
                 </div>
                 <div className="md:col-span-2">

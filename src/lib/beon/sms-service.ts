@@ -24,9 +24,7 @@ export class BeOnSMSService {
 
       const requestBody: SMSBulkRequest = {
         phoneNumbers,
-        message,
-        sender: BEON_V3_CONFIG.DEFAULTS.SENDER_NAME,
-        lang: BEON_V3_CONFIG.DEFAULTS.LANGUAGE
+        message
       };
 
       // تسجيل مفصل للطلب
@@ -188,6 +186,9 @@ export class BeOnSMSService {
 
 // Export singleton instance
 export const beonSMSService = new BeOnSMSService();
+
+// Default export for backward compatibility
+export default beonSMSService;
 
 
 

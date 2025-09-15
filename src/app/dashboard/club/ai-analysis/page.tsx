@@ -268,6 +268,7 @@ export default function AIAnalysisPage() {
             placeholder="ابحث عن لاعب..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
+            aria-label="البحث عن لاعب"
             className="w-full pr-12"
           />
         </div>

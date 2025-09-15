@@ -128,19 +128,19 @@ export default function AdminDreamAcademyCategoriesPage() {
         <div className="grid grid-cols-1 md:grid-cols-6 gap-3 items-end">
           <div>
             <label className="text-sm">المعرف (id){isEditing ? ' — لا يمكن تعديله أثناء التعديل' : ''}</label>
-            <Input placeholder="tactics" value={draft.id as any || ''} onChange={(e)=>setDraft(d=>({ ...d, id: e.target.value as any }))} disabled={isEditing} />
+            <Input placeholder="tactics" value={draft.id as any || ''} onChange={(e)=>setDraft(d=>({ ...d, id: e.target.value as any }))} disabled={isEditing} aria-label="معرف الفئة" />
           </div>
           <div>
             <label className="text-sm">العنوان</label>
-            <Input placeholder="التكتيكات" value={draft.title || ''} onChange={(e)=>setDraft(d=>({ ...d, title: e.target.value }))} />
+            <Input placeholder="التكتيكات" value={draft.title || ''} onChange={(e)=>setDraft(d=>({ ...d, title: e.target.value }))} aria-label="عنوان الفئة" />
           </div>
           <div>
             <label className="text-sm">العنوان (AR)</label>
-            <Input placeholder="العنوان بالعربية" value={(draft as any).titleAr || ''} onChange={(e)=>setDraft(d=>({ ...d, titleAr: e.target.value }))} />
+            <Input placeholder="العنوان بالعربية" value={(draft as any).titleAr || ''} onChange={(e)=>setDraft(d=>({ ...d, titleAr: e.target.value }))} aria-label="العنوان بالعربية" />
           </div>
           <div>
             <label className="text-sm">Title (EN)</label>
-            <Input placeholder="Title in English" value={(draft as any).titleEn || ''} onChange={(e)=>setDraft(d=>({ ...d, titleEn: e.target.value }))} />
+            <Input placeholder="Title in English" value={(draft as any).titleEn || ''} onChange={(e)=>setDraft(d=>({ ...d, titleEn: e.target.value }))} aria-label="العنوان بالإنجليزية" />
           </div>
           <div>
             <label className="text-sm">المجموعة</label>
@@ -154,8 +154,8 @@ export default function AdminDreamAcademyCategoriesPage() {
           <div>
             <label className="text-sm">اللون</label>
             <div className="flex items-center gap-2">
-              <Input type="color" value={draft.color || '#0ea5e9'} onChange={(e)=>setDraft(d=>({ ...d, color: e.target.value }))} className="w-12 h-10 p-1" />
-              <Input placeholder="#0ea5e9" value={draft.color || ''} onChange={(e)=>setDraft(d=>({ ...d, color: e.target.value }))} className="flex-1" />
+              <Input type="color" value={draft.color || '#0ea5e9'} onChange={(e)=>setDraft(d=>({ ...d, color: e.target.value }))} className="w-12 h-10 p-1" aria-label="لون الفئة" />
+              <Input placeholder="#0ea5e9" value={draft.color || ''} onChange={(e)=>setDraft(d=>({ ...d, color: e.target.value }))} className="flex-1" aria-label="كود اللون" />
             </div>
             <div className="flex flex-wrap gap-2 mt-2">
               {['#0ea5e9','#22c55e','#ef4444','#a855f7','#f59e0b','#06b6d4','#10b981','#64748b'].map(c => (
@@ -172,7 +172,7 @@ export default function AdminDreamAcademyCategoriesPage() {
           </div>
           <div>
             <label className="text-sm">السعر (USD)</label>
-            <Input type="number" value={draft.basePriceUSD || 0} onChange={(e)=>setDraft(d=>({ ...d, basePriceUSD: Number(e.target.value) }))} />
+            <Input type="number" value={draft.basePriceUSD || 0} onChange={(e)=>setDraft(d=>({ ...d, basePriceUSD: Number(e.target.value) }))} aria-label="السعر بالدولار" />
           </div>
           <div>
             <label className="text-sm">العملة</label>

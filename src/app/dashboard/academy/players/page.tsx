@@ -43,11 +43,11 @@ import { PlayerJoinRequest } from '@/types/organization-referral';
 import OrgReferralSummaryCard from '@/components/referrals/OrgReferralSummaryCard';
 
 export default function AcademyPlayersPage() {
-  const { user, userData } = useAuth();
+  const { user } = useAuth();
   const [players, setPlayers] = useState<Player[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-  const [viewMode, setViewMode] = useState<'cards' | 'table'>('table');
+  const [viewMode] = useState<'cards' | 'table'>('table');
   const [filterStatus, setFilterStatus] = useState('all');
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [playerToDelete, setPlayerToDelete] = useState<Player | null>(null);
@@ -511,6 +511,7 @@ export default function AcademyPlayersPage() {
                 placeholder="البحث في الاسم، الإيميل، أو الهاتف..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
+                aria-label="البحث في اللاعبين"
                 className="pr-10"
               />
             </div>

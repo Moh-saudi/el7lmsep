@@ -471,6 +471,7 @@ export default function SubscriptionPlansManagement() {
                 <Input
                   id="name"
                   value={editingPlan.name}
+                  aria-label="اسم الخطة بالعربية"
                   onChange={(e) => setEditingPlan(prev => ({ ...prev!, name: e.target.value }))}
                   placeholder="مثل: الباقة الأساسية"
                 />
@@ -481,6 +482,7 @@ export default function SubscriptionPlansManagement() {
                 <Input
                   id="nameEn"
                   value={editingPlan.nameEn}
+                  aria-label="اسم الخطة بالإنجليزية"
                   onChange={(e) => setEditingPlan(prev => ({ ...prev!, nameEn: e.target.value }))}
                   placeholder="e.g: Basic Plan"
                 />
@@ -492,6 +494,7 @@ export default function SubscriptionPlansManagement() {
                   <Input
                     id="price"
                     type="number"
+                    aria-label="سعر الخطة"
                     value={editingPlan.price}
                     onChange={(e) => setEditingPlan(prev => ({ ...prev!, price: Number(e.target.value) }))}
                     placeholder="299"
@@ -523,6 +526,7 @@ export default function SubscriptionPlansManagement() {
                   <Input
                     type="number"
                     value={editingPlan.duration}
+                    aria-label="مدة الاشتراك"
                     onChange={(e) => setEditingPlan(prev => ({ ...prev!, duration: Number(e.target.value) }))}
                     placeholder="أيام"
                     className="w-20"
@@ -537,6 +541,7 @@ export default function SubscriptionPlansManagement() {
                 <Input
                   id="maxUsers"
                   type="number"
+                  aria-label="عدد المستخدمين المسموح"
                   value={editingPlan.maxUsers || 1}
                   onChange={(e) => setEditingPlan(prev => ({ ...prev!, maxUsers: Number(e.target.value) }))}
                   placeholder="1"
@@ -548,6 +553,7 @@ export default function SubscriptionPlansManagement() {
                 <Input
                   id="maxStorage"
                   type="number"
+                  aria-label="مساحة التخزين"
                   value={editingPlan.maxStorage || 100}
                   onChange={(e) => setEditingPlan(prev => ({ ...prev!, maxStorage: Number(e.target.value) }))}
                   placeholder="100"
@@ -687,12 +693,14 @@ export default function SubscriptionPlansManagement() {
                       <Input
                         value={feature.name}
                         onChange={(e) => updateFeature(feature.id, { name: e.target.value })}
+                        aria-label="اسم الميزة"
                         placeholder="اسم الميزة"
                         className="font-medium"
                       />
                       <Input
                         value={feature.description || ''}
                         onChange={(e) => updateFeature(feature.id, { description: e.target.value })}
+                        aria-label="وصف الميزة"
                         placeholder="وصف الميزة (اختياري)"
                         className="text-sm"
                       />
@@ -704,6 +712,7 @@ export default function SubscriptionPlansManagement() {
                         <Input
                           type="number"
                           value={feature.limit || ''}
+                          aria-label="حد الميزة"
                           onChange={(e) => updateFeature(feature.id, { limit: e.target.value ? Number(e.target.value) : undefined })}
                           placeholder="غير محدود"
                           className="w-24"

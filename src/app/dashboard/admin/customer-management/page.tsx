@@ -1187,6 +1187,7 @@ export default function CustomerManagementPage() {
                   placeholder="البحث بالاسم أو رقم الهاتف..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
+                  aria-label="البحث بالاسم أو رقم الهاتف"
                   className="w-full"
                 />
               </div>

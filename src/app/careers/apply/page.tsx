@@ -118,43 +118,43 @@ function ApplyForm() {
           </div>
           <div>
             <label className="block text-sm mb-1">الاسم الكامل</label>
-            <input name="fullName" value={form.fullName} onChange={handleChange} className="w-full border rounded-lg px-3 py-2" required placeholder="اكتب اسمك الكامل" />
+            <input name="fullName" value={form.fullName} onChange={handleChange} className="w-full border rounded-lg px-3 py-2" required placeholder="اكتب اسمك الكامل" aria-label="الاسم الكامل" />
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm mb-1">البريد الإلكتروني</label>
-              <input type="email" name="email" value={form.email} onChange={handleChange} className="w-full border rounded-lg px-3 py-2" required placeholder="name@example.com" />
+              <input type="email" name="email" value={form.email} onChange={handleChange} className="w-full border rounded-lg px-3 py-2" required placeholder="name@example.com" aria-label="البريد الإلكتروني" />
             </div>
             <div>
               <label className="block text-sm mb-1">الهاتف</label>
-              <input name="phone" value={form.phone} onChange={handleChange} className="w-full border rounded-lg px-3 py-2" required placeholder="مثال: +2010xxxxxxx" />
+              <input name="phone" value={form.phone} onChange={handleChange} className="w-full border rounded-lg px-3 py-2" required placeholder="مثال: +2010xxxxxxx" aria-label="رقم الهاتف" />
             </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm mb-1">الدولة</label>
-              <input name="country" value={form.country} onChange={handleChange} className="w-full border rounded-lg px-3 py-2" required placeholder="اكتب الدولة" />
+              <input name="country" value={form.country} onChange={handleChange} className="w-full border rounded-lg px-3 py-2" required placeholder="اكتب الدولة" aria-label="الدولة" />
             </div>
             <div>
               <label className="block text-sm mb-1">المحافظة</label>
-              <input name="governorate" value={form.governorate} onChange={handleChange} className="w-full border rounded-lg px-3 py-2" required placeholder="اكتب المحافظة / الولاية" />
+              <input name="governorate" value={form.governorate} onChange={handleChange} className="w-full border rounded-lg px-3 py-2" required placeholder="اكتب المحافظة / الولاية" aria-label="المحافظة" />
             </div>
           </div>
           <div>
             <label className="block text-sm mb-1">الخبرات (سنوات وخلاصة)</label>
-            <textarea name="experience" value={form.experience} onChange={handleChange} className="w-full border rounded-lg px-3 py-2" rows={4} required placeholder="سنوات الخبرة + نبذة مختصرة" />
+            <textarea name="experience" value={form.experience} onChange={handleChange} className="w-full border rounded-lg px-3 py-2" rows={4} required placeholder="سنوات الخبرة + نبذة مختصرة" aria-label="الخبرات" />
           </div>
           <div>
             <label className="block text-sm mb-1">رابط لينكدإن (اختياري)</label>
-            <input name="linkedin" value={form.linkedin} onChange={handleChange} className="w-full border rounded-lg px-3 py-2" placeholder="رابط لينكدإن" required />
+            <input name="linkedin" value={form.linkedin} onChange={handleChange} className="w-full border rounded-lg px-3 py-2" placeholder="رابط لينكدإن" required aria-label="رابط لينكدإن" />
           </div>
           <div>
             <label className="block text-sm mb-1">رابط فيسبوك</label>
-            <input name="facebook" value={form.facebook} onChange={handleChange} className="w-full border rounded-lg px-3 py-2" placeholder="رابط فيسبوك" required />
+            <input name="facebook" value={form.facebook} onChange={handleChange} className="w-full border rounded-lg px-3 py-2" placeholder="رابط فيسبوك" required aria-label="رابط فيسبوك" />
           </div>
           <div>
             <label className="block text-sm mb-1">ملاحظات إضافية</label>
-            <textarea name="notes" value={form.notes} onChange={handleChange} className="w-full border rounded-lg px-3 py-2" rows={3} placeholder="ملاحظات إضافية" required />
+            <textarea name="notes" value={form.notes} onChange={handleChange} className="w-full border rounded-lg px-3 py-2" rows={3} placeholder="ملاحظات إضافية" required aria-label="ملاحظات إضافية" />
           </div>
           {error && <p className="text-red-600 text-sm">{error}</p>}
         {success && (

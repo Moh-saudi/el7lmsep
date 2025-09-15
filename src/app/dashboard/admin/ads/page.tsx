@@ -700,6 +700,7 @@ export default function AdminAdsPage() {
                          id="title"
                          value={formData.title}
                          onChange={(e) => setFormData(prev => ({...prev, title: e.target.value}))}
+                         aria-label="عنوان الإعلان"
                          placeholder="أدخل عنوان الإعلان الجذاب"
                          required
                          className="h-14 lg:h-16 border-gray-300 focus:border-blue-500 focus:ring-blue-500 bg-white text-base lg:text-lg px-4 lg:px-6 py-3 lg:py-4"
@@ -787,6 +788,7 @@ export default function AdminAdsPage() {
                           id="mediaUrl"
                           value={formData.mediaUrl}
                           onChange={(e) => setFormData(prev => ({...prev, mediaUrl: e.target.value}))}
+                          aria-label="رابط الوسائط"
                           placeholder={`أدخل رابط ${formData.type === 'image' ? 'الصورة' : 'الفيديو'} (https://example.com/image.jpg)`}
                           className="h-14 lg:h-16 border-gray-300 focus:border-purple-500 focus:ring-purple-500 bg-white text-base lg:text-lg px-4 lg:px-6 py-3 lg:py-4"
                         />
@@ -814,6 +816,7 @@ export default function AdminAdsPage() {
                          id="ctaText"
                          value={formData.ctaText}
                          onChange={(e) => setFormData(prev => ({...prev, ctaText: e.target.value}))}
+                         aria-label="نص الدعوة للعمل"
                          placeholder="مثال: اشترك الآن، احصل على الخصم، تعرف على المزيد"
                          className="h-14 lg:h-16 border-gray-300 focus:border-orange-500 focus:ring-orange-500 bg-white text-base lg:text-lg px-4 lg:px-6 py-3 lg:py-4"
                        />
@@ -872,6 +875,7 @@ export default function AdminAdsPage() {
                         id="customUrl"
                         value={formData.customUrl || ''}
                         onChange={(e) => setFormData(prev => ({...prev, customUrl: e.target.value}))}
+                        aria-label="الرابط المخصص"
                         placeholder="https://example.com أو https://wa.me/1234567890"
                         className="h-14 lg:h-16 border-gray-300 focus:border-orange-500 focus:ring-orange-500 bg-white text-base lg:text-lg px-4 lg:px-6 py-3 lg:py-4"
                       />
@@ -895,6 +899,7 @@ export default function AdminAdsPage() {
                          id="priority"
                          type="number"
                          value={formData.priority}
+                         aria-label="أولوية الإعلان"
                          onChange={(e) => setFormData(prev => ({...prev, priority: parseInt(e.target.value)}))}
                          min="1"
                          max="10"
@@ -954,6 +959,7 @@ export default function AdminAdsPage() {
                          id="startDate"
                          type="date"
                          value={formData.startDate}
+                         aria-label="تاريخ البداية"
                          onChange={(e) => setFormData(prev => ({...prev, startDate: e.target.value}))}
                          className="h-14 lg:h-16 border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 bg-white text-base lg:text-lg px-4 lg:px-6 py-3 lg:py-4"
                        />
@@ -967,6 +973,7 @@ export default function AdminAdsPage() {
                          id="endDate"
                          type="date"
                          value={formData.endDate}
+                         aria-label="تاريخ النهاية"
                          onChange={(e) => setFormData(prev => ({...prev, endDate: e.target.value}))}
                          className="h-14 lg:h-16 border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 bg-white text-base lg:text-lg px-4 lg:px-6 py-3 lg:py-4"
                        />
@@ -1010,6 +1017,7 @@ export default function AdminAdsPage() {
                         id="displayDelay"
                         type="number"
                         value={formData.displayDelay}
+                        aria-label="تأخير العرض"
                         onChange={(e) => setFormData(prev => ({...prev, displayDelay: parseInt(e.target.value)}))}
                         min="0"
                         max="60"
@@ -1067,6 +1075,7 @@ export default function AdminAdsPage() {
                         id="maxDisplays"
                         type="number"
                         value={formData.maxDisplays}
+                        aria-label="الحد الأقصى للعرض"
                         onChange={(e) => setFormData(prev => ({...prev, maxDisplays: parseInt(e.target.value)}))}
                         min="1"
                         max="100"
@@ -1082,6 +1091,7 @@ export default function AdminAdsPage() {
                         id="autoClose"
                         type="number"
                         value={formData.autoClose}
+                        aria-label="الإغلاق التلقائي"
                         onChange={(e) => setFormData(prev => ({...prev, autoClose: parseInt(e.target.value)}))}
                         min="0"
                         max="300"
@@ -1100,6 +1110,7 @@ export default function AdminAdsPage() {
                         id="discount"
                         value={formData.discount}
                         onChange={(e) => setFormData(prev => ({...prev, discount: e.target.value}))}
+                        aria-label="نسبة الخصم"
                         placeholder="مثال: خصم 50% لفترة محدودة"
                         className="h-14 lg:h-16 border-gray-300 focus:border-purple-500 focus:ring-purple-500 bg-white text-base lg:text-lg px-4 lg:px-6 py-3 lg:py-4"
                       />
@@ -1113,6 +1124,7 @@ export default function AdminAdsPage() {
                         id="countdown"
                         value={formData.countdown}
                         onChange={(e) => setFormData(prev => ({...prev, countdown: e.target.value}))}
+                        aria-label="العد التنازلي"
                         placeholder="مثال: 2h 30m 15s"
                         className="h-14 lg:h-16 border-gray-300 focus:border-purple-500 focus:ring-purple-500 bg-white text-base lg:text-lg px-4 lg:px-6 py-3 lg:py-4"
                       />

@@ -15,27 +15,27 @@
     "jsx": "preserve",
     "incremental": true,
     
-    /* Type Checking */
+    /* Type Checking - تشديد القواعد */
     "forceConsistentCasingInFileNames": true,
-    "noUncheckedIndexedAccess": false,
+    "noUncheckedIndexedAccess": true,
     "exactOptionalPropertyTypes": false,
-    "noImplicitReturns": false,
+    "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
-    "noImplicitAny": false,
-    "noImplicitThis": false,
-    "strictNullChecks": false,
-    "strictFunctionTypes": false,
-    "strictBindCallApply": false,
-    "strictPropertyInitialization": false,
-    "noImplicitOverride": false,
-    "noPropertyAccessFromIndexSignature": false,
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictBindCallApply": true,
+    "strictPropertyInitialization": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true,
     
     /* Performance & Quality */
     "declaration": false,
     "declarationMap": false,
     "sourceMap": true,
     "removeComments": true,
-    "noEmitOnError": false,
+    "noEmitOnError": true,
     
     /* Path Mapping */
     "baseUrl": ".",

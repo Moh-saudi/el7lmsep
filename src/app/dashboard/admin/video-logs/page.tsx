@@ -330,6 +330,7 @@ export default function VideoLogsPage() {
                 placeholder="البحث في السجلات..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
+                aria-label="البحث في السجلات"
                 className="pl-10"
               />
             </div>

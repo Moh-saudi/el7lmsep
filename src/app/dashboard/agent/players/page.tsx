@@ -511,6 +511,7 @@ export default function AgentPlayersPage() {
                 placeholder="البحث في الاسم، الإيميل، أو الهاتف..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
+                aria-label="البحث في اللاعبين"
                 className="pr-10"
               />
             </div>

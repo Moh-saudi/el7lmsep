@@ -7,10 +7,10 @@ export const BEON_V3_CONFIG = {
   // Base URL for BeOn V3 API
   BASE_URL: process.env.BEON_V3_BASE_URL || 'https://v3.api.beon.chat',
   
-  // Your API Token
+  // Your API Token (correct token)
   TOKEN: process.env.BEON_V3_TOKEN || 'Yt3A3RwMQHx49trsz1EMgSKP8qOD0CSVJXdJxy6IqNNtcYblsYWtfVAtaJpv',
   
-  // Endpoints
+  // Endpoints (updated to match documentation)
   ENDPOINTS: {
     // SMS Endpoints
     SMS_BULK: '/api/v3/messages/sms/bulk',
@@ -77,8 +77,6 @@ export interface BeOnSMSResponse {
 export interface SMSBulkRequest {
   phoneNumbers: string[];
   message: string;
-  sender?: string;
-  lang?: string;
 }
 
 export interface SMSTemplateRequest {
@@ -93,6 +91,11 @@ export interface TemplateCreateRequest {
   lang: string;
   message: string;
 }
+
+// Backward compatibility exports
+export const BEON_CONFIG = BEON_V3_CONFIG;
+export const getBeOnToken = () => BEON_V3_CONFIG.TOKEN;
+export const getBeOnEndpoint = (endpoint: string) => `${BEON_V3_CONFIG.BASE_URL}${endpoint}`;
 
 // Utility functions
 export async function retryRequest<T>(

@@ -315,6 +315,7 @@ export default function AdminNotificationCenterPage() {
                 placeholder="البحث في الإشعارات..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
+                aria-label="البحث في الإشعارات"
                 className="pl-10"
               />
             </div>

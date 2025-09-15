@@ -405,6 +405,7 @@ const AdminSupportPage: React.FC = () => {
                   <Input
                     placeholder="البحث في المحادثات..."
                     value={searchTerm}
+                    aria-label="البحث في المحادثات"
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="pl-10"
                   />
@@ -568,6 +569,7 @@ const AdminSupportPage: React.FC = () => {
                   <Input
                     value={newMessage}
                     onChange={(e) => setNewMessage(e.target.value)}
+                    aria-label="رسالة جديدة"
                     placeholder="اكتب ردك هنا..."
                     className="flex-1"
                     disabled={loading}

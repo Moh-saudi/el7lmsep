@@ -556,6 +556,7 @@ export default function SharedReferralsPage() {
                 <Input
                   value={referralCode}
                   readOnly
+                  aria-label="كود الإحالة"
                   className="text-center text-lg font-mono bg-white/20 border-white/30 text-white"
                 />
               </div>

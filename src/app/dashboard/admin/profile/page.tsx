@@ -157,6 +157,7 @@ export default function AdminProfile() {
                       <Input
                         value={formData.name}
                         onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                        aria-label="الاسم"
                         disabled={!isEditing}
                         className="pr-10"
                         placeholder="الاسم الكامل"
@@ -171,6 +172,7 @@ export default function AdminProfile() {
                       <Input
                         value={user?.email || ''}
                         disabled
+                        aria-label="البريد الإلكتروني"
                         className="pr-10"
                       />
                       <Mail className="absolute top-1/2 right-3 -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -183,6 +185,7 @@ export default function AdminProfile() {
                       <Input
                         value={formData.phone}
                         onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
+                        aria-label="رقم الهاتف"
                         disabled={!isEditing}
                         className="pr-10"
                         placeholder="رقم الهاتف"

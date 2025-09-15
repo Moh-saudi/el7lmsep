@@ -1403,6 +1403,7 @@ export default function UsersManagement() {
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   placeholder="بحث بالاسم، البريد، الهاتف..."
+                  aria-label="البحث في المستخدمين"
                   className="pr-10"
                 />
               </div>

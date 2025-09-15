@@ -1255,35 +1255,46 @@ const ResponsiveSidebar: React.FC<ResponsiveSidebarProps> = ({ accountType: prop
   }, [pathname]);
 
   // لا تعرض السايدبار حتى يتم تحميل المكون على العميل
-  if (!isClient) {
+  if (!isClient || typeof window === 'undefined') {
     return null;
   }
 
   return (
     <>
       {/* Mobile Overlay */}
-      <AnimatePresence>
-        {isSidebarOpen && isMobile && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-40 bg-black/50 lg:hidden"
-            onClick={closeSidebar}
-          />
-        )}
-      </AnimatePresence>
+      {typeof window !== 'undefined' && (
+        <AnimatePresence>
+          {isSidebarOpen && isMobile && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-40 bg-black/50 lg:hidden"
+              onClick={closeSidebar}
+            />
+          )}
+        </AnimatePresence>
+      )}
 
       {/* Sidebar */}
-      <motion.div
-        initial={isMobile ? { x: '100%' } : { width: isSidebarCollapsed ? 64 : 256 }}
-        animate={isMobile ? { x: isSidebarOpen ? 0 : '100%' } : { width: isSidebarCollapsed ? (isTablet ? 56 : 64) : (isTablet ? 224 : 256) }}
-        transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-        className={`fixed top-0 right-0 h-full bg-gradient-to-b ${accountInfo.color} z-50 shadow-xl backdrop-blur-xl border-l border-white/20 ${
-          isMobile ? 'w-72' : sidebarWidth
-        }`}
-        dir="rtl"
-      >
+      {typeof window !== 'undefined' ? (
+        <motion.div
+          initial={isMobile ? { x: '100%' } : { width: isSidebarCollapsed ? 64 : 256 }}
+          animate={isMobile ? { x: isSidebarOpen ? 0 : '100%' } : { width: isSidebarCollapsed ? (isTablet ? 56 : 64) : (isTablet ? 224 : 256) }}
+          transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+          className={`fixed top-0 right-0 h-full bg-gradient-to-b ${accountInfo.color} z-50 shadow-xl backdrop-blur-xl border-l border-white/20 ${
+            isMobile ? 'w-72' : sidebarWidth
+          }`}
+          dir="rtl"
+        >
+      ) : (
+        <div
+          className={`fixed top-0 right-0 h-full bg-gradient-to-b ${accountInfo.color} z-50 shadow-xl backdrop-blur-xl border-l border-white/20 ${
+            isMobile ? 'w-72' : sidebarWidth
+          }`}
+          dir="rtl"
+        >
+      )}
         <div className="flex flex-col h-full">
           {/* Header */}
           <div className="flex justify-between items-center p-3 border-b border-white/20">
@@ -1291,19 +1302,21 @@ const ResponsiveSidebar: React.FC<ResponsiveSidebarProps> = ({ accountType: prop
               <div className={`p-1.5 rounded-lg ${accountInfo.bgColor}`}>
                 <IconComponent className={`w-5 h-5 ${accountInfo.textColor}`} />
               </div>
-              <AnimatePresence>
-                {showText && (
-                  <motion.div
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -20 }}
-                    className="flex flex-col"
-                  >
-                    <h2 className="text-base font-bold text-white">{accountInfo.title}</h2>
-                    <p className="text-xs text-white/70">{accountInfo.subtitle}</p>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+              {typeof window !== 'undefined' && (
+                <AnimatePresence>
+                  {showText && (
+                    <motion.div
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -20 }}
+                      className="flex flex-col"
+                    >
+                      <h2 className="text-base font-bold text-white">{accountInfo.title}</h2>
+                      <p className="text-xs text-white/70">{accountInfo.subtitle}</p>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              )}
             </div>
             
             <div className="flex gap-2 items-center">
@@ -1513,7 +1526,11 @@ const ResponsiveSidebar: React.FC<ResponsiveSidebarProps> = ({ accountType: prop
             </Button>
           </div>
         </div>
-      </motion.div>
+      {typeof window !== 'undefined' ? (
+        </motion.div>
+      ) : (
+        </div>
+      )}
 
       {/* شاشة تسجيل الخروج */}
       {showLogoutScreen && <LogoutScreen />}

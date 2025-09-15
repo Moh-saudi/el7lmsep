@@ -481,6 +481,7 @@ export default function AdminDreamAcademyVideosPage() {
             <Input
               placeholder="https://www.youtube-nocookie.com/watch?v=... أو https://www.youtube-nocookie.com/playlist?list=..."
               value={draft.url || ''}
+              aria-label="رابط YouTube"
               onChange={(e) => {
                 const val = e.target.value;
                 const isPlaylist = /(?:youtube\.com\/playlist\?|[?&]list=)/.test(val);
@@ -511,11 +512,11 @@ export default function AdminDreamAcademyVideosPage() {
           </div>
           <div>
             <label className="text-sm">العنوان (اختياري)</label>
-            <Input placeholder="عنوان مختصر" value={draft.title || ''} onChange={(e) => setDraft((d) => ({ ...d, title: e.target.value }))} />
+            <Input placeholder="عنوان مختصر" value={draft.title || ''} onChange={(e) => setDraft((d) => ({ ...d, title: e.target.value }))} aria-label="عنوان الفيديو" />
           </div>
           <div>
             <label className="text-sm">الترتيب</label>
-            <Input type="number" value={draft.order || 0} onChange={(e) => setDraft((d) => ({ ...d, order: Number(e.target.value) }))} />
+            <Input type="number" value={draft.order || 0} onChange={(e) => setDraft((d) => ({ ...d, order: Number(e.target.value) }))} aria-label="ترتيب الفيديو" />
           </div>
           <div className="flex flex-wrap gap-2">
             <Button
@@ -579,7 +580,7 @@ export default function AdminDreamAcademyVideosPage() {
         <div className="flex flex-col md:flex-row gap-3 items-center">
           <div className="flex-1 flex items-center gap-2">
             <Search className="w-4 h-4" />
-            <Input placeholder="بحث بعنوان أو رابط" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+            <Input placeholder="بحث بعنوان أو رابط" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} aria-label="البحث في الفيديوهات" />
           </div>
           <div className="flex flex-wrap items-center gap-2">
             <Button className={`${filterType==='all'?'bg-slate-700 text-white':'border-slate-300'} px-3 py-2 rounded-xl`} size="sm" onClick={() => setFilterType('all')}>الكل</Button>
