@@ -130,7 +130,7 @@ export async function POST(request: NextRequest) {
       if (brokenFields.length > 0) {
         brokenDocs.push({
           id: docData.id,
-          name: docData.full_name || docData.name || docData.displayName || `مستند ${docData.id}`,
+          name: docData['full_name'] || docData['name'] || docData['displayName'] || `مستند ${docData.id}`,
           brokenFields: brokenFields
         });
       }
