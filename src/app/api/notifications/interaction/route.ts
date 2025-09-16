@@ -88,7 +88,7 @@ async function getProfileOwnerPhone(profileOwnerId: string): Promise<string | nu
     const profileOwnerDoc = await getDoc(doc(db, 'users', profileOwnerId));
     if (profileOwnerDoc.exists()) {
       const profileOwnerData = profileOwnerDoc.data();
-      return profileOwnerData.phone || null;
+      return profileOwnerData['phone'] || null;
     }
     return null;
   } catch (error) {
