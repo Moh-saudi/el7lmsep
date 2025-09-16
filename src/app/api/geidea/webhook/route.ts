@@ -7,8 +7,8 @@ import { safeExecute, createResponseHandler, validateInput } from '@/lib/utils/c
 
 // تكوين Geidea
 const GEIDEA_CONFIG = {
-  webhookSecret: process.env.GEIDEA_WEBHOOK_SECRET || '',
-  baseUrl: process.env.GEIDEA_BASE_URL || 'https://api.merchant.geidea.net'
+  webhookSecret: process.env['GEIDEA_WEBHOOK_SECRET'] || '',
+  baseUrl: process.env['GEIDEA_BASE_URL'] || 'https://api.merchant.geidea.net'
 };
 
 // معالج الاستجابة
