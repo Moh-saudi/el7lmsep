@@ -156,11 +156,12 @@ async function handleProfileViewNotification(body: any) {
 async function handleVideoInteractionNotification(body: any) {
   const { profileOwnerId, viewerId, viewerName, viewerType, videoId, commentText } = body;
   
-  const notificationId = await interactionNotificationService.sendVideoInteraction(
+  const notificationId = await interactionNotificationService.sendVideoCommentNotification(
     profileOwnerId,
     viewerId,
     viewerName,
     viewerType,
+    'player', // viewerAccountType - يمكن تحسينه لاحقاً
     videoId,
     commentText
   );
