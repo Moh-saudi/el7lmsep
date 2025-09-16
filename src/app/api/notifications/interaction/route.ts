@@ -77,8 +77,9 @@ function getSMSMessagesByType(accountType: string): string[] {
 
 // اختيار رسالة SMS عشوائية
 function selectRandomSMSMessage(messages: string[], viewerName: string): string {
+  if (messages.length === 0) return 'رسالة افتراضية';
   const randomIndex = Math.floor(Math.random() * messages.length);
-  return messages[randomIndex].replace('{viewerName}', viewerName);
+  return (messages[randomIndex] || 'رسالة افتراضية').replace('{viewerName}', viewerName);
 }
 
 // الحصول على رقم هاتف صاحب الملف
