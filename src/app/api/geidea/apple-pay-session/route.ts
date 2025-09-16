@@ -116,9 +116,9 @@ export async function POST(request: NextRequest) {
         email: customerEmail,
         name: customerName || 'Apple Pay User'
       },
-      callbackUrl: process.env.NEXT_PUBLIC_BASE_URL?.includes('localhost') 
+      callbackUrl: process.env['NEXT_PUBLIC_BASE_URL']?.includes('localhost') 
         ? 'https://webhook.site/c32729f0-39f0-4cf8-a8c2-e932a146b685'
-        : `${process.env.NEXT_PUBLIC_BASE_URL}/api/geidea/callback`,
+        : `${process.env['NEXT_PUBLIC_BASE_URL']}/api/geidea/callback`,
       billingAddress: {
         countryCode: getCountryFromCurrency(currency)
       }
