@@ -75,7 +75,7 @@ export async function POST(request: NextRequest) {
     const merchantPublicKey = '3448c010-87b1-41e7-9771-cac444268cfb';
     const apiPassword = 'edfd5eee-fd1b-4932-9ee1-d6d9ba7599f0';
     const geideaApiUrl = 'https://api.merchant.geidea.net';
-    const applePayMerchantId = process.env.APPLE_PAY_MERCHANT_ID;
+    const applePayMerchantId = process.env['APPLE_PAY_MERCHANT_ID'];
 
     // التحقق من وجود المفاتيح
     if (!merchantPublicKey || !apiPassword || !applePayMerchantId) {
