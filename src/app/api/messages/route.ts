@@ -139,7 +139,7 @@ export async function POST(request: Request) {
         lastMessage: message,
         lastMessageTime: serverTimestamp(),
         lastSenderId: senderId,
-        [`unreadCount.${receiverId}`]: (conversationDoc.data().unreadCount?.[receiverId] || 0) + 1,
+        [`unreadCount.${receiverId}`]: (conversationDoc.data()['unreadCount']?.[receiverId] || 0) + 1,
         [`unreadCount.${senderId}`]: 0
       });
     }
