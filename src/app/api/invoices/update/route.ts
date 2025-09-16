@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
 
     const q = query(collection(db, 'invoices'), where('payment_id', '==', paymentId), limit(1));
     const snap = await getDocs(q);
-    if (snap.empty) {
+    if (snap.empty || !snap.docs[0]) {
       return NextResponse.json({ ok: false, error: 'Invoice not found' }, { status: 404 });
     }
 
