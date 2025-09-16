@@ -80,7 +80,7 @@ function updateDailyStats(stats: MessageStats): MessageStats {
     ...stats,
     dailyStats: {
       ...stats.dailyStats,
-      [today]: (stats.dailyStats[today] || 0) + 1
+      [today as string]: (stats.dailyStats[today as string] || 0) + 1
     },
     hourlyStats: {
       ...stats.hourlyStats,
@@ -121,9 +121,9 @@ export async function GET(request: NextRequest) {
       const today = new Date().toISOString().split('T')[0];
       filteredStats = {
         ...stats,
-        totalSent: stats.dailyStats[today] || 0,
-        successful: Math.round((stats.dailyStats[today] || 0) * (successRate / 100)),
-        failed: Math.round((stats.dailyStats[today] || 0) * ((100 - successRate) / 100))
+        totalSent: stats.dailyStats[today as string] || 0,
+        successful: Math.round((stats.dailyStats[today as string] || 0) * (successRate / 100)),
+        failed: Math.round((stats.dailyStats[today as string] || 0) * ((100 - successRate) / 100))
       };
     } else if (period === 'week') {
       const weekAgo = new Date();

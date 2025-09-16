@@ -134,7 +134,7 @@ export async function GET() {
       const snap = await getDocs(q);
       snap.forEach((docSnap) => {
         const data = docSnap.data();
-        const createdAt = toDate(data?.createdAt);
+        const createdAt = toDate(data?.['createdAt']);
         if (createdAt) {
           recentUsers.push({
             id: docSnap.id,
@@ -166,10 +166,10 @@ export async function GET() {
     recentUsers.forEach((u) => {
       const score = computeProfileCompleteness(u);
       completenessSum += score;
-      if (score <= 25) completenessBuckets['0-25']++;
-      else if (score <= 50) completenessBuckets['26-50']++;
-      else if (score <= 75) completenessBuckets['51-75']++;
-      else completenessBuckets['76-100']++;
+      if (score <= 25) completenessBuckets['0-25']!++;
+      else if (score <= 50) completenessBuckets['26-50']!++;
+      else if (score <= 75) completenessBuckets['51-75']!++;
+      else completenessBuckets['76-100']!++;
       if (score >= 80) completedOver80++;
     });
     const avgCompleteness = recentUsers.length > 0 ? Math.round(completenessSum / recentUsers.length) : 0;
@@ -186,15 +186,15 @@ export async function GET() {
     visitsSnap.forEach((d) => {
       const v = d.data();
       visits.push({
-        sessionId: v?.sessionId || null,
-        route: v?.route || null,
-        createdAt: toDate(v?.createdAt),
-        ip: v?.ip || null,
-        userAgent: v?.userAgent || null,
+        sessionId: v?.['sessionId'] || null,
+        route: v?.['route'] || null,
+        createdAt: toDate(v?.['createdAt']),
+        ip: v?.['ip'] || null,
+        userAgent: v?.['userAgent'] || null,
         geo: {
-          country: v?.geo?.country || null,
-          region: v?.geo?.region || null,
-          city: v?.geo?.city || null,
+          country: v?.['geo']?.['country'] || null,
+          region: v?.['geo']?.['region'] || null,
+          city: v?.['geo']?.['city'] || null,
         },
       });
     });

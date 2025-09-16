@@ -66,7 +66,7 @@ export async function POST(request: NextRequest) {
 
     if (useFallback && phones.length === 1) {
       // استخدام fallback للرسائل الفردية
-      result = await beonWhatsAppService.sendWhatsAppWithFallback(phones[0], message);
+      result = await beonWhatsAppService.sendWhatsAppWithFallback(phones[0]!, message);
     } else {
       // إرسال جماعي عادي
       result = await beonWhatsAppService.sendBulkWhatsApp(phones, message);

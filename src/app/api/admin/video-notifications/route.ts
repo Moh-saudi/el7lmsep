@@ -38,7 +38,7 @@ async function checkNewVideos() {
         
         snapshot.forEach((doc) => {
           const userData = doc.data();
-          const userVideos = userData.videos || [];
+          const userVideos = userData['videos'] || [];
           
           if (Array.isArray(userVideos)) {
             const newVideos = userVideos.filter((video: any) => {
@@ -49,7 +49,7 @@ async function checkNewVideos() {
 
             if (newVideos.length > 0) {
               totalNewVideos += newVideos.length;
-              const userName = userData.full_name || userData.name || userData.userName || 'مستخدم';
+              const userName = userData['full_name'] || userData['name'] || userData['userName'] || 'مستخدم';
               newVideosByUser[userName] = (newVideosByUser[userName] || 0) + newVideos.length;
             }
           }

@@ -58,7 +58,7 @@ export async function POST(request: NextRequest) {
       } catch (error) {
         results.push({
           endpoint,
-          error: error.message,
+          error: (error as Error).message,
           success: false
         });
       }

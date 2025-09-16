@@ -40,7 +40,7 @@ async function searchInCollection(collectionName: string, phone: string, possibl
     
     phoneSnapshot.forEach((doc) => {
       const userData = doc.data();
-      if (userData && !userData.isDeleted) {
+      if (userData && !userData['isDeleted']) {
         foundUsers.push({
           id: doc.id,
           collection: collectionName,
@@ -59,7 +59,7 @@ async function searchInCollection(collectionName: string, phone: string, possibl
       
       emailSnapshot.forEach((doc) => {
         const userData = doc.data();
-        if (userData && !userData.isDeleted) {
+        if (userData && !userData['isDeleted']) {
           foundUsers.push({
             id: doc.id,
             collection: collectionName,

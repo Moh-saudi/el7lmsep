@@ -107,7 +107,7 @@ export async function POST(request: NextRequest) {
         results.push({
           format: format.name,
           requestBody: format.body,
-          error: error.message,
+          error: (error as Error).message,
           success: false
         });
       }

@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
     }
 
     const userData = userDoc.data();
-    const currentEmail = userData.email;
+    const currentEmail = userData['email'];
 
     // التحقق من أن البريد الإلكتروني الجديد مختلف
     if (currentEmail === newEmail) {
@@ -103,7 +103,7 @@ export async function PUT(request: NextRequest) {
     }
 
     const userData = userDoc.data();
-    const currentEmail = userData.email;
+    const currentEmail = userData['email'];
 
     await updateDoc(userRef, {
       email: newEmail,

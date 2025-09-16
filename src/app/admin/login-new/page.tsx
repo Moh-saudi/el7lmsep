@@ -136,11 +136,11 @@ export default function AdminLoginNewPage() {
         if (adminDoc.exists()) {
           const adminData = adminDoc.data();
           addDebugInfo(`✅ المستخدم موجود في admins collection`);
-          addDebugInfo(`   - الدور: ${adminData.role}`);
-          addDebugInfo(`   - نشط: ${adminData.isActive}`);
-          addDebugInfo(`   - الصلاحيات: ${adminData.permissions?.length || 0} صلاحية`);
+          addDebugInfo(`   - الدور: ${adminData['role']}`);
+          addDebugInfo(`   - نشط: ${adminData['isActive']}`);
+          addDebugInfo(`   - الصلاحيات: ${adminData['permissions']?.length || 0} صلاحية`);
           
-          if (adminData.isActive) {
+          if (adminData['isActive']) {
             isValidAdmin = true;
           } else {
             addDebugInfo('❌ حساب الأدمن غير مفعل');
@@ -252,17 +252,21 @@ export default function AdminLoginNewPage() {
 
             {/* رسائل التنبيه */}
             {error && (
-              <Alert variant="destructive">
-                <XCircle className="h-4 w-4" />
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
+              <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+                <div className="flex items-start gap-3">
+                  <XCircle className="h-4 w-4 text-red-600 mt-0.5" />
+                  <div className="text-red-800">{error}</div>
+                </div>
+              </div>
             )}
             
             {success && (
-              <Alert className="border-green-200 bg-green-50">
-                <CheckCircle className="h-4 w-4 text-green-600" />
-                <AlertDescription className="text-green-800">{success}</AlertDescription>
-              </Alert>
+              <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+                <div className="flex items-start gap-3">
+                  <CheckCircle className="h-4 w-4 text-green-600 mt-0.5" />
+                  <div className="text-green-800">{success}</div>
+                </div>
+              </div>
             )}
 
             {/* نموذج تسجيل الدخول */}

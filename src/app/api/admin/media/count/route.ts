@@ -19,10 +19,10 @@ export async function GET(request: NextRequest) {
       
       querySnapshot.forEach((doc) => {
         const userData = doc.data();
-        if (userData?.isDeleted === true) return;
+        if (userData?.['isDeleted'] === true) return;
 
         // Count videos
-        const userVideos = userData.videos || [];
+        const userVideos = userData['videos'] || [];
         totalVideos += userVideos.length;
         userVideos.forEach((video: any) => {
           if (video.status === 'pending') pendingVideos++;

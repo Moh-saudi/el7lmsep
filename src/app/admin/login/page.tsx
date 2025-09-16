@@ -152,7 +152,7 @@ export default function AdminLoginPage() {
       const userData = userDoc.data();
       
       // Check admin permissions
-              if (userData.accountType !== 'admin') {
+              if (userData['accountType'] !== 'admin') {
         // Check admins collection as fallback
         const adminDocRef = doc(db, 'admins', user.uid);
         const adminDoc = await getDoc(adminDocRef);
@@ -160,14 +160,14 @@ export default function AdminLoginPage() {
         if (!adminDoc.exists()) {
                       await logSecurityEvent('unauthorized_access_attempt', { 
               email, 
-              userRole: userData.accountType,
+              userRole: userData['accountType'],
               timestamp: new Date() 
             });
           throw new Error('You do not have admin permissions to access this panel');
         }
         
         const adminData = adminDoc.data();
-        if (!adminData.isActive) {
+        if (!adminData['isActive']) {
           await logSecurityEvent('inactive_admin_login_attempt', { email, timestamp: new Date() });
           throw new Error('Your admin account is deactivated. Please contact administration');
         }
@@ -179,7 +179,7 @@ export default function AdminLoginPage() {
         lastLoginIP: securityInfo?.ipAddress || 'Unknown',
         lastLoginDevice: securityInfo?.userAgent || 'Unknown',
         lastLoginLocation: securityInfo?.timezone || 'Unknown',
-        loginCount: (userData.loginCount || 0) + 1
+        loginCount: (userData['loginCount'] || 0) + 1
       };
 
       await updateDoc(userDocRef, loginData);
@@ -414,17 +414,21 @@ export default function AdminLoginPage() {
             <CardContent>
               <form onSubmit={handleLogin} className="space-y-4">
                 {error && (
-                  <Alert variant="destructive" className="border-red-200">
-                    <AlertCircle className="h-4 w-4" />
-                    <AlertDescription>{error}</AlertDescription>
-                  </Alert>
+                  <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+                    <div className="flex items-start gap-3">
+                      <AlertCircle className="h-4 w-4 text-red-600 mt-0.5" />
+                      <div className="text-red-800">{error}</div>
+                    </div>
+                  </div>
                 )}
 
                 {success && (
-                  <Alert className="border-green-200 bg-green-50 text-green-800">
-                    <CheckCircle className="h-4 w-4 text-green-600" />
-                    <AlertDescription>{success}</AlertDescription>
-                  </Alert>
+                  <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+                    <div className="flex items-start gap-3">
+                      <CheckCircle className="h-4 w-4 text-green-600 mt-0.5" />
+                      <div className="text-green-800">{success}</div>
+                    </div>
+                  </div>
                 )}
                 
                 <div className="space-y-2">
@@ -478,7 +482,7 @@ export default function AdminLoginPage() {
                   <Checkbox
                     id="remember"
                     checked={rememberMe}
-                    onCheckedChange={setRememberMe}
+                    onCheckedChange={(checked) => setRememberMe(checked === true)}
                     className="border-gray-300"
                   />
                   <Label 

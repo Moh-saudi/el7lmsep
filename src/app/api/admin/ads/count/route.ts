@@ -15,8 +15,8 @@ export async function GET(request: NextRequest) {
     const allAdsSnapshot = await getDocs(collection(db, 'ads'));
     const allAds = allAdsSnapshot.docs.map(doc => doc.data());
     
-    const totalViews = allAds.reduce((sum, ad) => sum + (ad.views || 0), 0);
-    const totalClicks = allAds.reduce((sum, ad) => sum + (ad.clicks || 0), 0);
+    const totalViews = allAds.reduce((sum, ad) => sum + (ad['views'] || 0), 0);
+    const totalClicks = allAds.reduce((sum, ad) => sum + (ad['clicks'] || 0), 0);
 
     return NextResponse.json({
       success: true,

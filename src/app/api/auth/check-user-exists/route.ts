@@ -75,9 +75,9 @@ export async function POST(request: NextRequest) {
             setTimeout(() => reject(new Error('Timeout')), 5000)
           )
         ]);
-        return { collectionName, found: !query.empty };
+        return { collectionName, found: !(query as any).empty };
       } catch (error) {
-        console.log(`⚠️ Timeout or error searching ${collectionName}:`, error.message);
+        console.log(`⚠️ Timeout or error searching ${collectionName}:`, (error as Error).message);
         return { collectionName, found: false };
       }
     };

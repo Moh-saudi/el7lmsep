@@ -52,8 +52,8 @@ export async function POST(request: NextRequest) {
 
     // الحصول على بيانات المستخدم
     const userDoc = querySnapshot.docs[0];
-    const userData = userDoc.data();
-    const userEmail = userData.firebaseEmail || userData.email;
+    const userData = userDoc?.data();
+    const userEmail = userData?.['firebaseEmail'] || userData?.['email'];
 
     if (!userEmail) {
       console.log('❌ No email found for user:', phoneNumber);

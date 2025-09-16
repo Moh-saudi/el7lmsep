@@ -15,11 +15,11 @@ export async function POST(request: NextRequest) {
     console.log('🔍 بدء التشخيص العميق للرسالة:', { phone, messageLength: message.length });
 
     const results = {
-      phoneFormats: [],
+      phoneFormats: [] as any[],
       accountCheck: null,
-      endpointTests: [],
+      endpointTests: [] as any[],
       deliveryStatus: null,
-      recommendations: []
+      recommendations: [] as any[]
     };
 
     // 1. اختبار تنسيقات مختلفة لرقم الهاتف
@@ -70,7 +70,7 @@ export async function POST(request: NextRequest) {
       } catch (error) {
         results.phoneFormats.push({
           format,
-          error: error.message,
+          error: (error as Error).message,
           success: false
         });
       }
@@ -90,7 +90,7 @@ export async function POST(request: NextRequest) {
         success: accountResponse.ok,
         data: accountData,
         timestamp: new Date().toISOString()
-      };
+      } as any;
 
       console.log('🔍 نتيجة فحص الحساب:', {
         status: accountResponse.status,
@@ -100,9 +100,9 @@ export async function POST(request: NextRequest) {
 
     } catch (error) {
       results.accountCheck = {
-        error: error.message,
+        error: (error as Error).message,
         success: false
-      };
+      } as any;
     }
 
     // 3. اختبار endpoints مختلفة
@@ -151,7 +151,7 @@ export async function POST(request: NextRequest) {
       } catch (error) {
         results.endpointTests.push({
           endpoint,
-          error: error.message,
+          error: (error as Error).message,
           success: false
         });
       }
@@ -169,7 +169,7 @@ export async function POST(request: NextRequest) {
       results.recommendations.push(`استخدم endpoint: ${successfulEndpoints[0].endpoint}`);
     }
 
-    if (results.accountCheck && results.accountCheck.success) {
+    if (results.accountCheck && (results.accountCheck as any).success) {
       results.recommendations.push('الحساب يعمل بشكل صحيح');
     } else {
       results.recommendations.push('تحقق من حالة الحساب مع دعم BeOn');
@@ -193,7 +193,7 @@ export async function POST(request: NextRequest) {
           successfulFormats: successfulFormats.length,
           totalEndpoints: results.endpointTests.length,
           successfulEndpoints: successfulEndpoints.length,
-          accountWorking: results.accountCheck?.success || false
+          accountWorking: (results.accountCheck as any)?.success || false
         },
         timestamp: new Date().toISOString()
       }

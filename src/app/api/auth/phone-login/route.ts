@@ -31,10 +31,10 @@ export async function POST(request: NextRequest) {
 		for (const candidate of candidates) {
 			const q = query(collection(db, 'users'), where('phone', '==', candidate));
 			const snap = await getDocs(q);
-			if (!snap.empty) {
-				userId = snap.docs[0].id;
-				break;
-			}
+                  if (!snap.empty) {
+                          userId = snap.docs[0]?.id || null;
+                          break;
+                  }
 		}
 
 		if (!userId) {
