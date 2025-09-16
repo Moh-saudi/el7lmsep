@@ -159,7 +159,7 @@ async function updatePaymentStatus(merchantReferenceId: string, status: string) 
     
     const querySnapshot = await getDocs(paymentsQuery);
     
-    if (!querySnapshot.empty) {
+    if (!querySnapshot.empty && querySnapshot.docs[0]) {
       const paymentDoc = querySnapshot.docs[0];
       await updateDoc(paymentDoc.ref, {
         status,
