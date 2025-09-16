@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
         const q = query(collectionRef, limit(1));
         const querySnapshot = await getDocs(q);
         
-        if (!querySnapshot.empty) {
+        if (!querySnapshot.empty && querySnapshot.docs[0]) {
           const doc = querySnapshot.docs[0];
           sampleData = { id: doc.id, ...doc.data() };
           availableFields = Object.keys(sampleData);
