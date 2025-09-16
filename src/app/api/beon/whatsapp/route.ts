@@ -77,8 +77,8 @@ export async function POST(request: NextRequest) {
         success: true,
         message: result.message,
         data: result.data,
-        method: result.method || 'whatsapp',
-        fallback: result.fallback || false
+        method: 'whatsapp',
+        fallback: false
       });
     } else {
       return NextResponse.json(
