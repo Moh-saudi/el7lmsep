@@ -44,7 +44,7 @@ export async function GET(request: Request) {
       
       return NextResponse.json({ 
         isFavorite,
-        favoriteId: isFavorite ? snapshot.docs[0].id : null
+        favoriteId: isFavorite ? snapshot.docs[0]?.id || null : null
       });
     } else {
       // جلب جميع المفضلين للمستخدم
