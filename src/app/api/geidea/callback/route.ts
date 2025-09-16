@@ -19,7 +19,7 @@ function extractUserId(merchantReferenceId: string): string {
   }
   
   const parts = merchantReferenceId.split('_');
-  return parts.length >= 2 ? parts[1] : 'unknown';
+  return parts.length >= 2 ? parts[1] || 'unknown' : 'unknown';
 }
 
 // إنشاء بيانات الدفع
