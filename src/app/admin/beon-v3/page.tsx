@@ -506,12 +506,15 @@ export default function BeOnV3AdminPage() {
       </div>
 
       {/* تنبيه مهم */}
-      <Alert className="mb-6">
-        <AlertTriangle className="h-4 w-4" />
-        <AlertDescription>
-          <strong>ملاحظة مهمة:</strong> BeOn V3 لا يدعم WhatsApp فعلياً. جميع طلبات WhatsApp يتم إرسالها كـ SMS.
-        </AlertDescription>
-      </Alert>
+      <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+        <div className="flex items-start gap-3">
+          <AlertTriangle className="h-4 w-4 text-yellow-600 mt-0.5" />
+          <div>
+            <strong className="text-yellow-800">ملاحظة مهمة:</strong>
+            <span className="text-yellow-700"> BeOn V3 لا يدعم WhatsApp فعلياً. جميع طلبات WhatsApp يتم إرسالها كـ SMS.</span>
+          </div>
+        </div>
+      </div>
 
       <Tabs defaultValue="testing" className="space-y-6">
         <TabsList className="grid w-full grid-cols-6">
@@ -1211,12 +1214,14 @@ export default function BeOnV3AdminPage() {
 
         {/* تبويب الطوارئ */}
         <TabsContent value="emergency" className="space-y-6">
-          <Alert className="border-red-200 bg-red-50">
-            <AlertTriangle className="h-4 w-4 text-red-600" />
-            <AlertDescription className="text-red-800">
-              <strong>تحذير:</strong> هذا القسم للإعدادات الطارئة فقط. استخدمه بحذر.
-            </AlertDescription>
-          </Alert>
+          <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+            <div className="flex items-start gap-3">
+              <AlertTriangle className="h-4 w-4 text-red-600 mt-0.5" />
+              <div className="text-red-800">
+                <strong>تحذير:</strong> هذا القسم للإعدادات الطارئة فقط. استخدمه بحذر.
+              </div>
+            </div>
+          </div>
 
           <Card>
             <CardHeader>

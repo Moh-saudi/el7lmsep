@@ -103,7 +103,7 @@ export default function AdminLoginAdvancedPage() {
       }
 
       const userData = userDoc.data();
-      addDebugInfo(`✅ بيانات المستخدم: ${userData.name} (${userData.accountType})`);
+      addDebugInfo(`✅ بيانات المستخدم: ${userData['name']} (${userData['accountType']})`);
       
       setStep('checking-admin-permissions');
 
@@ -111,7 +111,7 @@ export default function AdminLoginAdvancedPage() {
       
       let isValidAdmin = false;
       
-      if (userData.accountType === 'admin') {
+      if (userData['accountType'] === 'admin') {
         addDebugInfo('✅ المستخدم admin في users collection');
         isValidAdmin = true;
       } else {
@@ -122,9 +122,9 @@ export default function AdminLoginAdvancedPage() {
         
         if (adminDoc.exists()) {
           const adminData = adminDoc.data();
-          addDebugInfo(`✅ موجود في admins: ${adminData.role} (نشط: ${adminData.isActive})`);
+          addDebugInfo(`✅ موجود في admins: ${adminData['role']} (نشط: ${adminData['isActive']})`);
           
-          if (adminData.isActive) {
+          if (adminData['isActive']) {
             isValidAdmin = true;
           } else {
             throw new Error('حساب الأدمن غير مفعل');
@@ -207,17 +207,21 @@ export default function AdminLoginAdvancedPage() {
 
             {/* رسائل التنبيه */}
             {error && (
-              <Alert variant="destructive">
-                <XCircle className="h-4 w-4" />
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
+              <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+                <div className="flex items-start gap-3">
+                  <XCircle className="h-4 w-4 text-red-600 mt-0.5" />
+                  <div className="text-red-800">{error}</div>
+                </div>
+              </div>
             )}
             
             {success && (
-              <Alert className="border-green-200 bg-green-50">
-                <CheckCircle className="h-4 w-4 text-green-600" />
-                <AlertDescription className="text-green-800">{success}</AlertDescription>
-              </Alert>
+              <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+                <div className="flex items-start gap-3">
+                  <CheckCircle className="h-4 w-4 text-green-600 mt-0.5" />
+                  <div className="text-green-800">{success}</div>
+                </div>
+              </div>
             )}
 
             {/* نموذج تسجيل الدخول */}

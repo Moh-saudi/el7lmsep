@@ -113,9 +113,9 @@ export default function AdminLoginNewPage() {
 
       const userData = userDoc.data();
       addDebugInfo(`✅ بيانات المستخدم موجودة`);
-      addDebugInfo(`   - الاسم: ${userData.name}`);
-      addDebugInfo(`   - نوع الحساب: ${userData.accountType}`);
-      addDebugInfo(`   - حالة التفعيل: ${userData.isActive}`);
+      addDebugInfo(`   - الاسم: ${userData['name']}`);
+      addDebugInfo(`   - نوع الحساب: ${userData['accountType']}`);
+      addDebugInfo(`   - حالة التفعيل: ${userData['isActive']}`);
       
       setStep('checking-admin-permissions');
 
@@ -124,7 +124,7 @@ export default function AdminLoginNewPage() {
       
       let isValidAdmin = false;
       
-      if (userData.accountType === 'admin') {
+      if (userData['accountType'] === 'admin') {
         addDebugInfo('✅ المستخدم مصنف كـ admin في users collection');
         isValidAdmin = true;
       } else {

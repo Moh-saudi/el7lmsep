@@ -31,7 +31,7 @@ export default function FixPlayersNamesPage() {
       for (const userDoc of usersSnapshot.docs) {
         const userId = userDoc.id;
         const userData = userDoc.data();
-        const oldName = userData.full_name || userData.name || '';
+        const oldName = userData['full_name'] || userData['name'] || '';
         // جلب الاسم الصحيح من players أو player أو users
         let playerDoc = await getDoc(doc(db, 'players', userId));
         let playerData = null;
@@ -53,7 +53,7 @@ export default function FixPlayersNamesPage() {
         }
         
         if (playerData) {
-          const playerName = playerData.full_name || playerData.name || '';
+          const playerName = playerData['full_name'] || playerData['name'] || '';
           if (playerName && oldName !== playerName) {
             try {
               await updateDoc(doc(db, 'users', userId), {
