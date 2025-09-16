@@ -4,10 +4,10 @@ export async function GET(request: NextRequest) {
   try {
     // قراءة متغيرات البيئة من الخادم
     const config = {
-      merchantPublicKey: process.env.GEIDEA_MERCHANT_PUBLIC_KEY,
-      apiPassword: process.env.GEIDEA_API_PASSWORD,
-      webhookSecret: process.env.GEIDEA_WEBHOOK_SECRET,
-      baseUrl: process.env.GEIDEA_BASE_URL || 'https://api.merchant.geidea.net',
+      merchantPublicKey: process.env['GEIDEA_MERCHANT_PUBLIC_KEY'],
+      apiPassword: process.env['GEIDEA_API_PASSWORD'],
+      webhookSecret: process.env['GEIDEA_WEBHOOK_SECRET'],
+      baseUrl: process.env['GEIDEA_BASE_URL'] || 'https://api.merchant.geidea.net',
       isTestMode: false
     };
 
