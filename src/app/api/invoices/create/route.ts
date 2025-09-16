@@ -60,7 +60,7 @@ export async function POST(req: NextRequest) {
       for (const col of collectionsToSearch) {
         const q = query(collection(db, col), where('__name__', '==', paymentId));
         const snap = await getDocs(q);
-        if (!snap.empty) {
+        if (!snap.empty && snap.docs[0]) {
           const docSnap = snap.docs[0];
           paymentData = { id: docSnap.id, ...(docSnap.data() as any) };
           break;
