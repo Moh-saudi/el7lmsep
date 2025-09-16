@@ -194,7 +194,8 @@ async function handleConnectionRequestNotification(body: any) {
     profileOwnerId,
     viewerId,
     viewerName,
-    viewerType
+    viewerType,
+    'player' // requesterAccountType - يمكن تحسينه لاحقاً
   );
   
   return notificationId;
