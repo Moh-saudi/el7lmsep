@@ -80,7 +80,7 @@ export async function POST(req: NextRequest) {
     try {
       const existingQ = query(collection(db, 'invoices'), where('payment_id', '==', paymentData.id), limit(1));
       const existingSnap = await getDocs(existingQ);
-      if (!existingSnap.empty) {
+      if (!existingSnap.empty && existingSnap.docs[0]) {
         const doc = existingSnap.docs[0];
         return NextResponse.json({ ok: true, invoice: { id: doc.id, ...doc.data() } });
       }
