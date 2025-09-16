@@ -210,6 +210,7 @@ async function handleMessageNotification(body: any) {
     viewerId,
     viewerName,
     viewerType,
+    'player', // senderAccountType - يمكن تحسينه لاحقاً
     messagePreview
   );
   
