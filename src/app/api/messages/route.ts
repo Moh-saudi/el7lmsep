@@ -165,7 +165,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ 
       success: true, 
       messageId: messageRef.id,
-      conversationId: conversationRef.id,
+      conversationId: conversationRef?.id || conversationId,
       message: 'تم إرسال الرسالة بنجاح'
     });
 
