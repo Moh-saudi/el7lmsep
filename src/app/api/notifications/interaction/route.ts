@@ -178,6 +178,7 @@ async function handleSearchResultNotification(body: any) {
     viewerId,
     viewerName,
     viewerType,
+    'player', // viewerAccountType - يمكن تحسينه لاحقاً
     searchTerm,
     rank
   );
