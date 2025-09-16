@@ -130,7 +130,7 @@ export async function POST(request: Request) {
         createdAt: serverTimestamp(),
         isActive: true
       });
-    } else {
+    } else if (existingConversation.docs[0]) {
       // تحديث المحادثة الموجودة
       const conversationDoc = existingConversation.docs[0];
       conversationRef = conversationDoc.ref;
