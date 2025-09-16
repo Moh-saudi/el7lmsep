@@ -83,7 +83,7 @@ function createSessionData(amount: number, currency: string, merchantReferenceId
                     (process.env['VERCEL_URL'] ? `https://${process.env['VERCEL_URL']}` : 'http://localhost:3000');
   
   const sessionData: any = {
-    amount: parseFloat(amount),
+    amount: amount,
     currency: currency,
     timestamp: timestamp,
     merchantReferenceId: merchantReferenceId,
