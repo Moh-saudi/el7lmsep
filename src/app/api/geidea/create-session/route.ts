@@ -79,8 +79,8 @@ function processPlayersData(players: any[], amount: number, customerEmail: strin
 
 // إنشاء بيانات الجلسة
 function createSessionData(amount: number, currency: string, merchantReferenceId: string, timestamp: string, signature: string) {
-  const appBaseUrl = process.env.NEXT_PUBLIC_BASE_URL || 
-                    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000');
+  const appBaseUrl = process.env['NEXT_PUBLIC_BASE_URL'] || 
+                    (process.env['VERCEL_URL'] ? `https://${process.env['VERCEL_URL']}` : 'http://localhost:3000');
   
   const sessionData: any = {
     amount: parseFloat(amount),
