@@ -324,7 +324,7 @@ export default function EmployeesManagement() {
   
   // التحقق من صلاحيات المستخدم
   const isSystemAdmin = userData?.role === 'admin';
-  const isSupervisor = userData?.role === 'supervisor';
+  const isSupervisor = (userData?.role as string) === 'supervisor';
 
   // تحديث التحكم في الصلاحيات
   const canEditEmployee = (employee: Employee) => {
