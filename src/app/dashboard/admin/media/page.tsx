@@ -1256,6 +1256,11 @@ export default function MediaAdminPage() {
       const bucketName = pathParts[1]; // e.g., 'videos' or 'profile-images'
       const filePath = pathParts.slice(2).join('/'); // e.g., 'userId/filename.mp4'
       
+      if (!bucketName || !filePath) {
+        console.error('خطأ: لم يتم العثور على bucket name أو file path في URL:', url.pathname);
+        return;
+      }
+      
       console.log(`📂 Bucket: ${bucketName}, File Path: ${filePath}`);
       
       // Delete from Supabase Storage
