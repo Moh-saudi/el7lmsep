@@ -111,25 +111,25 @@ export default function EmailMigration() {
             // اقتراح إيميل جديد باستخدام النظام الجديد
             let newEmail = '';
             if (needsUpdate) {
-              if (data.phone) {
+              if (data['phone']) {
                 // استخدام النظام الجديد لإنشاء إيميل قصير
-                const accountType = data.accountType || collectionName.slice(0, -1);
-                const countryCode = data.countryCode || '+20'; // افتراضي لمصر
-                newEmail = generateTypedFirebaseEmail(data.phone, countryCode, accountType);
+                const accountType = data['accountType'] || collectionName.slice(0, -1);
+                const countryCode = data['countryCode'] || '+20'; // افتراضي لمصر
+                newEmail = generateTypedFirebaseEmail(data['phone'], countryCode, accountType);
               } else {
                 // استخدام الاسم لإنشاء إيميل
-                const cleanName = data.name?.toLowerCase().replace(/\s+/g, '').replace(/[^a-zA-Z0-9]/g, '') || 'user';
+                const cleanName = data['name']?.toLowerCase().replace(/\s+/g, '').replace(/[^a-zA-Z0-9]/g, '') || 'user';
                 newEmail = `${cleanName}@el7lm.com`;
               }
             }
 
             allUsers.push({
               id: doc.id,
-              name: data.name || 'غير محدد',
+              name: data['name'] || 'غير محدد',
               currentEmail: email,
               newEmail: newEmail,
-              phone: data.phone,
-              accountType: data.accountType || collectionName.slice(0, -1),
+              phone: data['phone'],
+              accountType: data['accountType'] || collectionName.slice(0, -1),
               needsUpdate: needsUpdate,
               status: 'pending'
             });
