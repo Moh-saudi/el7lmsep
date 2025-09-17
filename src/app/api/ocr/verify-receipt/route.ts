@@ -1,14 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 // دالة مساعدة لإنشاء FormData
-const createFormData = (imageUrl: string | null, imageData: string | null, language: string) => {
+const createFormData = (imageUrl: string | null, imageData: string | null, language: string): FormData | null => {
   const formData = new FormData();
   
   if (imageData) {
     // إذا كانت البيانات مرسلة كـ base64، نحولها إلى blob
     const [mimeType, base64Data] = imageData.split(',');
     if (!base64Data) {
-      return NextResponse.json({ error: 'Invalid image data format' }, { status: 400 });
+      return null;
     }
     const binaryData = atob(base64Data);
     const uint8Array = new Uint8Array(binaryData.length);
@@ -70,6 +70,10 @@ export async function POST(request: NextRequest) {
       console.log('Trying OCR with Arabic language...');
       const arabicFormData = createFormData(imageUrl, imageData, 'ara');
       
+      if (!arabicFormData) {
+        return NextResponse.json({ error: 'Invalid image data format' }, { status: 400 });
+      }
+      
       const arabicResponse = await fetch('https://api.ocr.space/parse/image', {
         method: 'POST',
         headers: {
@@ -97,6 +101,10 @@ export async function POST(request: NextRequest) {
     if (!result || !extractedText.trim()) {
       console.log('Trying OCR with English language...');
       const englishFormData = createFormData(imageUrl, imageData, 'eng');
+      
+      if (!englishFormData) {
+        return NextResponse.json({ error: 'Invalid image data format' }, { status: 400 });
+      }
       
       const englishResponse = await fetch('https://api.ocr.space/parse/image', {
         method: 'POST',
