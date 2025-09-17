@@ -77,7 +77,8 @@ const DEFAULT_PERMISSIONS: Record<EmployeeRole, RolePermissions> = {
     canManageContent: false,
     canManageEmployees: false,
     canViewSupport: true,
-    canManageSupport: true
+    canManageSupport: true,
+    allowedLocations: []
   },
   finance: {
     canViewUsers: true,
@@ -88,7 +89,8 @@ const DEFAULT_PERMISSIONS: Record<EmployeeRole, RolePermissions> = {
     canManageContent: false,
     canManageEmployees: false,
     canViewSupport: false,
-    canManageSupport: false
+    canManageSupport: false,
+    allowedLocations: []
   },
   sales: {
     canViewUsers: true,
@@ -100,7 +102,7 @@ const DEFAULT_PERMISSIONS: Record<EmployeeRole, RolePermissions> = {
     canManageEmployees: false,
     canViewSupport: true,
     canManageSupport: false,
-    allowedRegions: []
+    allowedLocations: []
   },
   content: {
     canViewUsers: false,
@@ -111,7 +113,8 @@ const DEFAULT_PERMISSIONS: Record<EmployeeRole, RolePermissions> = {
     canManageContent: true,
     canManageEmployees: false,
     canViewSupport: false,
-    canManageSupport: false
+    canManageSupport: false,
+    allowedLocations: []
   },
   admin: {
     canViewUsers: true,
@@ -122,7 +125,8 @@ const DEFAULT_PERMISSIONS: Record<EmployeeRole, RolePermissions> = {
     canManageContent: true,
     canManageEmployees: true,
     canViewSupport: true,
-    canManageSupport: true
+    canManageSupport: true,
+    allowedLocations: []
   },
   supervisor: {
     canViewUsers: true,
@@ -133,7 +137,8 @@ const DEFAULT_PERMISSIONS: Record<EmployeeRole, RolePermissions> = {
     canManageContent: true,
     canManageEmployees: false,
     canViewSupport: true,
-    canManageSupport: true
+    canManageSupport: true,
+    allowedLocations: []
   }
 };
 
