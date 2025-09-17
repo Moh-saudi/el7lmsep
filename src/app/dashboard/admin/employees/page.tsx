@@ -1402,7 +1402,7 @@ export default function EmployeesManagement() {
                       <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
                         {employee.avatar ? (
                           <img
-                            src={employee.avatar}
+                            src={employee.avatar.url}
                             alt={employee.name}
                             className="w-10 h-10 rounded-full object-cover"
                           />
