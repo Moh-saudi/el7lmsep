@@ -58,7 +58,7 @@ export async function POST(request: NextRequest) {
         });
         
       case 'clear':
-        clearOTP(phone, source);
+        clearOTP(phone);
         await getOTPStatus();
         return NextResponse.json({ 
           success: true, 
