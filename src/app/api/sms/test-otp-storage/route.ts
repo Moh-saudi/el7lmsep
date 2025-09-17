@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
             { status: 400 }
           );
         }
-        const storedOTP = getOTP(phoneNumber);
+        const storedOTP = await getOTP(phoneNumber);
         return NextResponse.json({
           success: true,
           found: !!storedOTP,
@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
         });
 
       case 'status':
-        getOTPStatus();
+        await getOTPStatus();
         return NextResponse.json({
           success: true,
           message: 'OTP storage status logged to console'
