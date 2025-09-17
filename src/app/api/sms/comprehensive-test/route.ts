@@ -45,8 +45,8 @@ async function testStorage(phone: string, otp: string, source: 'whatsapp' | 'sms
   storeOTP(phone, otp, source);
   
   // فحص التخزين الفوري
-  const storedOTP = getOTPBySource(phone, source);
-  const generalOTP = getOTP(phone);
+  const storedOTP = await getOTPBySource(phone, source);
+  const generalOTP = await getOTP(phone);
   
   return NextResponse.json({
     success: true,
@@ -72,9 +72,9 @@ async function testStorage(phone: string, otp: string, source: 'whatsapp' | 'sms
 async function testRetrieval(phone: string) {
   console.log('🔍 Testing retrieval for:', phone);
   
-  const whatsappOTP = getOTPBySource(phone, 'whatsapp');
-  const smsOTP = getOTPBySource(phone, 'sms');
-  const generalOTP = getOTP(phone);
+  const whatsappOTP = await getOTPBySource(phone, 'whatsapp');
+  const smsOTP = await getOTPBySource(phone, 'sms');
+  const generalOTP = await getOTP(phone);
   
   return NextResponse.json({
     success: true,
@@ -108,17 +108,17 @@ async function testClear(phone: string) {
   console.log('🗑️ Testing clear for:', phone);
   
   const beforeClear = {
-    whatsapp: getOTPBySource(phone, 'whatsapp'),
-    sms: getOTPBySource(phone, 'sms'),
-    general: getOTP(phone)
+    whatsapp: await getOTPBySource(phone, 'whatsapp'),
+    sms: await getOTPBySource(phone, 'sms'),
+    general: await getOTP(phone)
   };
   
   clearOTP(phone);
   
   const afterClear = {
-    whatsapp: getOTPBySource(phone, 'whatsapp'),
-    sms: getOTPBySource(phone, 'sms'),
-    general: getOTP(phone)
+    whatsapp: await getOTPBySource(phone, 'whatsapp'),
+    sms: await getOTPBySource(phone, 'sms'),
+    general: await getOTP(phone)
   };
   
   return NextResponse.json({
@@ -159,8 +159,8 @@ async function fullTest(phone: string, otp: string, source: 'whatsapp' | 'sms') 
   storeOTP(phone, otp, source);
   
   // 3. فحص التخزين
-  const storedOTP = getOTPBySource(phone, source);
-  const generalOTP = getOTP(phone);
+  const storedOTP = await getOTPBySource(phone, source);
+  const generalOTP = await getOTP(phone);
   
   // 4. محاكاة التحقق
   const verificationResult = storedOTP && storedOTP.otp === otp;
@@ -168,7 +168,7 @@ async function fullTest(phone: string, otp: string, source: 'whatsapp' | 'sms') 
   // 5. مسح OTP
   clearOTP(phone);
   
-  const afterClear = getOTP(phone);
+  const afterClear = await getOTP(phone);
   
   return NextResponse.json({
     success: true,
