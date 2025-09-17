@@ -208,6 +208,38 @@ export class BeOnSMSService {
     const otp = this.generateOTP();
     return this.sendOTPPlain(phoneNumber, otp, name);
   }
+
+  /**
+   * تنسيق رقم الهاتف
+   * Format phone number
+   */
+  formatPhoneNumber(phone: string): string {
+    // إزالة كل الأحرف غير الرقمية ما عدا +
+    let cleaned = phone.replace(/[^\d+]/g, '');
+    
+    // إذا لم يبدأ بـ +، نضيف 966
+    if (!cleaned.startsWith('+')) {
+      if (cleaned.startsWith('966')) {
+        cleaned = '+' + cleaned;
+      } else if (cleaned.startsWith('0')) {
+        cleaned = '+966' + cleaned.substring(1);
+      } else {
+        cleaned = '+966' + cleaned;
+      }
+    }
+    
+    return cleaned;
+  }
+
+  /**
+   * التحقق من صحة رقم الهاتف
+   * Validate phone number
+   */
+  validatePhoneNumber(phone: string): boolean {
+    // التحقق من أن الرقم يبدأ بـ +966 ويحتوي على 9 أرقام إضافية
+    const saudiPhoneRegex = /^\+966[0-9]{9}$/;
+    return saudiPhoneRegex.test(phone);
+  }
 }
 
 // Export singleton instance
