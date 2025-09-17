@@ -579,7 +579,7 @@ export default function EmployeesManagement() {
     role: 'support',
     isActive: true,
     department: '',
-    regions: []
+    locations: []
   });
 
   // إضافة state للنافذة المنبثقة لبيانات الدخول
