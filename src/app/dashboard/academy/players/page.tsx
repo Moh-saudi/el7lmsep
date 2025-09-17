@@ -803,9 +803,6 @@ export default function AcademyPlayersPage() {
                           <CreateLoginAccountButton
                             playerId={player.id}
                             playerData={{
-                              name: player.name || player.full_name,
-                              email: player.email,
-                              phone: player.phone,
                               academy_id: player.academy_id || user?.uid,
                               ...player
                             }}
@@ -818,10 +815,6 @@ export default function AcademyPlayersPage() {
                           <IndependentAccountCreator
                             playerId={player.id}
                             playerData={{
-                              name: player.name || player.full_name,
-                              email: player.email,
-                              phone: player.phone,
-                              whatsapp: player.whatsapp,
                               academy_id: player.academy_id || user?.uid,
                               ...player
                             }}
@@ -956,8 +949,8 @@ export default function AcademyPlayersPage() {
                       <td className="px-6 py-4 text-sm font-medium whitespace-nowrap">
                         <div className="flex gap-2">
                           <Link href={`/dashboard/academy/players/add?edit=${player.id}`}><Button variant="outline" size="sm" className="text-green-600 hover:bg-green-50" title="تعديل البيانات"><Edit className="w-4 h-4" /></Button></Link>
-                          <CreateLoginAccountButton playerId={player.id} playerData={{ name: player.name || player.full_name, email: player.email, phone: player.phone, academy_id: (player as any).academy_id || user?.uid, ...player }} source="players" onSuccess={(password) => { console.log(`تم إنشاء حساب للاعب ${player.full_name || player.name} بكلمة المرور: ${password}`); }} />
-                          <IndependentAccountCreator playerId={player.id} playerData={{ name: player.name || player.full_name, email: player.email, phone: player.phone, whatsapp: (player as any).whatsapp, academy_id: (player as any).academy_id || user?.uid, ...player }} source="players" variant="outline" size="sm" className="text-purple-600 hover:bg-purple-50" />
+                          <CreateLoginAccountButton playerId={player.id} playerData={{ academy_id: (player as any).academy_id || user?.uid, ...player }} source="players" onSuccess={(password) => { console.log(`تم إنشاء حساب للاعب ${player.full_name || player.name} بكلمة المرور: ${password}`); }} />
+                          <IndependentAccountCreator playerId={player.id} playerData={{ academy_id: (player as any).academy_id || user?.uid, ...player }} source="players" variant="outline" size="sm" className="text-purple-600 hover:bg-purple-50" />
                           <Button variant="outline" size="sm" onClick={() => handleDeletePlayer(player)} className="text-red-600 hover:bg-red-50" title="حذف اللاعب"><Trash2 className="w-4 h-4" /></Button>
                         </div>
                       </td>
