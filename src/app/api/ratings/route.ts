@@ -35,7 +35,7 @@ export async function GET(request: Request) {
       );
       
       const snapshot = await getDocs(userRatingQuery);
-      const userRating = snapshot.empty ? null : {
+      const userRating = snapshot.empty || !snapshot.docs[0] ? null : {
         id: snapshot.docs[0].id,
         ...snapshot.docs[0].data()
       };
