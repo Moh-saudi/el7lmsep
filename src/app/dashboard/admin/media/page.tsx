@@ -732,8 +732,8 @@ export default function MediaAdminPage() {
       const collectionName = selectedMedia.accountType === 'student' ? 'students' : 
                            selectedMedia.accountType === 'coach' ? 'coaches' : 'academies';
       
-      if (!userId) {
-        console.error('خطأ: لم يتم العثور على معرف المستخدم');
+      if (!userId || !itemIndex) {
+        console.error('خطأ: لم يتم العثور على معرف المستخدم أو فهرس الوسائط');
         return;
       }
       
@@ -1092,8 +1092,8 @@ export default function MediaAdminPage() {
       const [userId, mediaIndex] = media.id.split('_');
       const isImage = media.id.includes('img');
       
-      if (!userId) {
-        console.error('خطأ: لم يتم العثور على معرف المستخدم في media.id:', media.id);
+      if (!userId || !mediaIndex) {
+        console.error('خطأ: لم يتم العثور على معرف المستخدم أو فهرس الوسائط في media.id:', media.id);
         return;
       }
       
