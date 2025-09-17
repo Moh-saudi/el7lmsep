@@ -64,13 +64,13 @@ export async function getOTP(phone: string): Promise<any | undefined> {
   console.log('📋 Found OTP data:', { ...data, otp: '***' });
   
   // التحقق من انتهاء الصلاحية (5 دقائق)
-  const age = Date.now() - data.timestamp;
+  const age = Date.now() - data['timestamp'];
   const maxAge = 5 * 60 * 1000;
   
   if (age > maxAge) {
     console.log('⏰ OTP expired. Age:', age, 'ms');
     await db.collection('otps').doc(normalizedPhone).update({ expired: true });
-    data.expired = true;
+    data['expired'] = true;
   }
   
   return data;
@@ -95,19 +95,19 @@ export async function getOTPBySource(phone: string, source: 'whatsapp' | 'sms'):
     return undefined;
   }
   
-  if (data.source !== source) {
-    console.log('❌ OTP source mismatch. Expected:', source, 'Found:', data.source);
+  if (data['source'] !== source) {
+    console.log('❌ OTP source mismatch. Expected:', source, 'Found:', data['source']);
     return undefined;
   }
   
   // التحقق من انتهاء الصلاحية (5 دقائق)
-  const age = Date.now() - data.timestamp;
+  const age = Date.now() - data['timestamp'];
   const maxAge = 5 * 60 * 1000;
   
   if (age > maxAge) {
     console.log('⏰ OTP expired. Age:', age, 'ms');
     await db.collection('otps').doc(normalizedPhone).update({ expired: true });
-    data.expired = true;
+    data['expired'] = true;
   }
   
   return data;
@@ -146,7 +146,7 @@ export async function incrementAttempts(phone: string): Promise<void> {
       return;
     }
     
-    const attempts = (data.attempts || 0) + 1;
+    const attempts = (data['attempts'] || 0) + 1;
     console.log('📊 New attempts count:', attempts);
     
     t.update(docRef, { 
