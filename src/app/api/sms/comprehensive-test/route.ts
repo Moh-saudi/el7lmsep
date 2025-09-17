@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('❌ Comprehensive test error:', error);
     return NextResponse.json(
-      { success: false, error: 'Test failed', details: error.message },
+      { success: false, error: 'Test failed', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     );
   }
