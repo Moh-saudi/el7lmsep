@@ -1178,19 +1178,19 @@ export default function MediaAdminPage() {
         
         // Check different image fields
         if (userData['additional_images'] && userData['additional_images'][imageIndex]) {
-          updatedData.additional_images = userData['additional_images'].filter((_: any, index: number) => index !== imageIndex);
+          updatedData['additional_images'] = userData['additional_images'].filter((_: any, index: number) => index !== imageIndex);
           console.log('🖼️ حذف صورة إضافية من الفهرس:', imageIndex);
           imageDeleted = true;
         } else if (userData['images'] && userData['images'][imageIndex]) {
-          updatedData.images = userData['images'].filter((_: any, index: number) => index !== imageIndex);
+          updatedData['images'] = userData['images'].filter((_: any, index: number) => index !== imageIndex);
           console.log('🖼️ حذف صورة من الفهرس:', imageIndex);
           imageDeleted = true;
         } else if (userData['profile_image'] && imageIndex === 0) {
-          updatedData.profile_image = null;
+          updatedData['profile_image'] = null;
           console.log('🖼️ حذف الصورة الشخصية');
           imageDeleted = true;
         } else if (userData['cover_image'] && imageIndex === 0) {
-          updatedData.cover_image = null;
+          updatedData['cover_image'] = null;
           console.log('🖼️ حذف صورة الغلاف');
           imageDeleted = true;
         }
@@ -1215,7 +1215,7 @@ export default function MediaAdminPage() {
         });
         
         if (userData['videos'] && userData['videos'][videoIndex]) {
-          updatedData.videos = userData['videos'].filter((_: any, index: number) => index !== videoIndex);
+          updatedData['videos'] = userData['videos'].filter((_: any, index: number) => index !== videoIndex);
           console.log('🎥 حذف فيديو من الفهرس:', videoIndex);
         } else {
           console.warn('⚠️ لم يتم العثور على الفيديو للحذف:', {
