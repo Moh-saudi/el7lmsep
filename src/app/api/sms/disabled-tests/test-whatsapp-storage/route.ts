@@ -1,9 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-<<<<<<< HEAD
 import { storeOTP, getOTP, getOTPBySource, getOTPStatus } from '../../otp-storage';
-=======
-import { storeOTP, getOTP, getOTPBySource, getOTPStatus } from '../otp-storage';
->>>>>>> 4fd1f89c5176de586b34609dd3d584ad2f178bd9
 
 export async function POST(request: NextRequest) {
   try {
