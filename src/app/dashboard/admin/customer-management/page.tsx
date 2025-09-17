@@ -368,6 +368,9 @@ export default function CustomerManagementPage() {
         } else if (file.name.endsWith('.xlsx') || file.name.endsWith('.xls')) {
           const workbook = XLSX.read(data, { type: 'binary' });
           const sheetName = workbook.SheetNames[0];
+          if (!sheetName) {
+            throw new Error('لا توجد أوراق عمل في الملف');
+          }
           const worksheet = workbook.Sheets[sheetName];
           const jsonData = XLSX.utils.sheet_to_json(worksheet);
           setUploadProgress(80);
