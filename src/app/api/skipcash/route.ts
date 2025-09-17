@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import * as cryptojs from 'crypto-js';
 
 const paymentGatewayDetails = {
   sandboxURL: process.env.SKIPCASH_SANDBOX_URL || 'https://skipcashtest.azurewebsites.net',
