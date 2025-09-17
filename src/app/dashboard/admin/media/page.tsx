@@ -382,7 +382,7 @@ export default function MediaAdminPage() {
 
   // Watch users status changes and hide/cleanup media for disabled/deleted users
   useEffect(() => {
-    if (!user || !userData || userData.role !== 'admin') return;
+    if (!user || !userData || userData['role'] !== 'admin') return;
     const collections = ['students', 'coaches', 'academies', 'players'];
     const unsubs: (() => void)[] = [];
     const currentDisabled = new Set<string>();
@@ -414,7 +414,7 @@ export default function MediaAdminPage() {
   // Fetch Videos
   useEffect(() => {
     const fetchVideos = async () => {
-      if (!user || !userData || userData.role !== 'admin') {
+      if (!user || !userData || userData['role'] !== 'admin') {
         setLoading(false);
         return;
       }
@@ -477,12 +477,12 @@ export default function MediaAdminPage() {
     };
 
     fetchVideos();
-  }, [user?.uid, userData?.role]);
+  }, [user?.uid, userData?.['role']]);
 
   // Fetch Images
   useEffect(() => {
     const fetchImages = async () => {
-      if (!user || !userData || userData.role !== 'admin') return;
+      if (!user || !userData || userData['role'] !== 'admin') return;
       
       setImagesLoading(true);
       const allImages: ImageData[] = [];
@@ -583,8 +583,8 @@ export default function MediaAdminPage() {
                       thumbnailUrl: imageThumbnailUrl,
                       uploadDate: image.uploadDate || image.createdAt || image.updated_at || new Date(),
                       userId: doc.id,
-                      userEmail: userData.email || userData.userEmail || '',
-                      userName: userData.full_name || userData.name || userData.userName || 'مستخدم',
+                      userEmail: userData['email'] || userData['userEmail'] || '',
+                      userName: userData['full_name'] || userData['name'] || userData['userName'] || 'مستخدم',
                       accountType: getAccountTypeFromCollection(collectionName),
                       status: image.status || 'pending',
                       views: image.views || 0,
@@ -625,7 +625,7 @@ export default function MediaAdminPage() {
     };
 
     fetchImages();
-  }, [user?.uid, userData?.role, fetchSupabaseImages]);
+  }, [user?.uid, userData?.['role'], fetchSupabaseImages]);
 
   // Get current media data based on active tab
   const currentMediaData = activeTab === 'videos' ? videos : images;
@@ -1605,7 +1605,7 @@ export default function MediaAdminPage() {
     );
   }
 
-  if (!userData || userData.role !== 'admin') {
+  if (!userData || userData['role'] !== 'admin') {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
@@ -1614,7 +1614,7 @@ export default function MediaAdminPage() {
           </div>
           <h3 className="text-lg font-semibold text-gray-900 mb-2">غير مصرح لك بالوصول</h3>
           <p className="text-gray-600">هذه الصفحة مخصصة للمديرين فقط</p>
-          <p className="text-sm text-gray-500 mt-2">دورك الحالي: {userData?.role || 'غير محدد'}</p>
+          <p className="text-sm text-gray-500 mt-2">دورك الحالي: {userData?.['role'] || 'غير محدد'}</p>
         </div>
       </div>
     );
