@@ -1378,7 +1378,10 @@ export default function CustomerManagementPage() {
                                {getLastActionInfo(customer).text}
                              </div>
                              <div className="text-xs text-gray-500">
-                               {getLastActionInfo(customer).date ? formatDateTime(getLastActionInfo(customer).date) : 'غير محدد'}
+                               {(() => {
+                                 const lastAction = getLastActionInfo(customer);
+                                 return lastAction.date ? formatDateTime(lastAction.date) : 'غير محدد';
+                               })()}
                              </div>
                            </div>
                          </td>
