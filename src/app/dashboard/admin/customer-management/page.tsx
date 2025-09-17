@@ -372,6 +372,9 @@ export default function CustomerManagementPage() {
             throw new Error('لا توجد أوراق عمل في الملف');
           }
           const worksheet = workbook.Sheets[sheetName];
+          if (!worksheet) {
+            throw new Error('لا يمكن العثور على ورقة العمل المحددة');
+          }
           const jsonData = XLSX.utils.sheet_to_json(worksheet);
           setUploadProgress(80);
           setUploadMessage('جاري حفظ البيانات...');
