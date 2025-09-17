@@ -52,12 +52,14 @@ export default function ClarityAdminPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <Alert variant="destructive">
-              <AlertCircle className="h-4 w-4" />
-              <AlertDescription>
-                ليس لديك صلاحية للوصول إلى هذه الصفحة. هذه الصفحة مخصصة للمشرفين فقط.
-              </AlertDescription>
-            </Alert>
+            <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
+              <div className="flex items-start gap-3">
+                <AlertCircle className="h-4 w-4 text-red-600 mt-0.5" />
+                <div className="text-red-800">
+                  ليس لديك صلاحية للوصول إلى هذه الصفحة. هذه الصفحة مخصصة للمشرفين فقط.
+                </div>
+              </div>
+            </div>
           </CardContent>
         </Card>
       </div>
