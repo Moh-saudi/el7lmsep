@@ -1226,7 +1226,7 @@ export default function EmployeesManagement() {
       if (!acc[loc.countryName]) {
         acc[loc.countryName] = [];
       }
-      acc[loc.countryName].push(loc.cityName);
+      acc[loc.countryName]?.push(loc.cityName);
       return acc;
     }, {} as Record<string, string[]>);
 
