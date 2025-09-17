@@ -8,7 +8,7 @@ import PublicResponsiveLayoutWrapper from '@/components/layout/PublicResponsiveL
 function ApplyForm() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const roleFromQuery = searchParams.get('role') || '';
+  const roleFromQuery = searchParams?.get('role') || '';
 // نستخدم API route لضمان إنشاء إشعار للإدارة
 
   const [form, setForm] = useState({
