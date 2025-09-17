@@ -31,7 +31,7 @@ export default function InvoiceDetailsPage() {
     const load = async () => {
       try {
         setLoading(true);
-        const snap = await getDoc(doc(db, 'invoices', params.id));
+        const snap = await getDoc(doc(db, 'invoices', params?.id || ''));
         if (!snap.exists()) {
           router.push('/dashboard/admin/invoices');
           return;
