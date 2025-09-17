@@ -187,7 +187,7 @@ export default function MediaAdminPage() {
       if (files && files.length > 0) {
         for (const file of files) {
           if (file.name && file.name.includes('/')) {
-            const userId = file.name.split('/')[0];
+            const userId = file.name.split('/')[0] || 'unknown';
             const { data: urlData } = supabase.storage
               .from(STORAGE_BUCKETS.VIDEOS)
               .getPublicUrl(file.name);
