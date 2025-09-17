@@ -147,7 +147,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('❌ Error getting smart notifications:', error);
     return NextResponse.json(
-      { error: 'Failed to get smart notifications', details: error.message },
+      { error: 'Failed to get smart notifications', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     );
   }
