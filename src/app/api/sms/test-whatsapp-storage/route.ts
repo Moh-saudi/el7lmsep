@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { storeOTP, getOTP, getOTPStatus } from '../otp-storage';
+import { storeOTP, getOTP, getOTPBySource, getOTPStatus } from '../otp-storage';
 
 export async function POST(request: NextRequest) {
   try {
@@ -20,11 +20,11 @@ export async function POST(request: NextRequest) {
     console.log('💾 Test OTP stored for WhatsApp');
 
     // فحص التخزين
-    getOTPStatus();
+    await getOTPStatus();
 
     // محاولة استرجاع OTP
-    const retrievedOTP = getOTP(phone);
-    const whatsappOTP = getOTPBySource(phone, 'whatsapp');
+    const retrievedOTP = await getOTP(phone);
+    const whatsappOTP = await getOTPBySource(phone, 'whatsapp');
 
     return NextResponse.json({
       success: true,
