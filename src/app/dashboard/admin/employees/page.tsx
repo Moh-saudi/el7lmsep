@@ -332,7 +332,7 @@ export default function EmployeesManagement() {
     if (isSupervisor) {
       // المشرف يمكنه تعديل الموظفين في نفس المناطق فقط
       return employee.locations?.some(loc => 
-        userData?.permissions?.['allowedLocations']?.some(allowed => 
+        userData?.permissions?.['allowedLocations']?.some((allowed: any) => 
           allowed.countryId === loc.countryId && allowed.cityId === loc.cityId
         )
       );
