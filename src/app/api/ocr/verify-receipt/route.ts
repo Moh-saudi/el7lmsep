@@ -144,8 +144,12 @@ export async function POST(request: NextRequest) {
       
       let convertedText = text;
       for (let i = 0; i < arabicNumerals.length; i++) {
-        const arabicRegex = new RegExp(arabicNumerals[i], 'g');
-        convertedText = convertedText.replace(arabicRegex, englishNumerals[i]);
+        const arabicChar = arabicNumerals[i];
+        const englishChar = englishNumerals[i];
+        if (arabicChar && englishChar) {
+          const arabicRegex = new RegExp(arabicChar, 'g');
+          convertedText = convertedText.replace(arabicRegex, englishChar);
+        }
       }
       return convertedText;
     };
