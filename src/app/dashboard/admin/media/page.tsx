@@ -732,6 +732,11 @@ export default function MediaAdminPage() {
       const collectionName = selectedMedia.accountType === 'student' ? 'students' : 
                            selectedMedia.accountType === 'coach' ? 'coaches' : 'academies';
       
+      if (!userId) {
+        console.error('خطأ: لم يتم العثور على معرف المستخدم');
+        return;
+      }
+      
       const userRef = doc(db, collectionName, userId);
       const userDoc = await getDoc(userRef);
       
@@ -1086,6 +1091,11 @@ export default function MediaAdminPage() {
       // Parse media ID to get user ID and media index
       const [userId, mediaIndex] = media.id.split('_');
       const isImage = media.id.includes('img');
+      
+      if (!userId) {
+        console.error('خطأ: لم يتم العثور على معرف المستخدم في media.id:', media.id);
+        return;
+      }
       
       console.log('🔍 تحليل معرف الوسائط:', {
         userId,
