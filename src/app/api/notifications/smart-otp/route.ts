@@ -89,17 +89,25 @@ async function checkExistingOTP(phone: string) {
 async function sendSmartOTP(phone: string, name: string, country: string, countryCode: string) {
   console.log('📱 Attempting to send Smart OTP to:', phone);
   
-  // محاولة إرسال OTP ذكي
-  let smsResult = await beonSMSService.sendSmartOTP(phone, name, country, countryCode);
+  // توليد OTP
+  const otp = generateOTP();
   
-  // إذا فشل، جرب الطريقة البديلة
-  if (!smsResult.success) {
-    console.log('📱 Smart OTP failed, trying fallback method...');
-    const otp = beonSMSService.generateOTP();
-    smsResult = await beonSMSService.sendOTPPlain(phone, otp, name);
-  }
+  // إنشاء رسالة OTP
+  const message = `مرحباً ${name}، رمز التحقق الخاص بك هو: ${otp}. لا تشارك هذا الرمز مع أي شخص.`;
   
-  return smsResult;
+  // إرسال SMS باستخدام الخدمة المتاحة
+  const smsResult = await beonSMSService.sendSingleSMS(phone, message);
+  
+  // إضافة OTP للنتيجة
+  return {
+    ...smsResult,
+    otp: smsResult.success ? otp : undefined
+  };
+}
+
+// توليد OTP
+function generateOTP(): string {
+  return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
 // معالجة OTP المرسل

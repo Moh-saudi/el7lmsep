@@ -182,6 +182,32 @@ export class BeOnSMSService {
       };
     }
   }
+
+  /**
+   * توليد رمز OTP
+   * Generate OTP code
+   */
+  generateOTP(): string {
+    return Math.floor(100000 + Math.random() * 900000).toString();
+  }
+
+  /**
+   * إرسال OTP عادي
+   * Send plain OTP
+   */
+  async sendOTPPlain(phoneNumber: string, otp: string, name: string): Promise<BeOnResponse> {
+    const message = `مرحباً ${name}، رمز التحقق الخاص بك هو: ${otp}. لا تشارك هذا الرمز مع أي شخص.`;
+    return this.sendSingleSMS(phoneNumber, message);
+  }
+
+  /**
+   * إرسال OTP جديد
+   * Send new OTP
+   */
+  async sendOTPNew(phoneNumber: string, name: string, length: number = 6, language: string = 'ar'): Promise<BeOnResponse> {
+    const otp = this.generateOTP();
+    return this.sendOTPPlain(phoneNumber, otp, name);
+  }
 }
 
 // Export singleton instance
