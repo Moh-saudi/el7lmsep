@@ -279,11 +279,11 @@ export default function MediaAdminPage() {
             
             // استخراج معرف المستخدم من اسم الملف
             if (file.name.includes('/')) {
-              userId = file.name.split('/')[0];
+              userId = file.name.split('/')[0] || 'unknown';
               userName = `مستخدم ${userId}`;
             } else if (file.name.includes('.')) {
               // ملفات مثل userId.jpg
-              userId = file.name.split('.')[0];
+              userId = file.name.split('.')[0] || 'unknown';
               userName = `مستخدم ${userId}`;
             }
 
