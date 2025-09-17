@@ -1176,7 +1176,7 @@ export default function EmployeesManagement() {
       const employeeDoc = await getDoc(doc(db, 'employees', employeeId));
       const employeeData = employeeDoc.data();
 
-      if (employeeData?.authUserId) {
+      if (employeeData?.['authUserId']) {
         // حذف حساب المصادقة إذا كان موجوداً
         try {
           // Note: Deleting Firebase Auth users requires Admin SDK
