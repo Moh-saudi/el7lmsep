@@ -391,7 +391,7 @@ export default function MediaAdminPage() {
       const unsub = onSnapshot(collection(db, collectionName), (snap) => {
         snap.forEach((d) => {
           const u = d.data() as any;
-          const isDisabled = u?.isDeleted === true || u?.isActive === false;
+          const isDisabled = u?.['isDeleted'] === true || u?.['isActive'] === false;
           if (isDisabled) {
             currentDisabled.add(d.id);
             // Trigger cleanup once per user
@@ -431,8 +431,8 @@ export default function MediaAdminPage() {
             
           querySnapshot.forEach((doc) => {
             const userData = doc.data();
-            if (userData?.isDeleted === true) return;
-            const userVideos = userData.videos || [];
+            if (userData?.['isDeleted'] === true) return;
+            const userVideos = userData['videos'] || [];
               
             userVideos.forEach((video: any, index: number) => {
               if (video && video.url) {
@@ -445,14 +445,14 @@ export default function MediaAdminPage() {
                   duration: video.duration || 0,
                   uploadDate: video.uploadDate || video.createdAt || video.updated_at || new Date(),
                   userId: doc.id,
-                  userEmail: userData.email || userData.userEmail || '',
-                  userName: userData.full_name || userData.name || userData.userName || 'مستخدم',
+                  userEmail: userData['email'] || userData['userEmail'] || '',
+                  userName: userData['full_name'] || userData['name'] || userData['userName'] || 'مستخدم',
                   accountType: getAccountTypeFromCollection(collectionName),
                   status: video.status || 'pending',
                   views: video.views || 0,
                   likes: video.likes || 0,
                   comments: video.comments || 0,
-                  phone: userData.phone || userData.phoneNumber || '',
+                  phone: userData['phone'] || userData['phoneNumber'] || '',
                   sourceType: getVideoSourceType(video.url)
                 };
                 allVideos.push(videoData);
@@ -500,7 +500,7 @@ export default function MediaAdminPage() {
             
           querySnapshot.forEach((doc) => {
             const userData = doc.data();
-            if (userData?.isDeleted === true) return;
+            if (userData?.['isDeleted'] === true) return;
             
             // البحث في حقول مختلفة للصور
             const imageFields = [
@@ -542,14 +542,14 @@ export default function MediaAdminPage() {
                   thumbnailUrl: imageThumbnailUrl,
                   uploadDate: fieldData.uploadDate || fieldData.createdAt || new Date(),
                   userId: doc.id,
-                  userEmail: userData.email || userData.userEmail || '',
-                  userName: userData.full_name || userData.name || userData.userName || 'مستخدم',
+                  userEmail: userData['email'] || userData['userEmail'] || '',
+                  userName: userData['full_name'] || userData['name'] || userData['userName'] || 'مستخدم',
                   accountType: getAccountTypeFromCollection(collectionName),
                   status: fieldData.status || 'pending',
                   views: fieldData.views || 0,
                   likes: fieldData.likes || 0,
                   comments: fieldData.comments || 0,
-                  phone: userData.phone || userData.phoneNumber || '',
+                  phone: userData['phone'] || userData['phoneNumber'] || '',
                   sourceType: 'firebase' as const,
                   imageType: getImageType(fieldName)
                 };
@@ -590,7 +590,7 @@ export default function MediaAdminPage() {
                       views: image.views || 0,
                       likes: image.likes || 0,
                       comments: image.comments || 0,
-                      phone: userData.phone || userData.phoneNumber || '',
+                      phone: userData['phone'] || userData['phoneNumber'] || '',
                       sourceType: 'firebase' as const,
                       imageType: getImageType(fieldName)
                     };
@@ -737,7 +737,7 @@ export default function MediaAdminPage() {
       
       if (userDoc.exists()) {
         const userData = userDoc.data();
-        const mediaArray = isImage ? (userData.images || []) : (userData.videos || []);
+        const mediaArray = isImage ? (userData['images'] || []) : (userData['videos'] || []);
         const realIndex = parseInt(itemIndex.replace('img_', ''));
         
         if (mediaArray[realIndex]) {
@@ -1140,12 +1140,12 @@ export default function MediaAdminPage() {
 
       const userData = userDoc.data();
       console.log('📄 بيانات المستخدم الموجودة:', {
-        hasVideos: !!userData.videos,
-        videosCount: userData.videos?.length || 0,
-        hasAdditionalImages: !!userData.additional_images,
-        additionalImagesCount: userData.additional_images?.length || 0,
-        hasProfileImage: !!userData.profile_image,
-        hasCoverImage: !!userData.cover_image
+        hasVideos: !!userData['videos'],
+        videosCount: userData['videos']?.length || 0,
+        hasAdditionalImages: !!userData['additional_images'],
+        additionalImagesCount: userData['additional_images']?.length || 0,
+        hasProfileImage: !!userData['profile_image'],
+        hasCoverImage: !!userData['cover_image']
       });
       
       let updatedData = { ...userData };
@@ -1156,30 +1156,30 @@ export default function MediaAdminPage() {
         console.log('🖼️ معالجة حذف الصورة:', {
           imageIndex,
           mediaIndex,
-          hasAdditionalImages: !!userData.additional_images,
-          additionalImagesLength: userData.additional_images?.length || 0,
-          hasImages: !!userData.images,
-          imagesLength: userData.images?.length || 0,
-          hasProfileImage: !!userData.profile_image,
-          hasCoverImage: !!userData.cover_image
+          hasAdditionalImages: !!userData['additional_images'],
+          additionalImagesLength: userData['additional_images']?.length || 0,
+          hasImages: !!userData['images'],
+          imagesLength: userData['images']?.length || 0,
+          hasProfileImage: !!userData['profile_image'],
+          hasCoverImage: !!userData['cover_image']
         });
         
         let imageDeleted = false;
         
         // Check different image fields
-        if (userData.additional_images && userData.additional_images[imageIndex]) {
-          updatedData.additional_images = userData.additional_images.filter((_: any, index: number) => index !== imageIndex);
+        if (userData['additional_images'] && userData['additional_images'][imageIndex]) {
+          updatedData.additional_images = userData['additional_images'].filter((_: any, index: number) => index !== imageIndex);
           console.log('🖼️ حذف صورة إضافية من الفهرس:', imageIndex);
           imageDeleted = true;
-        } else if (userData.images && userData.images[imageIndex]) {
-          updatedData.images = userData.images.filter((_: any, index: number) => index !== imageIndex);
+        } else if (userData['images'] && userData['images'][imageIndex]) {
+          updatedData.images = userData['images'].filter((_: any, index: number) => index !== imageIndex);
           console.log('🖼️ حذف صورة من الفهرس:', imageIndex);
           imageDeleted = true;
-        } else if (userData.profile_image && imageIndex === 0) {
+        } else if (userData['profile_image'] && imageIndex === 0) {
           updatedData.profile_image = null;
           console.log('🖼️ حذف الصورة الشخصية');
           imageDeleted = true;
-        } else if (userData.cover_image && imageIndex === 0) {
+        } else if (userData['cover_image'] && imageIndex === 0) {
           updatedData.cover_image = null;
           console.log('🖼️ حذف صورة الغلاف');
           imageDeleted = true;
@@ -1188,10 +1188,10 @@ export default function MediaAdminPage() {
         if (!imageDeleted) {
           console.warn('⚠️ لم يتم العثور على الصورة للحذف:', {
             imageIndex,
-            availableAdditionalImages: userData.additional_images?.length || 0,
-            availableImages: userData.images?.length || 0,
-            hasProfileImage: !!userData.profile_image,
-            hasCoverImage: !!userData.cover_image
+            availableAdditionalImages: userData['additional_images']?.length || 0,
+            availableImages: userData['images']?.length || 0,
+            hasProfileImage: !!userData['profile_image'],
+            hasCoverImage: !!userData['cover_image']
           });
         }
       } else {
@@ -1200,17 +1200,17 @@ export default function MediaAdminPage() {
         console.log('🎥 معالجة حذف الفيديو:', {
           videoIndex,
           mediaIndex,
-          hasVideos: !!userData.videos,
-          videosLength: userData.videos?.length || 0
+          hasVideos: !!userData['videos'],
+          videosLength: userData['videos']?.length || 0
         });
         
-        if (userData.videos && userData.videos[videoIndex]) {
-          updatedData.videos = userData.videos.filter((_: any, index: number) => index !== videoIndex);
+        if (userData['videos'] && userData['videos'][videoIndex]) {
+          updatedData.videos = userData['videos'].filter((_: any, index: number) => index !== videoIndex);
           console.log('🎥 حذف فيديو من الفهرس:', videoIndex);
         } else {
           console.warn('⚠️ لم يتم العثور على الفيديو للحذف:', {
             videoIndex,
-            availableVideos: userData.videos?.length || 0
+            availableVideos: userData['videos']?.length || 0
           });
         }
       }
