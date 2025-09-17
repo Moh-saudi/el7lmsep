@@ -187,7 +187,7 @@ export async function POST(request: Request) {
       updatedAt: serverTimestamp()
     };
 
-    if (!existingRating.empty) {
+    if (!existingRating.empty && existingRating.docs[0]) {
       // تحديث التقييم الموجود
       const ratingDoc = existingRating.docs[0];
       await updateDoc(ratingDoc.ref, baseRatingData);
