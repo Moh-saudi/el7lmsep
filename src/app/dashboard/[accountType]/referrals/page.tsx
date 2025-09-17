@@ -121,7 +121,7 @@ const ACCOUNT_TYPE_INFO = {
 export default function SharedReferralsPage() {
   const { user, userData } = useAuth();
   const params = useParams();
-  const accountType = params?.accountType as string;
+  const accountType = params?.['accountType'] as string;
   
   const [loading, setLoading] = useState(true);
   const [playerRewards, setPlayerRewards] = useState<PlayerRewards | null>(null);
