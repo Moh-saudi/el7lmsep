@@ -357,7 +357,7 @@ export default function CustomerManagementPage() {
               setUploadMessage('جاري حفظ البيانات...');
               processFileData(results.data);
             },
-            error: (error) => {
+            error: (error: any) => {
               console.error('Error reading CSV file:', error);
               setUploadMessage('خطأ في قراءة ملف CSV');
               setIsUploading(false);
