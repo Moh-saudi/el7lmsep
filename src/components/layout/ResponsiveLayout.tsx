@@ -105,7 +105,7 @@ export const LayoutProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [isTablet, setIsTablet] = useState(false);
   const [isDesktop, setIsDesktop] = useState(false);
   const [isClient, setIsClient] = useState(false);
-
+  
   useEffect(() => {
     setIsClient(true);
     const checkScreenSize = () => {
@@ -239,8 +239,8 @@ const Sidebar: React.FC<{
           id: 'player-features',
           title: 'مميزات اللاعب',
           icon: User,
-          items: [
-            {
+        items: [
+          {
               id: 'player-tournaments',
               label: 'البطولات',
               icon: Trophy,
@@ -259,12 +259,12 @@ const Sidebar: React.FC<{
             {
               id: 'search',
               label: 'البحث عن الفرص',
-              icon: Search,
-              href: `/dashboard/player/search`,
-              color: 'text-indigo-600',
-              bgColor: 'bg-indigo-50'
-            },
-            {
+            icon: Search,
+            href: `/dashboard/player/search`,
+            color: 'text-indigo-600',
+            bgColor: 'bg-indigo-50'
+          },
+          {
               id: 'stats',
               label: 'الإحصائيات',
               icon: BarChart3,
@@ -283,21 +283,21 @@ const Sidebar: React.FC<{
           items: [
             {
               id: 'club-tournaments',
-              label: 'البطولات',
+          label: 'البطولات',
               icon: Trophy,
-              href: `/tournaments/unified-registration`,
-              color: 'text-yellow-600',
-              bgColor: 'bg-yellow-50'
-            },
+          href: `/tournaments/unified-registration`,
+          color: 'text-yellow-600',
+          bgColor: 'bg-yellow-50'
+        },
             {
               id: 'players',
               label: 'اللاعبين',
-              icon: Users,
-              href: `/dashboard/club/players`,
-              color: 'text-blue-600',
-              bgColor: 'bg-blue-50'
-            },
-            {
+            icon: Users,
+            href: `/dashboard/club/players`,
+            color: 'text-blue-600',
+            bgColor: 'bg-blue-50'
+          },
+          {
               id: 'team',
               label: 'الفريق',
               icon: Shield,
@@ -313,30 +313,30 @@ const Sidebar: React.FC<{
           id: 'trainer-features',
           title: 'مميزات المدرب',
           icon: GraduationCap,
-          items: [
-            {
-              id: 'trainer-tournaments',
-              label: 'البطولات',
+        items: [
+          {
+            id: 'trainer-tournaments',
+            label: 'البطولات',
               icon: Trophy,
-              href: `/tournaments/unified-registration`,
-              color: 'text-yellow-600',
-              bgColor: 'bg-yellow-50'
-            },
+            href: `/tournaments/unified-registration`,
+            color: 'text-yellow-600',
+            bgColor: 'bg-yellow-50'
+          },
             {
               id: 'players',
               label: 'اللاعبين',
-              icon: Users,
+            icon: Users,
               href: `/dashboard/trainer/players`,
-              color: 'text-blue-600',
-              bgColor: 'bg-blue-50'
-            },
-            {
+            color: 'text-blue-600',
+            bgColor: 'bg-blue-50'
+          },
+          {
               id: 'schedule',
               label: 'الجدول',
               icon: Calendar,
               href: `/dashboard/trainer/schedule`,
-              color: 'text-purple-600',
-              bgColor: 'bg-purple-50'
+            color: 'text-purple-600',
+            bgColor: 'bg-purple-50'
             }
           ]
         }
@@ -347,23 +347,23 @@ const Sidebar: React.FC<{
           title: 'مميزات الأكاديمية',
           icon: GraduationCap,
           items: [
-            {
-              id: 'academy-tournaments',
-              label: 'البطولات',
+          {
+            id: 'academy-tournaments',
+            label: 'البطولات',
               icon: Trophy,
-              href: `/tournaments/unified-registration`,
-              color: 'text-yellow-600',
-              bgColor: 'bg-yellow-50'
-            },
+            href: `/tournaments/unified-registration`,
+            color: 'text-yellow-600',
+            bgColor: 'bg-yellow-50'
+          },
             {
               id: 'students',
               label: 'الطلاب',
-              icon: Users,
+            icon: Users,
               href: `/dashboard/academy/students`,
-              color: 'text-blue-600',
-              bgColor: 'bg-blue-50'
-            },
-            {
+            color: 'text-blue-600',
+            bgColor: 'bg-blue-50'
+          },
+          {
               id: 'programs',
               label: 'البرامج',
               icon: BookOpen,
@@ -380,18 +380,18 @@ const Sidebar: React.FC<{
           title: 'مميزات الوكيل',
           icon: Briefcase,
           items: [
-            {
-              id: 'agent-tournaments',
-              label: 'البطولات',
+          {
+            id: 'agent-tournaments',
+            label: 'البطولات',
               icon: Trophy,
-              href: `/tournaments/unified-registration`,
-              color: 'text-yellow-600',
-              bgColor: 'bg-yellow-50'
-            },
+            href: `/tournaments/unified-registration`,
+            color: 'text-yellow-600',
+            bgColor: 'bg-yellow-50'
+          },
             {
               id: 'clients',
               label: 'العملاء',
-              icon: Users,
+            icon: Users,
               href: `/dashboard/agent/clients`,
               color: 'text-blue-600',
               bgColor: 'bg-blue-50'
@@ -399,7 +399,7 @@ const Sidebar: React.FC<{
             {
               id: 'contracts',
               label: 'العقود',
-              icon: FileText,
+            icon: FileText,
               href: `/dashboard/agent/contracts`,
               color: 'text-green-600',
               bgColor: 'bg-green-50'
@@ -412,16 +412,16 @@ const Sidebar: React.FC<{
           id: 'admin-features',
           title: 'إدارة النظام',
           icon: Shield,
-          items: [
-            {
-              id: 'admin-tournaments',
-              label: 'إدارة البطولات',
+        items: [
+          {
+            id: 'admin-tournaments',
+            label: 'إدارة البطولات',
               icon: Trophy,
-              href: `/dashboard/admin/tournaments`,
-              color: 'text-yellow-600',
-              bgColor: 'bg-yellow-50'
-            },
-            {
+            href: `/dashboard/admin/tournaments`,
+            color: 'text-yellow-600',
+            bgColor: 'bg-yellow-50'
+          },
+          {
               id: 'users',
               label: 'إدارة المستخدمين',
               icon: Users,
@@ -444,16 +444,16 @@ const Sidebar: React.FC<{
         {
           id: 'marketer-features',
           title: 'مميزات المسوق',
-          icon: TrendingUp,
-          items: [
-            {
-              id: 'marketer-tournaments',
-              label: 'البطولات',
+        icon: TrendingUp,
+        items: [
+          {
+            id: 'marketer-tournaments',
+            label: 'البطولات',
               icon: Trophy,
-              href: `/tournaments/unified-registration`,
-              color: 'text-yellow-600',
-              bgColor: 'bg-yellow-50'
-            },
+            href: `/tournaments/unified-registration`,
+            color: 'text-yellow-600',
+            bgColor: 'bg-yellow-50'
+          },
             {
               id: 'campaigns',
               label: 'الحملات',
@@ -467,10 +467,10 @@ const Sidebar: React.FC<{
               label: 'التحليلات',
               icon: BarChart3,
               href: `/dashboard/marketer/analytics`,
-              color: 'text-green-600',
-              bgColor: 'bg-green-50'
-            }
-          ]
+            color: 'text-green-600',
+            bgColor: 'bg-green-50'
+          }
+        ]
         }
       ],
       parent: [
@@ -478,15 +478,15 @@ const Sidebar: React.FC<{
           id: 'parent-features',
           title: 'مميزات الوالد',
           icon: Heart,
-          items: [
-            {
-              id: 'parent-tournaments',
-              label: 'البطولات',
+        items: [
+        {
+          id: 'parent-tournaments',
+          label: 'البطولات',
               icon: Trophy,
-              href: `/tournaments/unified-registration`,
-              color: 'text-yellow-600',
-              bgColor: 'bg-yellow-50'
-            },
+          href: `/tournaments/unified-registration`,
+          color: 'text-yellow-600',
+          bgColor: 'bg-yellow-50'
+        },
             {
               id: 'children',
               label: 'الأبناء',
@@ -519,10 +519,10 @@ const Sidebar: React.FC<{
   };
 
   const confirmLogout = async () => {
-    try {
-      await logout();
+      try {
+        await logout();
       router.push('/');
-    } catch (error) {
+      } catch (error) {
       console.error('خطأ في تسجيل الخروج:', error);
     }
   };
@@ -543,8 +543,8 @@ const Sidebar: React.FC<{
         isOpen ? 'block' : 'hidden'
       }`}
     >
-      <div className="flex flex-col h-full">
-        {/* Header */}
+        <div className="flex flex-col h-full">
+          {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-gray-200">
           {!isCollapsed && (
             <div className="flex items-center space-x-3">
@@ -565,24 +565,24 @@ const Sidebar: React.FC<{
             </div>
           )}
           <div className="flex items-center space-x-2">
-            <Button
-              variant="ghost"
+                <Button
+                  variant="ghost"
               size="sm"
               onClick={onCollapse}
               className="h-8 w-8 p-0"
             >
               {isCollapsed ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
-            </Button>
-            <Button
-              variant="ghost"
+                </Button>
+                <Button
+                  variant="ghost"
               size="sm"
               onClick={onToggle}
               className="h-8 w-8 p-0"
             >
               <X className="h-4 w-4" />
-            </Button>
+                </Button>
+            </div>
           </div>
-        </div>
 
         {/* Menu Groups */}
         <div className="flex-1 overflow-y-auto">
@@ -592,21 +592,21 @@ const Sidebar: React.FC<{
                 <div className="flex items-center space-x-2 mb-3">
                   <group.icon className="h-4 w-4 text-gray-500" />
                   <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                    {group.title}
+                              {group.title}
                   </h3>
-                </div>
+                      </div>
               )}
               <div className="space-y-1">
                 {group.items.map((item) => {
                   const isActive = pathname === item.href;
-                  const IconComponent = item.icon;
-                  
-                  return (
+                              const IconComponent = item.icon;
+                              
+                              return (
                     <motion.button
-                      key={item.id}
+                                  key={item.id}
                       onClick={() => handleItemClick(item.href)}
                       className={`w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                        isActive
+                                      isActive
                           ? `${item.bgColor || 'bg-blue-50'} ${item.color || 'text-blue-600'}`
                           : 'text-gray-700 hover:bg-gray-50'
                       }`}
@@ -628,25 +628,25 @@ const Sidebar: React.FC<{
                         </>
                       )}
                     </motion.button>
-                  );
-                })}
-              </div>
+                              );
+                            })}
+                          </div>
             </div>
           ))}
         </div>
 
-        {/* Footer */}
+          {/* Footer */}
         <div className="border-t border-gray-200 p-4">
-          <Button
-            variant="ghost"
-            onClick={handleLogout}
+            <Button
+              variant="ghost"
+              onClick={handleLogout}
             className="w-full flex items-center space-x-3 text-red-600 hover:bg-red-50"
           >
             <LogOut className="h-4 w-4" />
             {!isCollapsed && <span>تسجيل الخروج</span>}
-          </Button>
+            </Button>
+          </div>
         </div>
-      </div>
     </motion.aside>
   );
 };
@@ -686,9 +686,9 @@ const Header: React.FC<{
               <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs bg-red-500">
                 {unreadCount}
               </Badge>
-            )}
+              )}
           </Button>
-          
+
           <Avatar className="h-8 w-8">
             <AvatarImage src={userData?.photoURL} />
             <AvatarFallback>
@@ -732,7 +732,7 @@ export const ResponsiveLayoutWrapper: React.FC<ResponsiveLayoutWrapperProps> = (
   }
 
   if (!user) {
-    return (
+  return (
       <div className="flex items-center justify-center min-h-screen bg-gray-50">
         <div className="text-center">
           <div className="w-16 h-16 mx-auto mb-4 bg-red-100 rounded-full flex items-center justify-center">
@@ -777,18 +777,18 @@ export const ResponsiveLayoutWrapper: React.FC<ResponsiveLayoutWrapperProps> = (
               onToggleSidebar={toggleSidebar}
             />
           )}
-
-          {/* Content */}
+        
+        {/* Content */}
           <main className="p-4">
-            {children}
-          </main>
-
-          {/* Footer */}
+              {children}
+        </main>
+      
+      {/* Footer */}
           {showFooter && (
             <footer className="bg-white border-t border-gray-200 px-4 py-3">
               <div className="text-center text-sm text-gray-500">
                 © 2024 El7lm. جميع الحقوق محفوظة.
-              </div>
+    </div>
             </footer>
           )}
         </div>
