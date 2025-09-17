@@ -124,12 +124,12 @@ export async function DELETE(
     await deleteDoc(doc(db, 'tournament_registrations', registrationId));
 
     // تحديث عدد المشاركين في البطولة
-    const tournamentDoc = await getDoc(doc(db, 'tournaments', registration.tournamentId));
+    const tournamentDoc = await getDoc(doc(db, 'tournaments', registration['tournamentId']));
     
     if (tournamentDoc.exists()) {
       const tournament = tournamentDoc.data();
-      await updateDoc(doc(db, 'tournaments', registration.tournamentId), {
-        currentParticipants: Math.max(0, tournament.currentParticipants - 1),
+      await updateDoc(doc(db, 'tournaments', registration['tournamentId']), {
+        currentParticipants: Math.max(0, tournament['currentParticipants'] - 1),
         updatedAt: serverTimestamp()
       });
     }

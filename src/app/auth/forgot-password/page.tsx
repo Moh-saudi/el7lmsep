@@ -250,7 +250,7 @@ export default function ForgotPasswordPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           singlePhone: fullPhoneNumber,
-          message: `رمز التحقق الخاص بك هو: ${otp}`
+          message: `رمز التحقق الخاص بك هو: [OTP]`
         })
       });
       const otpData = await otpResponse.json();

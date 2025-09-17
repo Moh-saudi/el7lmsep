@@ -59,8 +59,8 @@ export async function POST(request: NextRequest) {
 
     // إنشاء عميل Supabase
     const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+      process.env['NEXT_PUBLIC_SUPABASE_URL']!,
+      process.env['NEXT_PUBLIC_SUPABASE_ANON_KEY']!
     );
 
     // التأكد من وجود bucket videos
@@ -161,8 +161,8 @@ export async function DELETE(request: NextRequest) {
 
     // إنشاء عميل Supabase
     const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+      process.env['NEXT_PUBLIC_SUPABASE_URL']!,
+      process.env['NEXT_PUBLIC_SUPABASE_ANON_KEY']!
     );
 
     // استخراج المسار من الرابط
@@ -181,7 +181,7 @@ export async function DELETE(request: NextRequest) {
 
     const { error } = await supabase.storage
       .from(bucket)
-      .remove([filePath]);
+      .remove([filePath!]);
 
     if (error) {
       console.error('❌ خطأ في حذف الفيديو:', error);

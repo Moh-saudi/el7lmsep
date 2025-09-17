@@ -253,17 +253,19 @@ export default function LoginPage() {
         }
 
         // التحقق من صحة تنسيق رقم الهاتف حسب الدولة
-        const phoneRegex = new RegExp(selectedCountry.phonePattern);
-        if (!phoneRegex.test(formData.phone)) {
-          const phoneError = `يرجى إدخال رقم هاتف صحيح مكون من ${selectedCountry.phoneLength} أرقام للدولة ${selectedCountry.name}`;
-          toast.error(phoneError, { duration: 4000 });
-          setError(phoneError);
-          setLoading(false);
-          return;
+        if (selectedCountry) {
+          const phoneRegex = new RegExp(selectedCountry.phonePattern);
+          if (!phoneRegex.test(formData.phone)) {
+            const phoneError = `يرجى إدخال رقم هاتف صحيح مكون من ${selectedCountry.phoneLength} أرقام للدولة ${selectedCountry.name}`;
+            toast.error(phoneError, { duration: 4000 });
+            setError(phoneError);
+            setLoading(false);
+            return;
+          }
         }
 
         // دمج كود الدولة مع الرقم
-        const fullPhone = normalizePhone(selectedCountry.code, formData.phone);
+        const fullPhone = selectedCountry ? normalizePhone(selectedCountry.code, formData.phone) : formData.phone;
         console.log('🔍 Searching for user with phone:', fullPhone);
         
         const firebaseEmail = await findFirebaseEmailByPhone(fullPhone);
@@ -484,7 +486,7 @@ export default function LoginPage() {
               
               <div>
                 <h2 className="text-lg font-bold text-gray-800 mb-3">
-                  {userData.name || userData.displayName || 'مستخدم'}
+                  {userData['name'] || userData['displayName'] || 'مستخدم'}
                 </h2>
                 <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-right">
                   <p className="text-sm text-red-800 mb-3">
@@ -546,7 +548,7 @@ export default function LoginPage() {
             
             <div>
               <h2 className="text-lg font-bold text-gray-800 mb-1">
-                {userData.name || userData.displayName || 'مستخدم'}
+                {userData['name'] || userData['displayName'] || 'مستخدم'}
               </h2>
               <p className="text-sm text-gray-600">
                 نوع الحساب: {userData.accountType === 'player' && 'لاعب'}
@@ -692,7 +694,7 @@ export default function LoginPage() {
                   <label className="block mb-1 text-xs text-gray-700">البلد</label>
                   <div className="relative">
                     <select
-                      value={selectedCountry.code}
+                      value={selectedCountry?.code || ''}
                       onChange={handleCountryChange}
                       className="w-full py-2 pl-3 pr-8 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       title="اختر البلد"
@@ -712,7 +714,7 @@ export default function LoginPage() {
                   <label className="block mb-1 text-xs text-gray-700">
                     رقم الهاتف
                     <span className="text-xs text-gray-500 mr-1">
-                                              ({selectedCountry.phoneLength} أرقام)
+                                              ({selectedCountry?.phoneLength || 0} أرقام)
                     </span>
                   </label>
                   <div className="relative">

@@ -79,21 +79,21 @@ export async function POST(request: NextRequest) {
     const tournament = tournamentDoc.data();
 
     // التحقق من إمكانية التسجيل
-    if (!tournament.isActive) {
+    if (!tournament['isActive']) {
       return NextResponse.json(
         { success: false, error: 'البطولة غير نشطة' },
         { status: 400 }
       );
     }
 
-    if (tournament.currentParticipants >= tournament.maxParticipants) {
+    if (tournament['currentParticipants'] >= tournament['maxParticipants']) {
       return NextResponse.json(
         { success: false, error: 'البطولة ممتلئة' },
         { status: 400 }
       );
     }
 
-    const registrationDeadline = new Date(tournament.registrationDeadline);
+    const registrationDeadline = new Date(tournament['registrationDeadline']);
     const now = new Date();
     
     if (registrationDeadline < now) {
@@ -106,8 +106,8 @@ export async function POST(request: NextRequest) {
     // التحقق من عدم التسجيل مسبقاً
     const existingRegistrationQuery = query(
       collection(db, 'tournament_registrations'),
-      where('tournamentId', '==', registrationData.tournamentId),
-      where('playerId', '==', registrationData.playerId)
+      where('tournamentId', '==', registrationData['tournamentId']),
+      where('playerId', '==', registrationData['playerId'])
     );
 
     const existingRegistrations = await getDocs(existingRegistrationQuery);
@@ -123,15 +123,15 @@ export async function POST(request: NextRequest) {
     const newRegistration = {
       ...registrationData,
       registrationDate: serverTimestamp(),
-      paymentStatus: tournament.isPaid ? 'pending' : 'free',
-      paymentAmount: tournament.isPaid ? tournament.entryFee : 0
+      paymentStatus: tournament['isPaid'] ? 'pending' : 'free',
+      paymentAmount: tournament['isPaid'] ? tournament['entryFee'] : 0
     };
 
     const docRef = await addDoc(collection(db, 'tournament_registrations'), newRegistration);
 
     // تحديث عدد المشاركين في البطولة
-    await updateDoc(doc(db, 'tournaments', registrationData.tournamentId), {
-      currentParticipants: tournament.currentParticipants + 1,
+    await updateDoc(doc(db, 'tournaments', registrationData['tournamentId']), {
+      currentParticipants: tournament['currentParticipants'] + 1,
       updatedAt: serverTimestamp()
     });
 

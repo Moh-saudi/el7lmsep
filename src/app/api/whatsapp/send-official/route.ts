@@ -6,9 +6,9 @@ const FALLBACK_WHATSAPP = '+97472053188';
 
 // يمكن استخدام Twilio, WhatsApp Business API, أو أي خدمة أخرى
 // هذا مثال باستخدام Twilio (يحتاج لإعداد المتغيرات)
-const TWILIO_ACCOUNT_SID = process.env.TWILIO_ACCOUNT_SID;
-const TWILIO_AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN;
-const TWILIO_WHATSAPP_NUMBER = process.env.TWILIO_WHATSAPP_NUMBER || `whatsapp:${FALLBACK_WHATSAPP}`;
+const TWILIO_ACCOUNT_SID = process.env['TWILIO_ACCOUNT_SID'];
+const TWILIO_AUTH_TOKEN = process.env['TWILIO_AUTH_TOKEN'];
+const TWILIO_WHATSAPP_NUMBER = process.env['TWILIO_WHATSAPP_NUMBER'] || `whatsapp:${FALLBACK_WHATSAPP}`;
 
 export async function POST(request: NextRequest) {
   try {
@@ -73,8 +73,8 @@ export async function POST(request: NextRequest) {
 
     // الطريقة الثانية: WhatsApp Business API (مثال)
     // يحتاج لإعداد WhatsApp Business API
-    const WHATSAPP_ACCESS_TOKEN = process.env.WHATSAPP_ACCESS_TOKEN;
-    const WHATSAPP_PHONE_NUMBER_ID = process.env.WHATSAPP_PHONE_NUMBER_ID;
+    const WHATSAPP_ACCESS_TOKEN = process.env['WHATSAPP_ACCESS_TOKEN'];
+    const WHATSAPP_PHONE_NUMBER_ID = process.env['WHATSAPP_PHONE_NUMBER_ID'];
 
     if (WHATSAPP_ACCESS_TOKEN && WHATSAPP_PHONE_NUMBER_ID) {
       try {
@@ -171,7 +171,7 @@ export async function GET() {
         required_env: ['TWILIO_ACCOUNT_SID', 'TWILIO_AUTH_TOKEN', 'TWILIO_WHATSAPP_NUMBER']
       },
       whatsapp_business: {
-        configured: !!(process.env.WHATSAPP_ACCESS_TOKEN && process.env.WHATSAPP_PHONE_NUMBER_ID),
+        configured: !!(process.env['WHATSAPP_ACCESS_TOKEN'] && process.env['WHATSAPP_PHONE_NUMBER_ID']),
         required_env: ['WHATSAPP_ACCESS_TOKEN', 'WHATSAPP_PHONE_NUMBER_ID']
       }
     },

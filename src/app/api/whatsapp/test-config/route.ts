@@ -5,18 +5,18 @@ export async function GET(request: NextRequest) {
     // فحص متغيرات البيئة للواتساب
     const config = {
       whatsappBusiness: {
-        accessToken: process.env.WHATSAPP_ACCESS_TOKEN ? '✅ Set' : '❌ Missing',
-        phoneId: process.env.WHATSAPP_PHONE_ID ? '✅ Set' : '❌ Missing',
-        isValid: !!(process.env.WHATSAPP_ACCESS_TOKEN && process.env.WHATSAPP_PHONE_ID)
+        accessToken: process.env['WHATSAPP_ACCESS_TOKEN'] ? '✅ Set' : '❌ Missing',
+        phoneId: process.env['WHATSAPP_PHONE_ID'] ? '✅ Set' : '❌ Missing',
+        isValid: !!(process.env['WHATSAPP_ACCESS_TOKEN'] && process.env['WHATSAPP_PHONE_ID'])
       },
       greenApi: {
-        token: process.env.GREEN_API_TOKEN ? '✅ Set' : '❌ Missing',
-        instance: process.env.GREEN_API_INSTANCE ? '✅ Set' : '❌ Missing',
-        isValid: !!(process.env.GREEN_API_TOKEN && process.env.GREEN_API_INSTANCE)
+        token: process.env['GREEN_API_TOKEN'] ? '✅ Set' : '❌ Missing',
+        instance: process.env['GREEN_API_INSTANCE'] ? '✅ Set' : '❌ Missing',
+        isValid: !!(process.env['GREEN_API_TOKEN'] && process.env['GREEN_API_INSTANCE'])
       },
       beOnWhatsApp: {
-        token: process.env.BEON_WHATSAPP_TOKEN ? '✅ Set' : '❌ Missing',
-        isValid: !!process.env.BEON_WHATSAPP_TOKEN
+        token: process.env['BEON_WHATSAPP_TOKEN'] ? '✅ Set' : '❌ Missing',
+        isValid: !!process.env['BEON_WHATSAPP_TOKEN']
       }
     };
 
