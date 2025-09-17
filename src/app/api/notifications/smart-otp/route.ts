@@ -122,7 +122,7 @@ async function handleSentOTP(phone: string, smsResult: any) {
   console.log('📱 Smart OTP sent successfully to:', phone);
   
   if (smsResult.otp) {
-    await storeOTP(phone, smsResult.otp, 'smart-otp');
+    await storeOTP(phone, smsResult.otp, 'sms');
     console.log('💾 Smart OTP stored successfully for verification');
   }
 
