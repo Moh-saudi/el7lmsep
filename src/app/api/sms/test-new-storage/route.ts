@@ -10,7 +10,7 @@ export async function POST(request: NextRequest) {
     switch (action) {
       case 'store':
         storeOTP(phone, otp, source);
-        getOTPStatus();
+        await getOTPStatus();
         return NextResponse.json({ 
           success: true, 
           message: 'OTP stored successfully',
@@ -21,8 +21,8 @@ export async function POST(request: NextRequest) {
         });
         
       case 'get':
-        const result = getOTP(phone);
-        getOTPStatus();
+        const result = await getOTP(phone);
+        await getOTPStatus();
         return NextResponse.json({ 
           success: true, 
           message: 'OTP retrieved',
@@ -39,8 +39,8 @@ export async function POST(request: NextRequest) {
         });
         
       case 'getBySource':
-        const resultBySource = getOTPBySource(phone, source);
-        getOTPStatus();
+        const resultBySource = await getOTPBySource(phone, source);
+        await getOTPStatus();
         return NextResponse.json({ 
           success: true, 
           message: 'OTP retrieved by source',
@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
         
       case 'clear':
         clearOTP(phone, source);
-        getOTPStatus();
+        await getOTPStatus();
         return NextResponse.json({ 
           success: true, 
           message: 'OTP cleared',
@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
         });
         
       case 'status':
-        getOTPStatus();
+        await getOTPStatus();
         return NextResponse.json({ 
           success: true, 
           message: 'Storage status logged',
