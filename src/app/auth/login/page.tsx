@@ -720,7 +720,7 @@ export default function LoginPage() {
                   <div className="relative">
                     <div className="flex">
                       <div className="flex items-center px-3 border border-r-0 border-gray-300 rounded-l-lg bg-gray-50 text-sm">
-                        {selectedCountry.code}
+                        {selectedCountry?.code || '+966'}
                       </div>
                       <input
                         type="tel"
@@ -728,17 +728,17 @@ export default function LoginPage() {
                         value={formData.phone}
                         onChange={handleInputChange}
                         className="w-full py-2 pl-3 pr-8 text-sm border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder={`${selectedCountry.phoneLength} أرقام`}
-                        pattern={selectedCountry.phonePattern}
-                        maxLength={selectedCountry.phoneLength}
+                      placeholder={`${selectedCountry?.phoneLength || 9} أرقام`}
+                        pattern={selectedCountry?.phonePattern || '[0-9]{9}'}
+                        maxLength={selectedCountry?.phoneLength || 9}
                         required
                       />
                       <Phone className="absolute w-4 h-4 text-gray-400 -translate-y-1/2 right-2 top-1/2" />
                     </div>
                     <p className="text-xs text-gray-500 mt-1">
-                    مثال: {selectedCountry.name === 'مصر' ? '1234567890' : 
-                             selectedCountry.name === 'قطر' ? '12345678' : 
-                             selectedCountry.name === 'السعودية' ? '123456789' : 
+                    مثال: {selectedCountry?.name === 'مصر' ? '1234567890' : 
+                             selectedCountry?.name === 'قطر' ? '12345678' : 
+                             selectedCountry?.name === 'السعودية' ? '123456789' : 
                              '123456789'}
                     </p>
                   </div>
