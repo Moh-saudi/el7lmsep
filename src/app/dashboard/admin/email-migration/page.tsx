@@ -98,7 +98,7 @@ export default function EmailMigration() {
           
           snapshot.docs.forEach(doc => {
             const data = doc.data();
-            const email = data.email || '';
+            const email = data['email'] || '';
             
             // التحقق من الإيميلات التي تحتاج تحديث
             const needsUpdate = email.includes('@hagzzgo.com') || 
