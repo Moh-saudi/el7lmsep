@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 const paymentGatewayDetails = {
-  sandboxURL: process.env.SKIPCASH_SANDBOX_URL || 'https://skipcashtest.azurewebsites.net',
-  productionURL: process.env.SKIPCASH_PRODUCTION_URL || 'https://api.skipcash.app',
-  secretKey: process.env.SKIPCASH_SECRET_KEY || '',
-  keyId: process.env.SKIPCASH_KEY_ID || '',
-  clientId: process.env.SKIPCASH_CLIENT_ID || '',
+  sandboxURL: process.env['SKIPCASH_SANDBOX_URL'] || 'https://skipcashtest.azurewebsites.net',
+  productionURL: process.env['SKIPCASH_PRODUCTION_URL'] || 'https://api.skipcash.app',
+  secretKey: process.env['SKIPCASH_SECRET_KEY'] || '',
+  keyId: process.env['SKIPCASH_KEY_ID'] || '',
+  clientId: process.env['SKIPCASH_CLIENT_ID'] || '',
 };
 
 export async function POST(req: Request) {
