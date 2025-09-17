@@ -172,10 +172,10 @@ export default function AdminAdsPage() {
       const adsData: Ad[] = snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data(),
-        createdAt: doc.data().createdAt?.toDate() || new Date(),
-        updatedAt: doc.data().updatedAt?.toDate() || new Date(),
-        views: doc.data().views || 0,
-        clicks: doc.data().clicks || 0
+        createdAt: doc.data()['createdAt']?.toDate() || new Date(),
+        updatedAt: doc.data()['updatedAt']?.toDate() || new Date(),
+        views: doc.data()['views'] || 0,
+        clicks: doc.data()['clicks'] || 0
       })) as Ad[];
       setAds(adsData);
     } catch (error) {
