@@ -281,7 +281,7 @@ export default function AdminDreamAcademyVideosPage() {
         let nextItems: string | null = null;
         let page = 0;
         do {
-          const res = await fetch('/api/youtube/playlist-items', {
+          const res: Response = await fetch('/api/youtube/playlist-items', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ playlistUrlOrId: pl.playlistId, pageToken: nextItems })
