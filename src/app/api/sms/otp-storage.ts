@@ -56,6 +56,11 @@ export async function getOTP(phone: string): Promise<any | undefined> {
   }
   
   const data = docSnap.data();
+  if (!data) {
+    console.log('❌ No data found in document');
+    return undefined;
+  }
+  
   console.log('📋 Found OTP data:', { ...data, otp: '***' });
   
   // التحقق من انتهاء الصلاحية (5 دقائق)
@@ -85,6 +90,11 @@ export async function getOTPBySource(phone: string, source: 'whatsapp' | 'sms'):
   }
   
   const data = docSnap.data();
+  if (!data) {
+    console.log('❌ No data found in document');
+    return undefined;
+  }
+  
   if (data.source !== source) {
     console.log('❌ OTP source mismatch. Expected:', source, 'Found:', data.source);
     return undefined;
@@ -131,6 +141,11 @@ export async function incrementAttempts(phone: string): Promise<void> {
     }
     
     const data = docSnap.data();
+    if (!data) {
+      console.log('❌ No data found in document');
+      return;
+    }
+    
     const attempts = (data.attempts || 0) + 1;
     console.log('📊 New attempts count:', attempts);
     
