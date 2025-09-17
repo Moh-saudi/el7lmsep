@@ -457,8 +457,8 @@ export default function CustomerManagementPage() {
       let fixedCount = 0;
       for (const doc of snapshot.docs) {
         const customerData = doc.data();
-        const originalPhone = customerData.phone;
-        const fixedPhone = formatPhoneNumber(originalPhone, customerData.country, customerData.countryCode);
+        const originalPhone = customerData['phone'];
+        const fixedPhone = formatPhoneNumber(originalPhone, customerData['country'], customerData['countryCode']);
         
         if (originalPhone !== fixedPhone) {
           await updateDoc(doc.ref, { phone: fixedPhone });
