@@ -21,15 +21,15 @@ const createFormData = (imageUrl: string | null, imageData: string | null, langu
     let fileName = 'receipt.jpg';
     let contentType = 'image/jpeg';
     
-    if (mimeType.includes('png')) {
+    if (mimeType && mimeType.includes('png')) {
       fileType = 'PNG';
       fileName = 'receipt.png';
       contentType = 'image/png';
-    } else if (mimeType.includes('gif')) {
+    } else if (mimeType && mimeType.includes('gif')) {
       fileType = 'GIF';
       fileName = 'receipt.gif';
       contentType = 'image/gif';
-    } else if (mimeType.includes('webp')) {
+    } else if (mimeType && mimeType.includes('webp')) {
       fileType = 'JPG'; // OCR.space لا يدعم WebP، نحوله إلى JPG
       fileName = 'receipt.jpg';
       contentType = 'image/jpeg';
