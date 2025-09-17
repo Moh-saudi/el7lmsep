@@ -7,6 +7,9 @@ const createFormData = (imageUrl: string | null, imageData: string | null, langu
   if (imageData) {
     // إذا كانت البيانات مرسلة كـ base64، نحولها إلى blob
     const [mimeType, base64Data] = imageData.split(',');
+    if (!base64Data) {
+      return NextResponse.json({ error: 'Invalid image data format' }, { status: 400 });
+    }
     const binaryData = atob(base64Data);
     const uint8Array = new Uint8Array(binaryData.length);
     for (let i = 0; i < binaryData.length; i++) {
