@@ -47,8 +47,8 @@ const nextConfig = {
     // إعدادات الأداء
     reactStrictMode: true,
     
-    // إعدادات خارجية للسيرفر
-    serverExternalPackages: ['firebase-admin', 'framer-motion'],
+    // إعدادات خارجية للسيرفر (تم نقلها إلى experimental)
+    // serverExternalPackages: ['firebase-admin', 'framer-motion'],
     
     // تعطيل DevTools نهائياً (خارج experimental)
     devIndicators: {
@@ -63,6 +63,7 @@ const nextConfig = {
         serverActions: {
             bodySizeLimit: '100mb',
         },
+        serverExternalPackages: ['firebase-admin', 'framer-motion'],
     },
 
     // إعدادات webpack مبسطة
