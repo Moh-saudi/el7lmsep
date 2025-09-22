@@ -38,7 +38,7 @@ export default function AdminPaymentsPage() {
 
   // عرض البيانات
   const [viewMode] = useState('cards'); // 'cards' أو 'table'
-  const [selectedRows] = useState([]);
+  const [selectedRows, setSelectedRows] = useState([]);
   const [showBulkActions] = useState(false);
 
   // صفحات البيانات
