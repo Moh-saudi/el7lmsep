@@ -154,17 +154,17 @@ export default function AdminPaymentsPage() {
       let aValue, bValue;
       
       if (filters.sortBy === 'amount') {
-        aValue = a.amount || 0;
-        bValue = b.amount || 0;
+        aValue = (a as any).amount || 0;
+        bValue = (b as any).amount || 0;
       } else if (filters.sortBy === 'playerName') {
-        aValue = a.playerName || '';
-        bValue = b.playerName || '';
+        aValue = (a as any).playerName || '';
+        bValue = (b as any).playerName || '';
       } else if (filters.sortBy === 'status') {
-        aValue = a.status || '';
-        bValue = b.status || '';
+        aValue = (a as any).status || '';
+        bValue = (b as any).status || '';
       } else {
-        aValue = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt);
-        bValue = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt);
+        aValue = (a as any).createdAt?.toDate ? (a as any).createdAt.toDate() : new Date((a as any).createdAt);
+        bValue = (b as any).createdAt?.toDate ? (b as any).createdAt.toDate() : new Date((b as any).createdAt);
       }
 
       if (filters.sortOrder === 'asc') {
