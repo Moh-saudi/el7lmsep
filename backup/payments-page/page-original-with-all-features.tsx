@@ -219,7 +219,7 @@ export default function AdminPaymentsPage() {
     if (selectedRows.length === currentData.length) {
       setSelectedRows([]);
     } else {
-      setSelectedRows(currentData.map(payment => payment.id));
+      setSelectedRows(currentData.map((payment: any) => payment.id));
     }
   };
 
