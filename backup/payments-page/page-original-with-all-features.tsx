@@ -8,7 +8,7 @@ import { openWhatsAppShare, testWhatsAppShare } from '@/lib/utils/whatsapp-share
 
 export default function AdminPaymentsPage() {
   const [payments, setPayments] = useState<any[]>([]);
-  const [filteredPayments, setFilteredPayments] = useState([]);
+  const [filteredPayments, setFilteredPayments] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedPayment, setSelectedPayment] = useState(null);
   const [showDetailsDialog, setShowDetailsDialog] = useState(false);
