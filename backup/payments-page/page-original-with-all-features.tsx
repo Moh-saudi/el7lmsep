@@ -91,10 +91,10 @@ export default function AdminPaymentsPage() {
   const selectTemplate = (template: any) => {
     if (template === 'custom') {
       setMessageText('');
-    } else if (typeof messageTemplates[template] === 'function') {
-      setMessageText(messageTemplates[template](selectedPayment));
+    } else if (typeof (messageTemplates as any)[template] === 'function') {
+      setMessageText((messageTemplates as any)[template](selectedPayment));
     } else {
-      setMessageText(messageTemplates[template]);
+      setMessageText((messageTemplates as any)[template]);
     }
   };
 
