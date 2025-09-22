@@ -130,7 +130,7 @@ export default function AdminPaymentsPage() {
     // فلتر طريقة الدفع
     if (filters.paymentMethod !== 'all') {
       filtered = filtered.filter(payment => 
-        payment.paymentMethod.toLowerCase().includes(filters.paymentMethod.toLowerCase())
+        (payment as any).paymentMethod?.toLowerCase().includes(filters.paymentMethod.toLowerCase())
       );
     }
 
