@@ -40,7 +40,7 @@ export default function FontLoader({
         console.log(`Font loaded successfully: ${fontUrl}`);
       };
       
-      if (typeof document !== 'undefined') {
+      if (typeof document !== 'undefined' && document && document.head) {
         document.head.appendChild(link);
       }
     });

@@ -1,0 +1,221 @@
+{
+  "tech_stack": [
+    "TypeScript",
+    "Next.js 14",
+    "React 18",
+    "Firebase",
+    "Supabase",
+    "Tailwind CSS",
+    "Radix UI",
+    "Framer Motion",
+    "Geidea Payment",
+    "BeOn SMS/WhatsApp",
+    "Microsoft Clarity",
+    "Google Tag Manager",
+    "Sentry",
+    "Docker"
+  ],
+  "features": [
+    {
+      "name": "Authentication System",
+      "description": "نظام مصادقة متكامل بالهاتف مع OTP عبر SMS و WhatsApp",
+      "files": [
+        "src/lib/firebase/auth-provider.tsx",
+        "src/lib/firebase/config.ts",
+        "src/lib/auth/smart-login-system.ts",
+        "src/app/api/auth/check-user-exists/route.ts",
+        "src/app/api/sms/send-otp/route.ts",
+        "src/app/api/sms/verify-otp/route.ts",
+        "src/app/api/whatsapp/send-otp/route.ts",
+        "src/app/api/whatsapp/verify-otp/route.ts"
+      ]
+    },
+    {
+      "name": "Payment System",
+      "description": "نظام دفع متكامل مع Geidea و Apple Pay و SkipCash",
+      "files": [
+        "src/lib/geidea-client.ts",
+        "src/lib/geidea-error-handler.ts",
+        "src/app/api/geidea/create-session/route.ts",
+        "src/app/api/geidea/apple-pay-session/route.ts",
+        "src/app/api/geidea/skipcash-session/route.ts",
+        "src/components/GeideaPaymentModal.tsx",
+        "src/components/shared/BulkPaymentPage.tsx"
+      ]
+    },
+    {
+      "name": "Dashboard Layouts",
+      "description": "أنظمة تخطيط متعددة للوحات التحكم المختلفة",
+      "files": [
+        "src/components/layout/ResponsiveLayout_fixed.tsx",
+        "src/components/layout/UnifiedSidebar.tsx",
+        "src/components/layout/EnhancedSidebar.tsx",
+        "src/components/layout/ModernEnhancedSidebar.tsx",
+        "src/components/layout/AdminSidebar.jsx",
+        "src/components/layout/PlayerSidebar.tsx",
+        "src/components/layout/ModernUnifiedDashboardLayout.tsx"
+      ]
+    },
+    {
+      "name": "Multi-Account Management",
+      "description": "إدارة حسابات متعددة (لاعب، نادي، أكاديمية، وكيل، مدرب، مسوق، إدارة)",
+      "files": [
+        "src/app/dashboard/layout.tsx",
+        "src/app/dashboard/player/page.tsx",
+        "src/app/dashboard/club/page.tsx",
+        "src/app/dashboard/academy/page.tsx",
+        "src/app/dashboard/agent/page.tsx",
+        "src/app/dashboard/trainer/page.tsx",
+        "src/app/dashboard/marketer/page.tsx",
+        "src/app/dashboard/admin/page.tsx"
+      ]
+    },
+    {
+      "name": "Player Management",
+      "description": "إدارة شاملة للاعبين مع تقييمات ومقاطع فيديو",
+      "files": [
+        "src/app/dashboard/club/players/page.tsx",
+        "src/app/dashboard/academy/players/page.tsx",
+        "src/components/player/PlayerCard.tsx",
+        "src/components/player/PlayerEvaluation.tsx",
+        "src/components/player/PlayerVideoUpload.tsx"
+      ]
+    },
+    {
+      "name": "Tournament System",
+      "description": "نظام البطولات والتسجيل",
+      "files": [
+        "src/app/tournaments/unified-registration/page.tsx",
+        "src/app/api/tournaments/registrations/route.ts",
+        "src/app/api/tournaments/registrations/[id]/route.ts"
+      ]
+    },
+    {
+      "name": "Notification System",
+      "description": "نظام إشعارات ذكي متعدد القنوات",
+      "files": [
+        "src/lib/notifications/smart-notifications.ts",
+        "src/lib/notifications/unified-notification-service.ts",
+        "src/lib/firebase/notifications.ts",
+        "src/components/notifications/JoinRequestNotifications.tsx"
+      ]
+    },
+    {
+      "name": "Media Management",
+      "description": "إدارة الوسائط مع رفع الصور والفيديوهات",
+      "files": [
+        "src/lib/supabase/storage.ts",
+        "src/lib/supabase/video-storage.ts",
+        "src/lib/supabase/image-utils.ts",
+        "src/app/api/upload/video/route.ts",
+        "src/lib/firebase/upload-media.ts"
+      ]
+    },
+    {
+      "name": "SMS/WhatsApp Services",
+      "description": "خدمات إرسال الرسائل عبر SMS و WhatsApp",
+      "files": [
+        "src/lib/beon/sms-service.ts",
+        "src/lib/beon/whatsapp-service.ts",
+        "src/lib/beon/unified-messaging-service.ts",
+        "src/app/api/sms/send-otp/route.ts",
+        "src/app/api/whatsapp/send-official/route.ts"
+      ]
+    },
+    {
+      "name": "Analytics & Monitoring",
+      "description": "تحليلات ومراقبة الأداء",
+      "files": [
+        "src/lib/console-performance.ts",
+        "src/lib/performance/app-optimizer.ts",
+        "src/lib/debug-system.ts",
+        "src/lib/security/secure-logger.ts"
+      ]
+    },
+    {
+      "name": "Currency & Localization",
+      "description": "تحويل العملات والترجمة",
+      "files": [
+        "src/lib/currency-rates.ts",
+        "src/lib/currency-converter.ts",
+        "src/lib/cities-data.ts"
+      ]
+    },
+    {
+      "name": "Security & Rate Limiting",
+      "description": "نظام الأمان والحد من الطلبات",
+      "files": [
+        "src/lib/security/rate-limit.ts",
+        "src/lib/security/secure-logger.ts",
+        "src/middleware.js"
+      ]
+    },
+    {
+      "name": "OCR & Receipt Processing",
+      "description": "معالجة الإيصالات باستخدام OCR",
+      "files": [
+        "src/lib/ocr/receipt-reader.ts"
+      ]
+    },
+    {
+      "name": "Referral System",
+      "description": "نظام الإحالات والمكافآت",
+      "files": [
+        "src/lib/referral/referral-service.ts",
+        "src/lib/organization/organization-referral-service.ts"
+      ]
+    },
+    {
+      "name": "Admin Panel",
+      "description": "لوحة تحكم الإدارة مع إحصائيات متقدمة",
+      "files": [
+        "src/app/dashboard/admin/page.tsx",
+        "src/app/dashboard/admin/clarity/page.tsx",
+        "src/app/dashboard/admin/email-migration/page.tsx",
+        "src/lib/admin/action-logs.ts",
+        "src/lib/admin/export-manager.ts"
+      ]
+    },
+    {
+      "name": "UI Components",
+      "description": "مكونات واجهة المستخدم المتقدمة",
+      "files": [
+        "src/components/ui/button.tsx",
+        "src/components/ui/avatar.tsx",
+        "src/components/ui/badge.tsx",
+        "src/components/ui/separator.tsx",
+        "src/components/ui/dialog.tsx",
+        "src/components/ui/input.tsx"
+      ]
+    },
+    {
+      "name": "Error Handling",
+      "description": "نظام معالجة الأخطاء الشامل",
+      "files": [
+        "src/lib/runtime-error-handler.ts",
+        "src/lib/firebase/error-handler.ts",
+        "src/lib/geidea-error-handler.ts",
+        "src/lib/utils/issue-analyzer.ts"
+      ]
+    },
+    {
+      "name": "Performance Optimization",
+      "description": "تحسينات الأداء والذاكرة",
+      "files": [
+        "src/lib/utils/complexity-reducer.ts",
+        "src/lib/utils/code-cleanup.ts",
+        "src/lib/utils/comprehensive-fixer.ts",
+        "src/lib/performance/console-optimizer.ts"
+      ]
+    }
+  ]
+}
+
+
+
+
+
+
+
+
+

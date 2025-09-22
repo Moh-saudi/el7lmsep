@@ -44,7 +44,7 @@ const WelcomeDialog: React.FC<WelcomeDialogProps> = ({ user, pathname, onClose }
     }}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle>مرحباً بك في أكاديمية الحلم</DialogTitle>
+          <DialogTitle>مرحباً بك في مدرسة الحلم</DialogTitle>
           <DialogDescription>
             تعلّم اللغات المتخصصة في كرة القدم، طوّر مهاراتك الحياتية، واستفد من جلسات لايف كوتش خاصة مدفوعة. محتوى مُختار بعناية مع قوائم تشغيل يوتيوب ومزايا تفاعلية داخل منصتنا.
           </DialogDescription>

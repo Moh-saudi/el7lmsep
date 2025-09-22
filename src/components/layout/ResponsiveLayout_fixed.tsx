@@ -194,11 +194,24 @@ interface ResponsiveSidebarProps {
 
 const ResponsiveSidebar: React.FC<ResponsiveSidebarProps> = ({ accountType: propAccountType = 'player' }) => {
   const { user, userData, logout } = useAuth();
-  
-  // تحديد نوع الحساب من userData أو من prop
-  const accountType = userData?.accountType || propAccountType;
   const router = useRouter();
   const pathname = usePathname();
+  
+  // تحديد نوع الحساب من المسار أولاً، ثم من prop، ثم من userData
+  const getAccountTypeFromPath = () => {
+    if (!pathname) return null;
+    const pathSegments = pathname.split('/');
+    if (pathSegments.length >= 3 && pathSegments[1] === 'dashboard') {
+      const pathAccountType = pathSegments[2];
+      const validAccountTypes = ['admin', 'player', 'club', 'academy', 'agent', 'trainer', 'marketer', 'parent'];
+      if (validAccountTypes.includes(pathAccountType)) {
+        return pathAccountType;
+      }
+    }
+    return null;
+  };
+
+  const accountType = getAccountTypeFromPath() || propAccountType || userData?.accountType || 'player';
 
   const { 
     isSidebarOpen, 
@@ -280,8 +293,8 @@ const ResponsiveSidebar: React.FC<ResponsiveSidebarProps> = ({ accountType: prop
       emoji: '📈'
     },
     'dream-academy': {
-      title: 'أكاديمية الحلم',
-      subtitle: 'أكاديمية الحلم',
+      title: 'مدرسة الحلم',
+      subtitle: 'مدرسة الحلم',
       icon: GraduationCap,
       color: 'from-purple-500 to-purple-600',
       bgColor: 'bg-purple-50',
@@ -367,8 +380,8 @@ const ResponsiveSidebar: React.FC<ResponsiveSidebarProps> = ({ accountType: prop
           bgColor: 'bg-yellow-50'
         },
         {
-          id: 'payment',
-          label: 'الدفع',
+          id: 'bulk-payment',
+          label: 'الدفع الجماعي',
           icon: CreditCard,
           href: accountType === 'admin' ? `/dashboard/admin/payments` : `/dashboard/shared/bulk-payment`,
           color: 'text-purple-600',
@@ -384,7 +397,7 @@ const ResponsiveSidebar: React.FC<ResponsiveSidebarProps> = ({ accountType: prop
       items: [
         {
           id: 'dream-academy',
-          label: 'أكاديمية الحلم',
+          label: 'مدرسة الحلم',
           icon: GraduationCap,
           href: `/dashboard/dream-academy`,
           color: 'text-indigo-600',
@@ -400,7 +413,7 @@ const ResponsiveSidebar: React.FC<ResponsiveSidebarProps> = ({ accountType: prop
       items: [
         {
           id: 'shared-bulk-payment',
-          label: 'الدفع الجماعي',
+          label: 'المدفوعات المشتركة',
           icon: CreditCard,
           href: `/dashboard/shared/bulk-payment`,
           color: 'text-purple-600',
@@ -544,8 +557,10 @@ const ResponsiveSidebar: React.FC<ResponsiveSidebarProps> = ({ accountType: prop
       });
     }
 
-    // قائمة النادي - إعادة ترتيب منطقي
+    // قائمة النادي - مطابقة للعناوين المطلوبة
     if (accountType === 'club') {
+
+      // قسم إدارة اللاعبين
       accountSpecificGroups.push({
         id: 'club-players',
         title: 'إدارة اللاعبين',
@@ -570,7 +585,7 @@ const ResponsiveSidebar: React.FC<ResponsiveSidebarProps> = ({ accountType: prop
           {
             id: 'club-referrals',
             label: 'الإحالات',
-            icon: Users,
+            icon: UserPlus,
             href: `/dashboard/club/referrals`,
             color: 'text-pink-600',
             bgColor: 'bg-pink-50'
@@ -590,18 +605,11 @@ const ResponsiveSidebar: React.FC<ResponsiveSidebarProps> = ({ accountType: prop
             href: `/dashboard/club/player-evaluation`,
             color: 'text-orange-600',
             bgColor: 'bg-orange-50'
-          },
-          {
-            id: 'club-tournaments',
-            label: 'البطولات',
-            icon: Award,
-            href: `/tournaments/unified-registration`,
-            color: 'text-yellow-600',
-            bgColor: 'bg-yellow-50'
-          },
+          }
         ]
       });
 
+      // قسم الأعمال التجارية
       accountSpecificGroups.push({
         id: 'club-business',
         title: 'الأعمال التجارية',
@@ -634,6 +642,7 @@ const ResponsiveSidebar: React.FC<ResponsiveSidebarProps> = ({ accountType: prop
         ]
       });
 
+      // قسم التسويق والتحليل
       accountSpecificGroups.push({
         id: 'club-marketing',
         title: 'التسويق والتحليل',
@@ -1001,7 +1010,7 @@ const ResponsiveSidebar: React.FC<ResponsiveSidebarProps> = ({ accountType: prop
 
       accountSpecificGroups.push({
         id: 'admin-academy',
-        title: 'أكاديمية الحلم',
+        title: 'مدرسة الحلم',
         icon: GraduationCap,
         items: [
           {
@@ -1081,7 +1090,7 @@ const ResponsiveSidebar: React.FC<ResponsiveSidebarProps> = ({ accountType: prop
         items: [
           {
             id: 'marketer-dream-academy',
-            label: 'أكاديمية الحلم',
+            label: 'مدرسة الحلم',
             icon: GraduationCap,
             href: `/dashboard/marketer/dream-academy`,
             color: 'text-cyan-600',
@@ -1262,39 +1271,28 @@ const ResponsiveSidebar: React.FC<ResponsiveSidebarProps> = ({ accountType: prop
   return (
     <>
       {/* Mobile Overlay */}
-      {typeof window !== 'undefined' && (
-        <AnimatePresence>
-          {isSidebarOpen && isMobile && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 z-40 bg-black/50 lg:hidden"
-              onClick={closeSidebar}
-            />
-          )}
-        </AnimatePresence>
-      )}
+      <AnimatePresence>
+        {isSidebarOpen && isMobile && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-40 bg-black/50 lg:hidden"
+            onClick={closeSidebar}
+          />
+        )}
+      </AnimatePresence>
 
       {/* Sidebar */}
-      {typeof window !== 'undefined' ? (
-        <motion.div
-          initial={isMobile ? { x: '100%' } : { width: isSidebarCollapsed ? 64 : 256 }}
-          animate={isMobile ? { x: isSidebarOpen ? 0 : '100%' } : { width: isSidebarCollapsed ? (isTablet ? 56 : 64) : (isTablet ? 224 : 256) }}
-          transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-          className={`fixed top-0 right-0 h-full bg-gradient-to-b ${accountInfo.color} z-50 shadow-xl backdrop-blur-xl border-l border-white/20 ${
-            isMobile ? 'w-72' : sidebarWidth
-          }`}
-          dir="rtl"
-        >
-      ) : (
-        <div
-          className={`fixed top-0 right-0 h-full bg-gradient-to-b ${accountInfo.color} z-50 shadow-xl backdrop-blur-xl border-l border-white/20 ${
-            isMobile ? 'w-72' : sidebarWidth
-          }`}
-          dir="rtl"
-        >
-      )}
+      <motion.div
+        initial={isMobile ? { x: '100%' } : { width: isSidebarCollapsed ? 64 : 256 }}
+        animate={isMobile ? { x: isSidebarOpen ? 0 : '100%' } : { width: isSidebarCollapsed ? (isTablet ? 56 : 64) : (isTablet ? 224 : 256) }}
+        transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+        className={`fixed top-0 right-0 h-full bg-gradient-to-b ${accountInfo.color} z-50 shadow-xl backdrop-blur-xl border-l border-white/20 ${
+          isMobile ? 'w-72' : sidebarWidth
+        }`}
+        dir="rtl"
+      >
         <div className="flex flex-col h-full">
           {/* Header */}
           <div className="flex justify-between items-center p-3 border-b border-white/20">
@@ -1526,11 +1524,7 @@ const ResponsiveSidebar: React.FC<ResponsiveSidebarProps> = ({ accountType: prop
             </Button>
           </div>
         </div>
-      {typeof window !== 'undefined' ? (
-        </motion.div>
-      ) : (
-        </div>
-      )}
+      </motion.div>
 
       {/* شاشة تسجيل الخروج */}
       {showLogoutScreen && <LogoutScreen />}
@@ -1878,10 +1872,12 @@ const ResponsiveHeader: React.FC = () => {
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
+    if (typeof document !== 'undefined') {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => {
+        document.removeEventListener('mousedown', handleClickOutside);
+      };
+    }
   }, []);
 
   return (

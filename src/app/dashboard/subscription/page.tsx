@@ -58,7 +58,7 @@ import { referralService } from '@/lib/referral/referral-service';
 import { POINTS_CONVERSION, BADGES } from '@/types/referral';
 
 // استخدام التخطيط الجديد
-const ResponsiveLayoutWrapper = dynamic(() => import('@/components/layout/ResponsiveLayout'), {
+const ResponsiveLayoutWrapper = dynamic(() => import('@/components/layout/ResponsiveLayout_fixed'), {
   ssr: false,
   loading: () => (
     <div className="flex items-center justify-center min-h-screen">

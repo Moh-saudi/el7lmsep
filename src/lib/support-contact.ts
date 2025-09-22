@@ -1,9 +1,9 @@
 // معلومات التواصل مع الدعم الفني
 export const SUPPORT_CONTACT = {
-  email: process.env.NEXT_PUBLIC_SUPPORT_EMAIL || 'info@el7lm.com',
+  email: 'info@el7lm.com',
   whatsapp: {
-    qatar: process.env.NEXT_PUBLIC_SUPPORT_WHATSAPP_QATAR || '+97472053188',
-    egypt: process.env.NEXT_PUBLIC_SUPPORT_WHATSAPP_EGYPT || '+201017799580'
+    qatar: '+97472053188',
+    egypt: '+201017799580'
   },
   website: 'https://el7lm.com',
   contactForm: '/contact'

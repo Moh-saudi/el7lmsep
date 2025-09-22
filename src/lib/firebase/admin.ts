@@ -6,7 +6,7 @@ let isDisabled = false;
 
 export function initializeFirebaseAdmin() {
   if (isInitialized || getApps().length > 0) {
-    return;
+    return getApps()[0];
   }
 
   // تعطيل Firebase أثناء البناء إذا لم تكن المتغيرات موجودة
@@ -59,7 +59,7 @@ export function initializeFirebaseAdmin() {
         );
       }
       
-      initializeApp({
+      const app = initializeApp({
         credential: cert({
           projectId: projectId,
           privateKey: cleanPrivateKey,
@@ -69,18 +69,20 @@ export function initializeFirebaseAdmin() {
       });
       
       console.log('✅ Firebase Admin initialized with service account');
+      isInitialized = true;
+      return app;
     } else {
       // استخدام default credentials (في production أو development)
       console.log('🔐 Using default credentials');
       
-      initializeApp({
+      const app = initializeApp({
         projectId: projectId,
       });
       
       console.log('✅ Firebase Admin initialized with default credentials');
+      isInitialized = true;
+      return app;
     }
-    
-    isInitialized = true;
     
   } catch (error: any) {
     console.error('❌ Failed to initialize Firebase Admin:');

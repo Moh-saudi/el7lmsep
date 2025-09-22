@@ -29,7 +29,9 @@ export default function TestCSPPage() {
           setCspStatus('❌ CSP blocking Geidea script');
         };
 
-        document.head.appendChild(script);
+        if (document && document.head) {
+          document.head.appendChild(script);
+        }
         
         // Remove script after test
         setTimeout(() => {

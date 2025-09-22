@@ -356,7 +356,7 @@ export default function GeideaPaymentModal({
       console.log('🌍 [Geidea] API response:', data);
 
       // معالجة نجاح الدفع
-      if (data.success && data.sessionId) {
+      if (data.sessionId) {
         console.log('✅ [Geidea] Payment session created successfully:', data);
         
         // حفظ بيانات الدفع في localStorage للاستخدام لاحقاً

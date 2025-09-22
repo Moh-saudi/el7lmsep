@@ -37,7 +37,6 @@ export function middleware(request) {
     return response;
   }
   
-  // لا نضبط CSP هنا لتفادي التعارض مع الرؤوس المُدارة من next.config.js
   return NextResponse.next();
 }
 
@@ -45,7 +44,6 @@ export const config = {
   matcher: [
     '/api/geidea/:path*',
     '/api/upload/:path*',
-    '/((?!_next/static|_next/image|favicon.ico).*)',
   ],
 };
 

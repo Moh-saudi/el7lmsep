@@ -29,7 +29,7 @@ import {
   Users,
   X
 } from 'lucide-react';
-import UnifiedOTPVerification from '@/components/shared/UnifiedOTPVerification';
+// import UnifiedOTPVerification from '@/components/shared/UnifiedOTPVerification';
 
 // Define user role types
 type UserRole = 'player' | 'club' | 'academy' | 'agent' | 'trainer' | 'admin';
@@ -51,6 +51,7 @@ const countries = [
   { name: 'الجزائر', code: '+213', currency: 'DZD', currencySymbol: 'د.ج', phoneLength: 9, phonePattern: '[0-9]{9}' },
   { name: 'تونس', code: '+216', currency: 'TND', currencySymbol: 'د.ت', phoneLength: 8, phonePattern: '[0-9]{8}' },
   { name: 'ليبيا', code: '+218', currency: 'LYD', currencySymbol: 'د.ل', phoneLength: 9, phonePattern: '[0-9]{9}' },
+  { name: 'اليمن', code: '+967', currency: 'YER', currencySymbol: 'ر.ي', phoneLength: 9, phonePattern: '[0-9]{9}' },
   // مضافة حديثاً
   { name: 'السودان', code: '+249', currency: 'SDG', currencySymbol: 'ج.س', phoneLength: 9, phonePattern: '[0-9]{9}' },
   { name: 'السنغال', code: '+221', currency: 'XOF', currencySymbol: 'Fr', phoneLength: 9, phonePattern: '[0-9]{9}' },
@@ -146,9 +147,9 @@ export default function RegisterPage() {
   const [error, setError] = useState<string | React.ReactNode>('');
   const [loading, setLoading] = useState(false);
   const [showTerms, setShowTerms] = useState(false);
-  const [showPhoneVerification, setShowPhoneVerification] = useState(false);
-  const [pendingPhone, setPendingPhone] = useState<string | null>(null);
-  const [pendingRegistrationData, setPendingRegistrationData] = useState<any>(null);
+  // const [showPhoneVerification, setShowPhoneVerification] = useState(false);
+  // const [pendingPhone, setPendingPhone] = useState<string | null>(null);
+  // const [pendingRegistrationData, setPendingRegistrationData] = useState<any>(null);
   const [selectedCountry, setSelectedCountry] = useState<any>(null);
   const [phoneCheckLoading, setPhoneCheckLoading] = useState(false);
   const [phoneExistsError, setPhoneExistsError] = useState('');
@@ -203,13 +204,13 @@ export default function RegisterPage() {
   ];
 
   // عند تحميل الصفحة: تحقق من وجود رقم هاتف معلق في localStorage
-  useEffect(() => {
-    const storedPendingPhone = localStorage.getItem('pendingPhoneVerification');
-    if (storedPendingPhone) {
-      setPendingPhone(storedPendingPhone);
-      setShowPhoneVerification(true);
-    }
-  }, []);
+  // useEffect(() => {
+  //   const storedPendingPhone = localStorage.getItem('pendingPhoneVerification');
+  //   if (storedPendingPhone) {
+  //     setPendingPhone(storedPendingPhone);
+  //     setShowPhoneVerification(true);
+  //   }
+  // }, []);
 
   // عدل handleInputChange ليستخدم التحقق
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -443,14 +444,14 @@ export default function RegisterPage() {
     }
   };
 
-  const handlePhoneVerificationClose = () => {
-    console.log('🔒 Closing OTP verification modal');
-    setShowPhoneVerification(false);
-    setPendingPhone(null);
-    localStorage.removeItem('pendingPhoneVerification');
-    localStorage.removeItem('pendingRegistration');
-          setError('تم إلغاء التحقق من الهاتف.');
-  };
+  // const handlePhoneVerificationClose = () => {
+  //   console.log('🔒 Closing OTP verification modal');
+  //   setShowPhoneVerification(false);
+  //   setPendingPhone(null);
+  //   localStorage.removeItem('pendingPhoneVerification');
+  //   localStorage.removeItem('pendingRegistration');
+  //         setError('تم إلغاء التحقق من الهاتف.');
+  // };
 
   // دالة تخطي OTP للعملاء الجدد
   const handleSkipOTP = async () => {
@@ -501,11 +502,11 @@ export default function RegisterPage() {
       
       // تنظيف البيانات المعلقة
       localStorage.removeItem('pendingRegistration');
-      localStorage.removeItem('pendingPhoneVerification');
+      // localStorage.removeItem('pendingPhoneVerification');
       
       // إغلاق نافذة التحقق
-      setShowPhoneVerification(false);
-      setPendingPhone(null);
+      // setShowPhoneVerification(false);
+      // setPendingPhone(null);
       
       // إعادة التوجيه إلى لوحة التحكم
       const dashboardRoute = getDashboardRoute(pendingData.accountType);
@@ -575,9 +576,9 @@ export default function RegisterPage() {
       
       // تنظيف البيانات المعلقة
       localStorage.removeItem('pendingRegistration');
-      localStorage.removeItem('pendingPhoneVerification');
-      setShowPhoneVerification(false);
-      setPendingPhone(null);
+      // localStorage.removeItem('pendingPhoneVerification');
+      // setShowPhoneVerification(false);
+      // setPendingPhone(null);
       
       setMessage('✅ تم إنشاء الحساب بنجاح! سيتم تحويلك للوحة التحكم.');
       setTimeout(() => {
@@ -755,7 +756,7 @@ export default function RegisterPage() {
                       <div className="flex items-center px-2 text-xs bg-gray-50 rounded-l-lg border border-r-0 border-gray-300">
                       {formData.countryCode || '+966'}
                     </div>
-                    <input
+                      <input
                       type="tel"
                       name="phone"
                       value={formData.phone}
@@ -765,11 +766,19 @@ export default function RegisterPage() {
                       required
                       maxLength={selectedCountry?.phoneLength || 10}
                         aria-label="رقم الهاتف"
-                        title="رقم الهاتف"
+                        title={`أدخل رقم الهاتف بدون كود الدولة (${selectedCountry?.phoneLength || 10} أرقام)`}
                       />
                       {phoneExistsError && (
                         <p className="mt-1 text-xs text-red-600" role="alert" aria-live="polite">{phoneExistsError}</p>
                     )}
+                  </div>
+                  {/* تلميحات رقم الهاتف */}
+                  <div className="mt-2 p-2 bg-blue-50 border border-blue-200 rounded-lg">
+                    <p className="text-xs text-blue-700">
+                      <strong>مثال:</strong> {selectedCountry?.name} - {selectedCountry?.code} + {selectedCountry ? '0'.repeat(selectedCountry.phoneLength) : '1012345678'}
+                    </p>
+                    <p className="text-xs text-gray-600 mt-1">• أدخل الرقم بدون كود الدولة</p>
+                    <p className="text-xs text-gray-600">• سيتم التحقق من عدم تكرار الرقم</p>
                   </div>
                   </div>
                 </div>

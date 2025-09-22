@@ -15,6 +15,7 @@ import {
 } from "firebase/firestore";
 import { getStorage, FirebaseStorage } from "firebase/storage";
 import { logFirebaseError, shouldSuppressFirebaseError } from "./error-handler";
+import { NETWORK_CONFIG } from "./network-config";
 
 // التحقق من متغيرات البيئة
 const requiredEnvVars = {
@@ -130,13 +131,7 @@ if (!getApps().length) {
     auth = getAuth(app);
 
     // Initialize Firestore with robust network settings for flaky networks/proxies
-    db = initializeFirestore(app, {
-      ignoreUndefinedProperties: true,
-      cacheSizeBytes: 50 * 1024 * 1024, // 50MB cache
-      // Reduce WebChannel 400 terminate noise by auto switching to long-polling when needed
-      experimentalAutoDetectLongPolling: true,
-      useFetchStreams: false
-    } as any);
+    db = initializeFirestore(app, NETWORK_CONFIG.FIREBASE_SETTINGS as any);
     
     // Note: Firestore network is enabled by default. Avoid toggling it at runtime to prevent race conditions.
 
@@ -227,7 +222,7 @@ function validateFirebaseConfig() {
   return true;
 }
 
-// Enhanced Firestore connection check
+// Enhanced Firestore connection check with offline support
 export const checkFirestoreConnection = async () => {
   try {
     // In development, skip strict connection checks to avoid false negatives from local environments
@@ -245,7 +240,35 @@ export const checkFirestoreConnection = async () => {
       console.log('✅ Firestore reachable (permission-denied on health doc)');
       return true;
     }
+    // If client is offline, that's acceptable for our use case
+    if (error?.code === 'unavailable' || error?.message?.includes('offline')) {
+      console.log('⚠️ Firestore offline - using cached data');
+      return true;
+    }
     console.error('❌ Firestore connection failed:', error);
+    return false;
+  }
+};
+
+// Network connectivity check
+export const checkNetworkConnectivity = async (): Promise<boolean> => {
+  try {
+    // Check if we're online
+    if (typeof navigator !== 'undefined' && !navigator.onLine) {
+      console.warn('⚠️ Browser reports offline status');
+      return false;
+    }
+    
+    // Try to fetch a small resource from Google
+    const response = await fetch('https://www.google.com/favicon.ico', {
+      method: 'HEAD',
+      mode: 'no-cors',
+      cache: 'no-cache'
+    });
+    
+    return true;
+  } catch (error) {
+    console.warn('⚠️ Network connectivity check failed:', error);
     return false;
   }
 };
@@ -253,8 +276,8 @@ export const checkFirestoreConnection = async () => {
 // Enhanced retry operation with better error handling
 export const retryOperation = async <T>(
   operation: () => Promise<T>,
-  maxRetries: number = 3,
-  baseDelay: number = 1000
+  maxRetries: number = NETWORK_CONFIG.MAX_RETRIES,
+  baseDelay: number = NETWORK_CONFIG.BASE_DELAY
 ): Promise<T> => {
   let lastError: Error;
   
@@ -268,12 +291,20 @@ export const retryOperation = async <T>(
       const isNetworkError = error instanceof Error && (
         error.message.includes('network') ||
         error.message.includes('connection') ||
-        error.message.includes('timeout')
+        error.message.includes('timeout') ||
+        error.message.includes('offline')
       );
       
       if (attempt === maxRetries || !isNetworkError) {
         console.error(`❌ Operation failed after ${attempt + 1} attempts:`, error);
         throw lastError;
+      }
+      
+      // Check network connectivity before retrying
+      const isOnline = await checkNetworkConnectivity();
+      if (!isOnline) {
+        console.warn('⚠️ Network offline, skipping retry');
+        throw new Error('Network offline');
       }
       
       // Exponential backoff with jitter

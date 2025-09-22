@@ -69,13 +69,22 @@ export default function EmailMigration() {
 
   useEffect(() => {
     // التحقق من صلاحيات المدير
-    if (!user || userData?.accountType !== 'admin') {
+    if (!user) {
+      router.push('/auth/login');
+      return;
+    }
+    
+    // فحص المسار للتأكد من أننا في صفحة الإدارة
+    const pathSegments = window.location.pathname.split('/');
+    const isAdminPath = pathSegments.length >= 3 && pathSegments[1] === 'dashboard' && pathSegments[2] === 'admin';
+    
+    if (!isAdminPath) {
       router.push('/dashboard/admin/users');
       return;
     }
     
     loadUsers();
-  }, [user, userData, router]);
+  }, [user, router]);
 
   const loadUsers = async () => {
     try {

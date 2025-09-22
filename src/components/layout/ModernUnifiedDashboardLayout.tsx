@@ -48,7 +48,7 @@ const ModernUnifiedDashboardLayout: React.FC<ModernUnifiedDashboardLayoutProps> 
   // إظهار القائمة الجانبية في صفحة ملف اللاعب أيضاً. نخفيها فقط لملفات الكيانات العامة.
   const shouldShowSidebar = !isEntityProfilePage;
 
-  // نافذة ترحيب بأكاديمية الحلم (مرة لكل مستخدم) - لا تظهر داخل صفحة الأكاديمية
+  // نافذة ترحيب بمدرسة الحلم (مرة لكل مستخدم) - لا تظهر داخل صفحة المدرسة
   useEffect(() => {
     try {
       if (!user) return;
@@ -87,7 +87,7 @@ const ModernUnifiedDashboardLayout: React.FC<ModernUnifiedDashboardLayoutProps> 
           <div className="p-8 bg-white/60 backdrop-blur-sm rounded-2xl shadow-lg">
             <p className="text-slate-600 mb-4">يرجى تسجيل الدخول للوصول إلى لوحة التحكم</p>
             <button 
-              onClick={() => window.location.href = '/auth/login'}
+              onClick={() => router.push('/auth/login')}
               className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
             >
               تسجيل الدخول
@@ -152,11 +152,11 @@ const ModernUnifiedDashboardLayout: React.FC<ModernUnifiedDashboardLayoutProps> 
           </main>
         </div>
 
-        {/* نافذة ترحيبية عصرية بأكاديمية الحلم */}
+        {/* نافذة ترحيبية عصرية بمدرسة الحلم */}
         <Dialog open={showWelcome} onOpenChange={(open)=>{ setShowWelcome(open); if (!open && dontShowAgain) markWelcomeSeen(); }}>
           <DialogContent className="max-w-2xl">
             <DialogHeader>
-              <DialogTitle>مرحباً بك في أكاديمية الحلم</DialogTitle>
+              <DialogTitle>مرحباً بك في مدرسة الحلم</DialogTitle>
               <DialogDescription>
                 تعلّم اللغات المتخصصة في كرة القدم، طوّر مهاراتك الحياتية، واستفد من جلسات لايف كوتش خاصة مدفوعة. محتوى مُختار بعناية مع قوائم تشغيل يوتيوب ومزايا تفاعلية داخل منصتنا.
               </DialogDescription>

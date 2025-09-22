@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import ResponsiveLayoutWrapper from '@/components/layout/ResponsiveLayout';
+import ResponsiveLayoutWrapper from '@/components/layout/ResponsiveLayout_fixed';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';

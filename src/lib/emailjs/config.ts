@@ -1,13 +1,13 @@
 // EmailJS Configuration
 export const EMAILJS_CONFIG = {
   // EmailJS Service ID
-  SERVICE_ID: process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID || 'your_service_id',
+  SERVICE_ID: 'service_12345678',
   
   // EmailJS Template ID for OTP
-  TEMPLATE_ID: process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID || 'your_template_id',
+  TEMPLATE_ID: 'template_12345678',
   
   // EmailJS Public Key
-  PUBLIC_KEY: process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY || 'your_public_key',
+  PUBLIC_KEY: 'public_key_12345678',
   
   // OTP Configuration
   OTP_LENGTH: 6,

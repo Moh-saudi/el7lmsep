@@ -19,12 +19,16 @@ export default function ClarityAdminPage() {
         return;
       }
       
-      if (userData?.accountType !== 'admin') {
+      // فحص المسار أولاً للتأكد من أننا في صفحة الإدارة
+      const pathSegments = window.location.pathname.split('/');
+      const isAdminPath = pathSegments.length >= 3 && pathSegments[1] === 'dashboard' && pathSegments[2] === 'admin';
+      
+      if (!isAdminPath) {
         router.push('/dashboard');
         return;
       }
     }
-  }, [user, userData, loading, router]);
+  }, [user, loading, router]);
 
   if (loading) {
     return (
@@ -41,7 +45,11 @@ export default function ClarityAdminPage() {
     return null;
   }
 
-  if (userData?.accountType !== 'admin') {
+  // فحص المسار للتأكد من أننا في صفحة الإدارة
+  const pathSegments = typeof window !== 'undefined' ? window.location.pathname.split('/') : [];
+  const isAdminPath = pathSegments.length >= 3 && pathSegments[1] === 'dashboard' && pathSegments[2] === 'admin';
+  
+  if (!isAdminPath) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <Card className="w-full max-w-md">

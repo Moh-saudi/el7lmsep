@@ -24,7 +24,7 @@ import {
   initializeFirestore,
   CACHE_SIZE_UNLIMITED
 } from 'firebase/firestore';
-import { auth, db } from './config';
+import { auth, db, retryOperation } from './config';
 import { secureConsole } from '../utils/secure-console';
 import { checkAccountStatus, updateLastLogin } from './account-status-checker';
 import { logInfo, logError, logWarn, logSuccess } from '../utils/debug-logger';
@@ -439,7 +439,7 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
     };
   }, []);
 
-  // Enhanced login function
+  // Enhanced login function with network resilience
   const login = async (email: string, password: string): Promise<{ user: User; userData: UserData }> => {
     try {
       console.log('🔐 AuthProvider - Login attempt started:', {
@@ -455,16 +455,21 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
         throw new Error('صيغة البريد الإلكتروني غير صحيحة');
       }
 
-      // محاولة تسجيل الدخول
+      // محاولة تسجيل الدخول مع إعادة المحاولة
       console.log('🔑 AuthProvider - Attempting Firebase Auth login...');
-      const result = await signInWithEmailAndPassword(auth, email, password);
+      
+      const result = await retryOperation(
+        () => signInWithEmailAndPassword(auth, email, password),
+        3, // max retries
+        1000 // base delay
+      );
       const user = result.user;
       console.log('✅ AuthProvider - Firebase Auth login successful:', {
         uid: user.uid,
         email: user.email
       });
 
-      // جلب بيانات المستخدم من Firestore
+      // جلب بيانات المستخدم من Firestore مع معالجة الأخطاء
       console.log('📋 AuthProvider - Fetching user data from Firestore...');
       
       // البحث في المجموعات الخاصة بالأدوار أولاً
@@ -472,20 +477,28 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
       let foundData = null;
       let userAccountType: UserRole = 'player';
 
-      // استخدام Promise.all للبحث المتوازي
-      const queries = accountTypes.map(collection => 
-        getDoc(doc(db, collection, user.uid))
-      );
+      try {
+        // استخدام Promise.all للبحث المتوازي مع معالجة الأخطاء
+        const queries = accountTypes.map(collection => 
+          getDoc(doc(db, collection, user.uid)).catch(error => {
+            console.warn(`Failed to fetch from ${collection}:`, error);
+            return { exists: () => false, data: () => null };
+          })
+        );
+        
+        const results = await Promise.all(queries);
       
-      const results = await Promise.all(queries);
-      
-      for (let i = 0; i < results.length; i++) {
-        if (results[i].exists()) {
-          foundData = results[i].data();
-          userAccountType = accountTypes[i].slice(0, -1) as UserRole;
-          console.log(`✅ Found user data in ${accountTypes[i]} collection:`, foundData);
-          break;
+        for (let i = 0; i < results.length; i++) {
+          if (results[i].exists()) {
+            foundData = results[i].data();
+            userAccountType = accountTypes[i].slice(0, -1) as UserRole;
+            console.log(`✅ Found user data in ${accountTypes[i]} collection:`, foundData);
+            break;
+          }
         }
+      } catch (firestoreError) {
+        console.warn('⚠️ Firestore query failed, continuing with fallback:', firestoreError);
+        // Continue with fallback logic
       }
 
       // إذا وجدنا بيانات في المجموعات الخاصة بالأدوار، استخدمها مباشرة
@@ -534,11 +547,20 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
       }
 
       // إذا لم نجد بيانات في المجموعات الخاصة بالأدوار، ابحث في مجموعة users
-      const userRef = doc(db, 'users', user.uid);
-      const userDoc = await getDoc(userRef);
+      let userDoc;
+      try {
+        const userRef = doc(db, 'users', user.uid);
+        userDoc = await getDoc(userRef);
 
-      if (!userDoc.exists()) {
-        // إنشاء وثيقة المستخدم إذا لم يتم العثور عليها
+        if (!userDoc.exists()) {
+          // إنشاء وثيقة المستخدم إذا لم يتم العثور عليها
+          const userData = await createBasicUserDocument(user, userAccountType, foundData || {});
+          setUserData(userData);
+          return { user, userData };
+        }
+      } catch (userDocError) {
+        console.warn('⚠️ Failed to fetch user document, creating basic document:', userDocError);
+        // إنشاء وثيقة أساسية في حالة فشل الاتصال
         const userData = await createBasicUserDocument(user, userAccountType, foundData || {});
         setUserData(userData);
         return { user, userData };

@@ -4,8 +4,7 @@ const isClient = typeof window !== 'undefined';
 // دالة فحص ما إذا كنا في بيئة تطوير آمنة
 const isSafeToDevelop = (): boolean => {
   // التحقق من بيئة التطوير بطريقة آمنة
-  const isDevelopment = (typeof window !== 'undefined' && (window as Window & { process?: { env?: { NODE_ENV?: string } } }).process?.env?.NODE_ENV === 'development') || 
-                       (typeof process !== 'undefined' && process.env?.NODE_ENV === 'development');
+  const isDevelopment = (typeof process !== 'undefined' && process.env?.NODE_ENV === 'development');
   
   if (!isClient) return isDevelopment;
   

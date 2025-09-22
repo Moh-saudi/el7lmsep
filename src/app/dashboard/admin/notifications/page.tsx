@@ -7,7 +7,7 @@ import toast from 'react-hot-toast';
 import { openWhatsAppShare, testWhatsAppShare } from '@/lib/utils/whatsapp-share';
 
 export default function AdminNotificationsPage() {
-  const [notifications, setNotifications] = useState([]);
+  const [notifications, setNotifications] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('all'); // all, unread, read
   const [selectedNotification, setSelectedNotification] = useState(null);
@@ -30,7 +30,7 @@ export default function AdminNotificationsPage() {
       const notificationsData = snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data(),
-        createdAt: doc.data().createdAt?.toDate?.() || new Date()
+        createdAt: doc.data()['createdAt']?.toDate?.() || new Date()
       }));
       
       setNotifications(notificationsData);
@@ -43,7 +43,7 @@ export default function AdminNotificationsPage() {
     }
   };
 
-  const markAsRead = async (notificationId) => {
+  const markAsRead = async (notificationId: string) => {
     try {
       const notificationRef = doc(db, 'admin_notifications', notificationId);
       await updateDoc(notificationRef, {
@@ -89,7 +89,7 @@ export default function AdminNotificationsPage() {
     }
   };
 
-  const getNotificationIcon = (type) => {
+  const getNotificationIcon = (type: string) => {
     switch (type) {
       case 'new_payment':
         return '💰';
@@ -102,7 +102,7 @@ export default function AdminNotificationsPage() {
     }
   };
 
-  const getNotificationColor = (type, isRead) => {
+  const getNotificationColor = (type: string, isRead: boolean) => {
     if (isRead) return 'bg-gray-50';
     
     switch (type) {

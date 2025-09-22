@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { beonSMSService } from '@/lib/beon';
-import { storeOTP, getOTP, getOTPStatus } from '../otp-storage';
+import { storeOTP, getOTP, getOTPStatus, clearOTP } from '../otp-storage';
 import { rateLimiter, getClientIpFromHeaders } from '@/lib/security/rate-limit';
 import { safeExecute, createResponseHandler, validateInput } from '@/lib/utils/complexity-reducer';
 
@@ -136,17 +136,23 @@ function manageRequestCache(formattedPhone: string) {
 async function sendOTP(formattedPhone: string, name: string) {
   console.log('📱 Attempting to send OTP to:', formattedPhone);
   
-  // محاولة API الجديد أولاً
-  let smsResult = await beonSMSService.sendOTPNew(formattedPhone, name, 6, 'ar');
+  // إنشاء OTP واحد فقط
+  const otp = beonSMSService.generateOTP();
+  console.log('📱 Generated OTP:', otp);
   
-  // إذا فشل، جرب الطريقة البديلة
+  // محاولة API الجديد أولاً مع OTP المولد
+  let smsResult = await beonSMSService.sendOTPNew(formattedPhone, name, 6, 'ar', otp);
+  
+  // إذا فشل، جرب الطريقة البديلة مع نفس OTP
   if (!smsResult.success) {
-    console.log('📱 New API failed, trying alternative method...');
-    const otp = beonSMSService.generateOTP();
+    console.log('📱 New API failed, trying alternative method with same OTP...');
     smsResult = await beonSMSService.sendOTPPlain(formattedPhone, otp, name);
   }
   
-  return smsResult;
+  // إضافة OTP إلى النتيجة
+  const result = { ...smsResult, otp };
+  
+  return result;
 }
 
 // معالجة OTP المرسل
@@ -220,14 +226,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // فحص OTP موجود
+    // حذف OTP موجود لإنشاء OTP جديد
     const existingOTPCheck = await checkExistingOTP(formattedPhone);
     if (existingOTPCheck.found) {
-      return NextResponse.json(responseHandler.success({
-        phoneNumber: formattedPhone,
-        existingOTP: true,
-        otp: existingOTPCheck.otp.otp
-      }, 'تم إرسال رمز التحقق بنجاح'));
+      console.log('📱 Found existing OTP, clearing it to generate new one:', existingOTPCheck.otp.otp);
+      // حذف OTP الموجود
+      await clearOTP(formattedPhone);
     }
 
     // التحقق من Rate Limiting

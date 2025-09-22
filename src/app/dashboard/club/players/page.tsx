@@ -388,10 +388,11 @@ export default function ClubPlayersPage() {
       .join('\n');
 
     // Download CSV file
-    const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = `club_players_${new Date().toISOString().split('T')[0]}.csv`;
+    if (typeof document !== 'undefined') {
+      const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `club_players_${new Date().toISOString().split('T')[0]}.csv`;
     link.click();
   };
 
@@ -1029,4 +1030,6 @@ export default function ClubPlayersPage() {
       </div>
     </main>
   );
-} 
+}
+}  
+ 

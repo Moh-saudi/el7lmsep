@@ -84,7 +84,7 @@ export default function AdminNotificationCenterPage() {
         },
         {
           id: '4',
-          type: 'video',
+          type: 'info',
           title: 'فيديوهات جديدة تحتاج مراجعة (3)',
           message: 'تم رفع 3 فيديوهات جديدة من قبل: أحمد محمد، سارة أحمد، محمد علي. يرجى مراجعة الفيديوهات الجديدة.',
           priority: 'medium',
@@ -94,7 +94,7 @@ export default function AdminNotificationCenterPage() {
         },
         {
           id: '5',
-          type: 'video',
+          type: 'info',
           title: 'فيديو جديد: مهارات التمرير المتقدمة',
           message: 'تم رفع فيديو جديد من قبل أحمد محمد (لاعب). يرجى مراجعة الفيديو.',
           priority: 'medium',

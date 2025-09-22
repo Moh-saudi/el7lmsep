@@ -9,24 +9,95 @@ import {
 
 // أنواع الوظائف المتاحة
 export type EmployeeRole = 
+  | 'admin' // مدير نظام عام
+  | 'supervisor' // مشرف
   | 'support' // موظف دعم فني
   | 'finance' // موظف مالية
   | 'sales' // مندوب مبيعات
   | 'content' // محرر محتوى
-  | 'admin' // مدير نظام
-  | 'supervisor'; // مشرف
+  | 'media_analyst' // محلل أداء الوسائط
+  | 'marketing_manager' // مدير التسويق
+  | 'customer_service' // خدمة العملاء الهاتفية
+  | 'customer_supervisor' // مشرف إدارة العملاء
+  | 'hr_manager' // مدير الموارد البشرية
+  | 'quality_manager' // مدير الجودة
+  | 'compliance_manager' // مدير الامتثال
+  | 'training_manager' // مدير التدريب
+  | 'assets_manager' // مدير الأصول
+  | 'projects_manager' // مدير المشاريع
+  | 'pr_manager'; // مدير العلاقات العامة
 
 // صلاحيات كل وظيفة
 export interface RolePermissions {
+  // صلاحيات المستخدمين
   canViewUsers: boolean; // عرض المستخدمين
   canEditUsers: boolean; // تعديل بيانات المستخدمين
+  canDeleteUsers: boolean; // حذف المستخدمين
+  
+  // صلاحيات المالية
   canViewFinancials: boolean; // عرض التقارير المالية
   canManagePayments: boolean; // إدارة المدفوعات
+  canManageInvoices: boolean; // إدارة الفواتير
+  canManageSubscriptions: boolean; // إدارة الاشتراكات
+  
+  // صلاحيات التقارير والتحليلات
   canViewReports: boolean; // عرض التقارير
+  canViewAnalytics: boolean; // عرض التحليلات والإحصائيات
+  canGenerateReports: boolean; // إنشاء التقارير
+  
+  // صلاحيات المحتوى
   canManageContent: boolean; // إدارة المحتوى
+  canManageAds: boolean; // إدارة الإعلانات
+  canManageVideos: boolean; // إدارة الفيديوهات
+  canManageDreamAcademy: boolean; // إدارة أكاديمية الحلم
+  
+  // صلاحيات الموظفين
   canManageEmployees: boolean; // إدارة الموظفين
+  canViewEmployees: boolean; // عرض الموظفين
+  canManageRoles: boolean; // إدارة الأدوار والصلاحيات
+  
+  // صلاحيات الدعم الفني
   canViewSupport: boolean; // عرض تذاكر الدعم
   canManageSupport: boolean; // إدارة تذاكر الدعم
+  canAssignTickets: boolean; // تعيين التذاكر
+  
+  // صلاحيات العملاء
+  canManageCustomers: boolean; // إدارة العملاء
+  canViewCustomerData: boolean; // عرض بيانات العملاء
+  
+  // صلاحيات النظام
+  canManageSettings: boolean; // إدارة إعدادات النظام
+  canViewSystemHealth: boolean; // عرض حالة النظام
+  canManageNotifications: boolean; // إدارة الإشعارات
+  
+  // صلاحيات البيانات
+  canExportData: boolean; // تصدير البيانات
+  canImportData: boolean; // استيراد البيانات
+  canViewAuditLogs: boolean; // عرض سجلات التدقيق
+  
+  // صلاحيات الموارد البشرية
+  canManageHR: boolean; // إدارة الموارد البشرية
+  canViewEmployeeSalaries: boolean; // عرض رواتب الموظفين
+  canManageTraining: boolean; // إدارة التدريب
+  
+  // صلاحيات الجودة والامتثال
+  canManageQuality: boolean; // إدارة الجودة
+  canManageCompliance: boolean; // إدارة الامتثال
+  
+  // صلاحيات الأصول والمشاريع
+  canManageAssets: boolean; // إدارة الأصول
+  canManageProjects: boolean; // إدارة المشاريع
+  
+  // صلاحيات العلاقات العامة
+  canManagePR: boolean; // إدارة العلاقات العامة
+  
+  // صلاحيات البطولات
+  canManageTournaments: boolean; // إدارة البطولات
+  
+  // صلاحيات الوسائط
+  canManageMedia: boolean; // إدارة الوسائط
+  
+  // المناطق المسموح بها
   allowedLocations: EmployeeLocation[]; // المناطق المسموح بها
 }
 

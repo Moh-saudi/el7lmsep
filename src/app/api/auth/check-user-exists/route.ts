@@ -7,20 +7,147 @@ function normalizePhoneNumber(phone: string): string[] {
   // إزالة جميع الرموز غير الرقمية
   let cleaned = phone.replace(/[^\d]/g, '');
   
-  // إزالة الصفر من البداية إذا كان موجوداً
-  cleaned = cleaned.replace(/^0+/, '');
-  
   // إنشاء قائمة بالتنسيقات المحتملة
   const formats = [cleaned];
   
-  // إذا كان الرقم يبدأ بـ 974 (كود قطر)، أضف تنسيق بدون الكود
-  if (cleaned.startsWith('974') && cleaned.length > 9) {
-    formats.push(cleaned.substring(3));
+  // إزالة الصفر من البداية إذا كان موجوداً
+  const withoutLeadingZero = cleaned.replace(/^0+/, '');
+  if (withoutLeadingZero !== cleaned) {
+    formats.push(withoutLeadingZero);
   }
   
-  // إذا كان الرقم لا يبدأ بـ 974، أضف تنسيق مع الكود
-  if (!cleaned.startsWith('974') && cleaned.length <= 9) {
-    formats.push('974' + cleaned);
+  // إضافة تنسيقات مختلفة حسب كود الدولة
+  if (cleaned.startsWith('20')) {
+    // رقم مصري
+    const withoutCountryCode = cleaned.substring(2);
+    formats.push(withoutCountryCode); // بدون كود مصر
+    formats.push('0' + withoutCountryCode); // مع صفر في البداية
+    // إضافة تنسيقات أخرى للرقم المصري
+    if (withoutCountryCode.length === 10) {
+      formats.push(withoutCountryCode.substring(0, 9)); // بدون آخر رقم
+      formats.push('0' + withoutCountryCode.substring(0, 9)); // مع صفر وبدون آخر رقم
+    }
+  } else if (cleaned.length === 10 && cleaned.startsWith('1')) {
+    // رقم مصري بدون صفر في البداية (مثل 1017799580)
+    formats.push(cleaned); // الرقم كما هو
+    formats.push('0' + cleaned); // مع صفر في البداية
+    formats.push(cleaned.substring(0, 9)); // بدون آخر رقم
+    formats.push('0' + cleaned.substring(0, 9)); // مع صفر وبدون آخر رقم
+  } else if (cleaned.startsWith('966')) {
+    // رقم سعودي
+    formats.push(cleaned.substring(3)); // بدون كود السعودية
+    formats.push('0' + cleaned.substring(3)); // مع صفر في البداية
+  } else if (cleaned.startsWith('971')) {
+    // رقم إماراتي
+    formats.push(cleaned.substring(3)); // بدون كود الإمارات
+    formats.push('0' + cleaned.substring(3)); // مع صفر في البداية
+  } else if (cleaned.startsWith('974')) {
+    // رقم قطري
+    formats.push(cleaned.substring(3)); // بدون كود قطر
+    formats.push('0' + cleaned.substring(3)); // مع صفر في البداية
+  } else if (cleaned.startsWith('965')) {
+    // رقم كويتي
+    formats.push(cleaned.substring(3)); // بدون كود الكويت
+    formats.push('0' + cleaned.substring(3)); // مع صفر في البداية
+  } else if (cleaned.startsWith('973')) {
+    // رقم بحريني
+    formats.push(cleaned.substring(3)); // بدون كود البحرين
+    formats.push('0' + cleaned.substring(3)); // مع صفر في البداية
+  } else if (cleaned.startsWith('968')) {
+    // رقم عماني
+    formats.push(cleaned.substring(3)); // بدون كود عمان
+    formats.push('0' + cleaned.substring(3)); // مع صفر في البداية
+  } else if (cleaned.startsWith('962')) {
+    // رقم أردني
+    formats.push(cleaned.substring(3)); // بدون كود الأردن
+    formats.push('0' + cleaned.substring(3)); // مع صفر في البداية
+  } else if (cleaned.startsWith('961')) {
+    // رقم لبناني
+    formats.push(cleaned.substring(3)); // بدون كود لبنان
+    formats.push('0' + cleaned.substring(3)); // مع صفر في البداية
+  } else if (cleaned.startsWith('964')) {
+    // رقم عراقي
+    formats.push(cleaned.substring(3)); // بدون كود العراق
+    formats.push('0' + cleaned.substring(3)); // مع صفر في البداية
+  } else if (cleaned.startsWith('963')) {
+    // رقم سوري
+    formats.push(cleaned.substring(3)); // بدون كود سوريا
+    formats.push('0' + cleaned.substring(3)); // مع صفر في البداية
+  } else if (cleaned.startsWith('212')) {
+    // رقم مغربي
+    formats.push(cleaned.substring(3)); // بدون كود المغرب
+    formats.push('0' + cleaned.substring(3)); // مع صفر في البداية
+  } else if (cleaned.startsWith('213')) {
+    // رقم جزائري
+    formats.push(cleaned.substring(3)); // بدون كود الجزائر
+    formats.push('0' + cleaned.substring(3)); // مع صفر في البداية
+  } else if (cleaned.startsWith('216')) {
+    // رقم تونسي
+    formats.push(cleaned.substring(3)); // بدون كود تونس
+    formats.push('0' + cleaned.substring(3)); // مع صفر في البداية
+  } else if (cleaned.startsWith('218')) {
+    // رقم ليبي
+    formats.push(cleaned.substring(3)); // بدون كود ليبيا
+    formats.push('0' + cleaned.substring(3)); // مع صفر في البداية
+  } else if (cleaned.startsWith('249')) {
+    // رقم سوداني
+    formats.push(cleaned.substring(3)); // بدون كود السودان
+    formats.push('0' + cleaned.substring(3)); // مع صفر في البداية
+  } else if (cleaned.startsWith('221')) {
+    // رقم سنغالي
+    formats.push(cleaned.substring(3)); // بدون كود السنغال
+    formats.push('0' + cleaned.substring(3)); // مع صفر في البداية
+  } else if (cleaned.startsWith('225')) {
+    // رقم ساحل العاج
+    formats.push(cleaned.substring(3)); // بدون كود ساحل العاج
+    formats.push('0' + cleaned.substring(3)); // مع صفر في البداية
+  } else if (cleaned.startsWith('253')) {
+    // رقم جيبوتي
+    formats.push(cleaned.substring(3)); // بدون كود جيبوتي
+    formats.push('0' + cleaned.substring(3)); // مع صفر في البداية
+  } else if (cleaned.startsWith('34')) {
+    // رقم إسباني
+    formats.push(cleaned.substring(2)); // بدون كود إسبانيا
+    formats.push('0' + cleaned.substring(2)); // مع صفر في البداية
+  } else if (cleaned.startsWith('33')) {
+    // رقم فرنسي
+    formats.push(cleaned.substring(2)); // بدون كود فرنسا
+    formats.push('0' + cleaned.substring(2)); // مع صفر في البداية
+  } else if (cleaned.startsWith('44')) {
+    // رقم إنجليزي
+    formats.push(cleaned.substring(2)); // بدون كود إنجلترا
+    formats.push('0' + cleaned.substring(2)); // مع صفر في البداية
+  } else if (cleaned.startsWith('351')) {
+    // رقم برتغالي
+    formats.push(cleaned.substring(3)); // بدون كود البرتغال
+    formats.push('0' + cleaned.substring(3)); // مع صفر في البداية
+  } else if (cleaned.startsWith('39')) {
+    // رقم إيطالي
+    formats.push(cleaned.substring(2)); // بدون كود إيطاليا
+    formats.push('0' + cleaned.substring(2)); // مع صفر في البداية
+  } else if (cleaned.startsWith('30')) {
+    // رقم يوناني
+    formats.push(cleaned.substring(2)); // بدون كود اليونان
+    formats.push('0' + cleaned.substring(2)); // مع صفر في البداية
+  } else if (cleaned.startsWith('357')) {
+    // رقم قبرصي
+    formats.push(cleaned.substring(3)); // بدون كود قبرص
+    formats.push('0' + cleaned.substring(3)); // مع صفر في البداية
+  } else if (cleaned.startsWith('90')) {
+    // رقم تركي
+    formats.push(cleaned.substring(2)); // بدون كود تركيا
+    formats.push('0' + cleaned.substring(2)); // مع صفر في البداية
+  } else if (cleaned.startsWith('66')) {
+    // رقم تايلندي
+    formats.push(cleaned.substring(2)); // بدون كود تايلاند
+    formats.push('0' + cleaned.substring(2)); // مع صفر في البداية
+  } else {
+    // إذا لم يكن هناك كود دولة معروف، أضف تنسيقات مختلفة
+    if (cleaned.length > 9) {
+      // إذا كان الرقم طويل، قد يكون مع كود دولة
+      formats.push(cleaned.substring(2)); // بدون أول رقمين
+      formats.push(cleaned.substring(3)); // بدون أول ثلاثة أرقام
+    }
   }
   
   // إزالة التكرار

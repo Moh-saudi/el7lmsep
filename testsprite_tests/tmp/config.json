@@ -1,0 +1,16 @@
+{
+  "status": "commited",
+  "type": "frontend",
+  "scope": "codebase",
+  "localEndpoint": "http://localhost:3001",
+  "executionArgs": {
+    "projectName": "el7lm25-main",
+    "projectPath": "D:\\el7lm25-main (1)\\el7lm25-main",
+    "testIds": [],
+    "additionalInstruction": "تحليل شامل للمشاكل في المشروع مع التركيز على أخطاء 500 Internal Server Error ومشاكل التخطيط والتنقل",
+    "envs": {
+      "API_KEY": "sk-user-YGjvrNbkYGE87AI6InCVFr6DrRHDYDlQbA9gmfmn-0JcMQzk4EOiJKYSZiPkMZerNykAHPob9DF91xfiUUN80y0V2noNcfPLdz3R0WWPfMPufa42cm17TlcNqygF-GnhwRU"
+    }
+  },
+  "proxy": "http://b7e20036-53b7-474a-baa5-212560112794:zXptqnTTixwCd3DAXJBECiZCk3VNSltP@tun.testsprite.com:8080"
+}

@@ -63,11 +63,11 @@ import {
 import { auth } from '@/lib/firebase/config';
 import { toast } from 'sonner';
 import { useAuth } from '@/lib/firebase/auth-provider';
-import AdminHeader from '@/components/layout/AdminHeader';
-import AdminFooter from '@/components/layout/AdminFooter';
+// import AdminHeader from '@/components/layout/AdminHeader';
+// import AdminFooter from '@/components/layout/AdminFooter';
 
 // الصلاحيات الافتراضية لكل دور وظيفي
-const DEFAULT_PERMISSIONS: Record<EmployeeRole, RolePermissions> = {
+const DEFAULT_PERMISSIONS: Partial<Record<EmployeeRole, Partial<RolePermissions>>> = {
   support: {
     canViewUsers: true,
     canEditUsers: false,
@@ -437,7 +437,14 @@ export default function EmployeesManagement() {
 
   // تحديث نموذج إضافة/تعديل الموظف
   const EmployeeForm = () => (
-    <div className="grid gap-4 py-4">
+    <div className="py-4">
+      {/* تخطيط من 3 أعمدة */}
+      <div className="grid grid-cols-12 gap-6">
+        {/* العمود الأيسر - فارغ للتوازن */}
+        <div className="col-span-2"></div>
+        
+        {/* العمود الأوسط - الحقول (عرض مضاعف) */}
+        <div className="col-span-8 grid gap-4 bg-blue-50 p-4 rounded-lg border-2 border-blue-200">
       <div className="grid gap-2">
         <Label>الاسم الكامل</Label>
         <Input
@@ -508,7 +515,7 @@ export default function EmployeesManagement() {
             setNewEmployee(prev => ({ 
               ...prev, 
               role: value,
-              permissions: DEFAULT_PERMISSIONS[value]
+              permissions: DEFAULT_PERMISSIONS[value] as RolePermissions
             }));
             if (formErrors.role) {
               setFormErrors(prev => ({ ...prev, role: '' }));
@@ -552,9 +559,14 @@ export default function EmployeesManagement() {
         )}
       </div>
 
-      <div className="border-t pt-4 mt-4">
-        <h4 className="font-medium mb-4">المناطق الجغرافية</h4>
-        <LocationSelector />
+        <div className="border-t pt-4 mt-4">
+          <h4 className="font-medium mb-4">المناطق الجغرافية</h4>
+          <LocationSelector />
+        </div>
+        </div>
+        
+        {/* العمود الأيمن - فارغ للتوازن */}
+        <div className="col-span-2"></div>
       </div>
     </div>
   );
@@ -739,6 +751,7 @@ export default function EmployeesManagement() {
                       type="button"
                       onClick={() => setSelectedCities(prev => prev.filter(id => id !== cityId))}
                       className="ml-1 hover:text-red-500"
+                      title="إزالة المدينة"
                     >
                       <X className="w-3 h-3" />
                     </button>
@@ -1244,24 +1257,20 @@ export default function EmployeesManagement() {
 
   if (loading) {
     return (
-      <div className="bg-gray-50">
-        <AdminHeader />
+      <div className="min-h-screen bg-gray-50">
         <div className="flex items-center justify-center h-[calc(100vh-8rem)]">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
             <p className="mt-4 text-gray-600">جاري تحميل بيانات الموظفين...</p>
           </div>
         </div>
-        <AdminFooter />
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col bg-gray-50">
-      <AdminHeader />
-      
-      <main className="flex-1 container mx-auto px-6 py-8">
+    <div className="min-h-screen bg-gray-50">
+      <main className="container mx-auto px-6 py-8">
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
           <div>
@@ -1479,10 +1488,10 @@ export default function EmployeesManagement() {
 
         {/* Add/Edit Employee Dialog */}
         <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
-          <DialogContent className="sm:max-w-[600px]">
+          <DialogContent className="max-w-4xl">
             <DialogHeader>
               <DialogTitle>
-                {editingEmployee ? 'تعديل بيانات الموظف' : 'إضافة موظف جديد'}
+                {editingEmployee ? 'تعديل بيانات الموظف' : 'إضافة موظف جديد - تخطيط محدث'}
               </DialogTitle>
               <DialogDescription>
                 أدخل بيانات الموظف وحدد صلاحياته في النظام
@@ -1526,8 +1535,6 @@ export default function EmployeesManagement() {
         {/* Credentials Dialog */}
         <CredentialsDialog />
       </main>
-
-      <AdminFooter />
     </div>
   );
 } 

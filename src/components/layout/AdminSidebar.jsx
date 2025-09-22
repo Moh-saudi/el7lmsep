@@ -28,7 +28,9 @@ import {
   Building,
   GraduationCap,
   UserPlus,
-  Trophy
+  Trophy,
+  Video,
+  Mail
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { auth } from '@/lib/firebase/config';
@@ -102,6 +104,61 @@ const AdminSidebar = ({ isOpen, adminData, onToggle, isMobile }) => {
       ]
     },
     {
+      title: 'إدارة اللاعبين',
+      icon: UserCheck,
+      color: 'text-blue-600',
+      subItems: [
+        { 
+          title: 'جميع اللاعبين', 
+          href: '/dashboard/admin/users/players', 
+          icon: Users,
+          description: 'عرض وإدارة جميع اللاعبين في النظام'
+        },
+        { 
+          title: 'لاعبين الأكاديميات', 
+          href: '/dashboard/academy/players', 
+          icon: GraduationCap,
+          description: 'إدارة لاعبي الأكاديميات'
+        },
+        { 
+          title: 'لاعبين الأندية', 
+          href: '/dashboard/club/players', 
+          icon: Building,
+          description: 'إدارة لاعبي الأندية'
+        },
+        { 
+          title: 'لاعبين الوكلاء', 
+          href: '/dashboard/agent/players', 
+          icon: UserCog,
+          description: 'إدارة لاعبي الوكلاء'
+        },
+        { 
+          title: 'لاعبين المدربين', 
+          href: '/dashboard/trainer/players', 
+          icon: UserCheck,
+          description: 'إدارة لاعبي المدربين'
+        },
+        { 
+          title: 'لاعبين المسوقين', 
+          href: '/dashboard/marketer/players', 
+          icon: UserPlus,
+          description: 'إدارة لاعبي المسوقين'
+        },
+        { 
+          title: 'إضافة لاعب جديد', 
+          href: '/dashboard/shared/player-form?mode=add&accountType=admin', 
+          icon: UserPlus,
+          description: 'إضافة لاعب جديد للنظام'
+        },
+        { 
+          title: 'تحويل اللاعبين التابعين', 
+          href: '/admin/convert-dependent-players', 
+          icon: UserCheck,
+          description: 'تحويل اللاعبين التابعين إلى حسابات مستقلة'
+        }
+      ]
+    },
+    {
       title: 'المدفوعات والاشتراكات',
       icon: CreditCard,
       color: 'text-purple-600',
@@ -129,7 +186,10 @@ const AdminSidebar = ({ isOpen, adminData, onToggle, isMobile }) => {
       color: 'text-rose-600',
       subItems: [
         { title: 'إدارة الملفات', href: '/dashboard/admin/media', icon: HardDrive },
-        { title: 'الصور والفيديوهات', href: '/dashboard/admin/media/gallery', icon: FileText }
+        { title: 'الصور والفيديوهات', href: '/dashboard/admin/media/gallery', icon: FileText },
+        { title: 'فيديوهات اللاعبين', href: '/dashboard/admin/videos', icon: Video },
+        { title: 'سجلات الفيديوهات', href: '/dashboard/admin/video-logs', icon: FileText },
+        { title: 'مدرسة الحلم', href: '/dashboard/admin/dream-academy', icon: GraduationCap }
       ]
     },
     {

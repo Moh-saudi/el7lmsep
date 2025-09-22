@@ -202,27 +202,75 @@ export default function EnhancedSidebar({ accountType = 'player' }: EnhancedSide
       ],
       coach: [
         {
-          title: 'الفريق',
-          icon: Users,
-          href: '/dashboard/coach/team',
+          title: 'الملف الشخصي',
+          icon: User,
+          href: '/dashboard/trainer/profile',
           color: 'text-green-400'
+        },
+        {
+          title: 'اللاعبين',
+          icon: Users,
+          href: '/dashboard/trainer/players',
+          color: 'text-green-400'
+        },
+        {
+          title: 'البحث عن لاعبين',
+          icon: Search,
+          href: '/dashboard/trainer/search-players',
+          color: 'text-blue-400'
+        },
+        {
+          title: 'فيديوهات اللاعبين',
+          icon: Video,
+          href: '/dashboard/trainer/player-videos',
+          color: 'text-red-400'
+        },
+        {
+          title: 'الرسائل',
+          icon: MessageSquare,
+          href: '/dashboard/trainer/messages',
+          color: 'text-blue-400'
+        },
+        {
+          title: 'الإشعارات',
+          icon: Bell,
+          href: '/dashboard/trainer/notifications',
+          color: 'text-orange-400'
+        },
+        {
+          title: 'الدفع الجماعي',
+          icon: CreditCard,
+          href: '/dashboard/trainer/bulk-payment',
+          color: 'text-purple-400'
+        },
+        {
+          title: 'الفواتير والاشتراكات',
+          icon: CreditCard,
+          href: '/dashboard/trainer/billing',
+          color: 'text-green-400'
+        },
+        {
+          title: 'حالة الاشتراك',
+          icon: Star,
+          href: '/dashboard/trainer/subscription-status',
+          color: 'text-yellow-400'
         },
         {
           title: 'التدريبات',
           icon: Target,
-          href: '/dashboard/coach/training',
+          href: '/dashboard/trainer/training',
           color: 'text-blue-400'
         },
         {
           title: 'المباريات',
           icon: Trophy,
-          href: '/dashboard/coach/matches',
+          href: '/dashboard/trainer/matches',
           color: 'text-purple-400'
         },
         {
           title: 'التقارير',
           icon: FileText,
-          href: '/dashboard/coach/reports',
+          href: '/dashboard/trainer/reports',
           color: 'text-orange-400'
         },
         {
@@ -230,20 +278,68 @@ export default function EnhancedSidebar({ accountType = 'player' }: EnhancedSide
           icon: Trophy,
           href: '/tournaments/unified-registration',
           color: 'text-yellow-400'
-        },
-        {
-          title: 'الفيديوهات',
-          icon: Video,
-          href: '/dashboard/club/player-videos',
-          color: 'text-red-400'
         }
       ],
       club: [
         {
-          title: 'اللاعبين',
+          title: 'الملف الشخصي',
+          icon: User,
+          href: '/dashboard/club/profile',
+          color: 'text-green-400'
+        },
+        {
+          title: 'الرسائل',
+          icon: MessageSquare,
+          href: '/dashboard/club/messages',
+          color: 'text-blue-400'
+        },
+        {
+          title: 'الإشعارات',
+          icon: Bell,
+          href: '/dashboard/club/notifications',
+          color: 'text-orange-400'
+        },
+        {
+          title: 'الاشتراكات والمدفوعات',
+          icon: CreditCard,
+          href: '/dashboard/club/subscriptions',
+          color: 'text-purple-400'
+        },
+        {
+          title: 'حالة الاشتراك',
+          icon: Star,
+          href: '/dashboard/club/subscription-status',
+          color: 'text-yellow-400'
+        },
+        {
+          title: 'التدريب والتعليم',
+          icon: Target,
+          href: '/dashboard/club/training',
+          color: 'text-indigo-400'
+        },
+        {
+          title: 'مدرسة الحلم',
+          icon: Star,
+          href: '/dashboard/dream-academy',
+          color: 'text-amber-400'
+        },
+        {
+          title: 'الدفع الجماعي',
+          icon: CreditCard,
+          href: '/dashboard/club/bulk-payment',
+          color: 'text-purple-400'
+        },
+        {
+          title: 'إدارة اللاعبين',
           icon: Users,
           href: '/dashboard/club/players',
           color: 'text-green-400'
+        },
+        {
+          title: 'البحث عن لاعبين',
+          icon: Search,
+          href: '/dashboard/club/search-players',
+          color: 'text-blue-400'
         },
         {
           title: 'الإحالات',
@@ -252,74 +348,158 @@ export default function EnhancedSidebar({ accountType = 'player' }: EnhancedSide
           color: 'text-purple-400'
         },
         {
-          title: 'المباريات',
-          icon: Trophy,
-          href: '/dashboard/club/matches',
-          color: 'text-purple-400'
-        },
-        {
-          title: 'التقارير',
-          icon: FileText,
-          href: '/dashboard/club/reports',
-          color: 'text-orange-400'
-        },
-        {
-          title: 'الإحصائيات',
-          icon: BarChart3,
-          href: '/dashboard/club/stats',
-          color: 'text-indigo-400'
-        },
-        {
-          title: 'البطولات',
-          icon: Trophy,
-          href: '/tournaments/unified-registration',
-          color: 'text-yellow-400'
-        },
-        {
-          title: 'الفيديوهات',
+          title: 'فيديوهات اللاعبين',
           icon: Video,
           href: '/dashboard/club/player-videos',
           color: 'text-red-400'
+        },
+        {
+          title: 'تقييم اللاعبين',
+          icon: Target,
+          href: '/dashboard/club/player-evaluation',
+          color: 'text-orange-400'
+        },
+        {
+          title: 'العقود',
+          icon: FileText,
+          href: '/dashboard/club/contracts',
+          color: 'text-indigo-400'
+        },
+        {
+          title: 'المفاوضات',
+          icon: TrendingUp,
+          href: '/dashboard/club/negotiations',
+          color: 'text-cyan-400'
+        },
+        {
+          title: 'القيم السوقية',
+          icon: TrendingUp,
+          href: '/dashboard/club/market-values',
+          color: 'text-green-400'
+        },
+        {
+          title: 'التسويق',
+          icon: TrendingUp,
+          href: '/dashboard/club/marketing',
+          color: 'text-pink-400'
+        },
+        {
+          title: 'تحليل الذكاء الاصطناعي',
+          icon: BarChart3,
+          href: '/dashboard/club/ai-analysis',
+          color: 'text-violet-400'
         }
       ],
       academy: [
         {
-          title: 'الطلاب',
-          icon: Users,
-          href: '/dashboard/academy/students',
+          title: 'الملف الشخصي',
+          icon: User,
+          href: '/dashboard/academy/profile',
           color: 'text-green-400'
         },
         {
-          title: 'البرامج',
-          icon: Target,
-          href: '/dashboard/academy/programs',
+          title: 'الطلاب واللاعبين',
+          icon: Users,
+          href: '/dashboard/academy/players',
+          color: 'text-green-400'
+        },
+        {
+          title: 'البحث عن لاعبين',
+          icon: Search,
+          href: '/dashboard/academy/search-players',
           color: 'text-blue-400'
         },
         {
-          title: 'التقارير',
-          icon: FileText,
-          href: '/dashboard/academy/reports',
-          color: 'text-purple-400'
-        },
-        {
-          title: 'البطولات',
-          icon: Trophy,
-          href: '/tournaments/unified-registration',
-          color: 'text-yellow-400'
-        },
-        {
-          title: 'الفيديوهات',
+          title: 'فيديوهات اللاعبين',
           icon: Video,
           href: '/dashboard/academy/player-videos',
           color: 'text-red-400'
+        },
+        {
+          title: 'الرسائل',
+          icon: MessageSquare,
+          href: '/dashboard/academy/messages',
+          color: 'text-blue-400'
+        },
+        {
+          title: 'الإشعارات',
+          icon: Bell,
+          href: '/dashboard/academy/notifications',
+          color: 'text-orange-400'
+        },
+        {
+          title: 'الدفع الجماعي',
+          icon: CreditCard,
+          href: '/dashboard/academy/bulk-payment',
+          color: 'text-purple-400'
+        },
+        {
+          title: 'الفواتير والاشتراكات',
+          icon: CreditCard,
+          href: '/dashboard/academy/billing',
+          color: 'text-green-400'
+        },
+        {
+          title: 'حالة الاشتراك',
+          icon: Star,
+          href: '/dashboard/academy/subscription-status',
+          color: 'text-yellow-400'
         }
       ],
       agent: [
+        {
+          title: 'الملف الشخصي',
+          icon: User,
+          href: '/dashboard/agent/profile',
+          color: 'text-green-400'
+        },
         {
           title: 'اللاعبين',
           icon: Users,
           href: '/dashboard/agent/players',
           color: 'text-green-400'
+        },
+        {
+          title: 'البحث عن لاعبين',
+          icon: Search,
+          href: '/dashboard/agent/search-players',
+          color: 'text-blue-400'
+        },
+        {
+          title: 'فيديوهات اللاعبين',
+          icon: Video,
+          href: '/dashboard/agent/player-videos',
+          color: 'text-red-400'
+        },
+        {
+          title: 'الرسائل',
+          icon: MessageSquare,
+          href: '/dashboard/agent/messages',
+          color: 'text-blue-400'
+        },
+        {
+          title: 'الإشعارات',
+          icon: Bell,
+          href: '/dashboard/agent/notifications',
+          color: 'text-orange-400'
+        },
+        {
+          title: 'الدفع الجماعي',
+          icon: CreditCard,
+          href: '/dashboard/agent/bulk-payment',
+          color: 'text-purple-400'
+        },
+        {
+          title: 'الفواتير والاشتراكات',
+          icon: CreditCard,
+          href: '/dashboard/agent/billing',
+          color: 'text-green-400'
+        },
+        {
+          title: 'حالة الاشتراك',
+          icon: Star,
+          href: '/dashboard/agent/subscription-status',
+          color: 'text-yellow-400'
         },
         {
           title: 'العقود',
@@ -328,60 +508,96 @@ export default function EnhancedSidebar({ accountType = 'player' }: EnhancedSide
           color: 'text-purple-400'
         },
         {
-          title: 'الفرص',
+          title: 'المفاوضات',
           icon: TrendingUp,
-          href: '/dashboard/agent/opportunities',
-          color: 'text-orange-400'
+          href: '/dashboard/agent/negotiations',
+          color: 'text-cyan-400'
         },
         {
-          title: 'البطولات',
-          icon: Trophy,
-          href: '/tournaments/unified-registration',
-          color: 'text-yellow-400'
+          title: 'القيم السوقية',
+          icon: TrendingUp,
+          href: '/dashboard/agent/market-values',
+          color: 'text-green-400'
         },
         {
-          title: 'الفيديوهات',
-          icon: Video,
-          href: '/dashboard/agent/player-videos',
-          color: 'text-red-400'
+          title: 'التسويق',
+          icon: TrendingUp,
+          href: '/dashboard/agent/marketing',
+          color: 'text-pink-400'
+        },
+        {
+          title: 'تحليل الذكاء الاصطناعي',
+          icon: BarChart3,
+          href: '/dashboard/agent/ai-analysis',
+          color: 'text-violet-400'
         }
       ],
       admin: [
         {
-          title: 'المستخدمين',
+          title: 'إدارة المستخدمين',
           icon: Users,
           href: '/dashboard/admin/users',
           color: 'text-green-400'
         },
         {
-          title: 'النظام',
-          icon: Settings,
-          href: '/dashboard/admin/system',
+          title: 'إدارة اللاعبين',
+          icon: Users,
+          href: '/dashboard/admin/players',
+          color: 'text-blue-400'
+        },
+        {
+          title: 'المدفوعات والاشتراكات',
+          icon: CreditCard,
+          href: '/dashboard/admin/payments',
           color: 'text-purple-400'
         },
         {
-          title: 'التقارير',
-          icon: FileText,
+          title: 'التقارير والإحصائيات',
+          icon: BarChart3,
           href: '/dashboard/admin/reports',
           color: 'text-orange-400'
+        },
+        {
+          title: 'المحتوى والوسائط',
+          icon: Video,
+          href: '/dashboard/admin/media',
+          color: 'text-red-400'
+        },
+        {
+          title: 'الرسائل والدعم',
+          icon: MessageSquare,
+          href: '/dashboard/admin/messages',
+          color: 'text-pink-400'
+        },
+        {
+          title: 'إدارة البطولات',
+          icon: Trophy,
+          href: '/dashboard/admin/tournaments',
+          color: 'text-yellow-400'
+        },
+        {
+          title: 'إدارة الإعلانات',
+          icon: Settings,
+          href: '/dashboard/admin/ads',
+          color: 'text-cyan-400'
+        },
+        {
+          title: 'إدارة الوظائف',
+          icon: FileText,
+          href: '/dashboard/admin/careers',
+          color: 'text-emerald-400'
+        },
+        {
+          title: 'إعدادات النظام',
+          icon: Settings,
+          href: '/dashboard/admin/system',
+          color: 'text-gray-400'
         },
         {
           title: 'Clarity Analytics',
           icon: BarChart3,
           href: '/dashboard/admin/clarity',
           color: 'text-indigo-400'
-        },
-        {
-          title: 'البطولات',
-          icon: Trophy,
-          href: '/dashboard/admin/tournaments',
-          color: 'text-yellow-400'
-        },
-        {
-          title: 'الفيديوهات',
-          icon: Video,
-          href: '/dashboard/admin/videos',
-          color: 'text-red-400'
         }
       ]
     };

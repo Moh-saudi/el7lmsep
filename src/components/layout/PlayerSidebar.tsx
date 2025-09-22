@@ -67,10 +67,10 @@ const PlayerSidebar: React.FC<PlayerSidebarProps> = ({ collapsed, setCollapsed }
       description: 'تصفح وشراء المنتجات'
     },
     {
-      title: 'أكاديمية الحلم',
+      title: 'مدرسة الحلم',
       href: '/dashboard/player/academy',
       icon: BookOpen,
-      description: 'الوصول لأكاديمية الحلم'
+      description: 'الوصول لمدرسة الحلم'
     },
     {
       title: 'إدارة الفيديوهات',

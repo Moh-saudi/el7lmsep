@@ -45,7 +45,7 @@ export const cairo = Cairo({
 
 // دالة لتحسين تحميل الخطوط
 export const optimizeFontLoading = () => {
-  if (typeof window !== 'undefined') {
+  if (typeof window !== 'undefined' && typeof document !== 'undefined' && document && document.head) {
     // تحسين تحميل الخطوط في المتصفح
     const link = document.createElement('link');
     link.rel = 'preconnect';

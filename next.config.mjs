@@ -45,14 +45,20 @@ const nextConfig = {
     },
     
     // إعدادات الأداء
-    swcMinify: true,
     reactStrictMode: true,
-    optimizeFonts: true,
+    
+    // إعدادات خارجية للسيرفر
+    serverExternalPackages: ['firebase-admin', 'framer-motion'],
+    
+    // تعطيل DevTools نهائياً (خارج experimental)
+    devIndicators: {
+        buildActivity: false,
+        buildActivityPosition: 'bottom-right',
+    },
     
     // إعدادات تجريبية
     experimental: {
         optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],
-        serverComponentsExternalPackages: ['firebase-admin'],
         scrollRestoration: true,
         serverActions: {
             bodySizeLimit: '100mb',

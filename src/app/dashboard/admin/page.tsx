@@ -225,9 +225,7 @@ export default function AdminDashboardPage() {
 
   if (loading) {
     return (
-      <AccountTypeProtection allowedTypes={['admin']}>
-        <div className="p-8 text-center text-gray-500">Loading statistics...</div>
-      </AccountTypeProtection>
+      <div className="p-8 text-center text-gray-500">Loading statistics...</div>
     );
   }
 

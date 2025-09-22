@@ -1,7 +1,7 @@
 'use client';
 
 import { useAuth } from '@/lib/firebase/auth-provider';
-import { secureConsole } from '@/lib/utils/secure-console';
+// import { secureConsole } from '@/lib/utils/secure-console';
 import {
     AlertTriangle,
     CheckCircle,
@@ -17,12 +17,12 @@ import {
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
-import EmailVerification from '@/components/auth/EmailVerification';
-import { EmailService } from '@/lib/emailjs/service';
+// import EmailVerification from '@/components/auth/EmailVerification';
+// import { EmailService } from '@/lib/emailjs/service';
 import { getInvalidAccountMessage, getContactInfo } from '@/lib/support-contact';
 // تم حذف الترجمة
-import SMSOTPVerification from '@/components/shared/SMSOTPVerification';
-import toast, { Toaster } from 'react-hot-toast';
+// import SMSOTPVerification from '@/components/shared/SMSOTPVerification';
+// import toast, { Toaster } from 'react-hot-toast';
 
 export default function LoginPage() {
   const { login, logout, user, userData, loading: authLoading } = useAuth();
@@ -49,38 +49,53 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-  const [showEmailVerification, setShowEmailVerification] = useState(false);
-  const [pendingEmail, setPendingEmail] = useState<string | null>(null);
+  // const [showEmailVerification, setShowEmailVerification] = useState(false);
+  // const [pendingEmail, setPendingEmail] = useState<string | null>(null);
 
-  // قائمة الدول مع أكوادها وأطوال أرقام الهاتف
+  // قائمة الدول مع أكوادها والعملات وأطوال أرقام الهاتف
   const countries = [
-    { name: 'السعودية', code: '+966', phoneLength: 9, phonePattern: '[0-9]{9}' },
-    { name: 'الإمارات', code: '+971', phoneLength: 9, phonePattern: '[0-9]{9}' },
-    { name: 'الكويت', code: '+965', phoneLength: 8, phonePattern: '[0-9]{8}' },
-    { name: 'قطر', code: '+974', phoneLength: 8, phonePattern: '[0-9]{8}' },
-    { name: 'البحرين', code: '+973', phoneLength: 8, phonePattern: '[0-9]{8}' },
-    { name: 'عمان', code: '+968', phoneLength: 8, phonePattern: '[0-9]{8}' },
-    { name: 'مصر', code: '+20', phoneLength: 10, phonePattern: '[0-9]{10}' },
-    { name: 'الأردن', code: '+962', phoneLength: 9, phonePattern: '[0-9]{9}' },
-    { name: 'لبنان', code: '+961', phoneLength: 8, phonePattern: '[0-9]{8}' },
-    { name: 'العراق', code: '+964', phoneLength: 10, phonePattern: '[0-9]{10}' },
-    { name: 'سوريا', code: '+963', phoneLength: 9, phonePattern: '[0-9]{9}' },
-    { name: 'المغرب', code: '+212', phoneLength: 9, phonePattern: '[0-9]{9}' },
-    { name: 'الجزائر', code: '+213', phoneLength: 9, phonePattern: '[0-9]{9}' },
-    { name: 'تونس', code: '+216', phoneLength: 8, phonePattern: '[0-9]{8}' },
-    { name: 'ليبيا', code: '+218', phoneLength: 9, phonePattern: '[0-9]{9}' },
+    { name: 'السعودية', code: '+966', currency: 'SAR', currencySymbol: 'ر.س', phoneLength: 9, phonePattern: '[0-9]{9}' },
+    { name: 'الإمارات', code: '+971', currency: 'AED', currencySymbol: 'د.إ', phoneLength: 9, phonePattern: '[0-9]{9}' },
+    { name: 'الكويت', code: '+965', currency: 'KWD', currencySymbol: 'د.ك', phoneLength: 8, phonePattern: '[0-9]{8}' },
+    { name: 'قطر', code: '+974', currency: 'QAR', currencySymbol: 'ر.ق', phoneLength: 8, phonePattern: '[0-9]{8}' },
+    { name: 'البحرين', code: '+973', currency: 'BHD', currencySymbol: 'د.ب', phoneLength: 8, phonePattern: '[0-9]{8}' },
+    { name: 'عمان', code: '+968', currency: 'OMR', currencySymbol: 'ر.ع', phoneLength: 8, phonePattern: '[0-9]{8}' },
+    { name: 'مصر', code: '+20', currency: 'EGP', currencySymbol: 'ج.م', phoneLength: 10, phonePattern: '[0-9]{10}' },
+    { name: 'الأردن', code: '+962', currency: 'JOD', currencySymbol: 'د.أ', phoneLength: 9, phonePattern: '[0-9]{9}' },
+    { name: 'لبنان', code: '+961', currency: 'LBP', currencySymbol: 'ل.ل', phoneLength: 8, phonePattern: '[0-9]{8}' },
+    { name: 'العراق', code: '+964', currency: 'IQD', currencySymbol: 'د.ع', phoneLength: 10, phonePattern: '[0-9]{10}' },
+    { name: 'سوريا', code: '+963', currency: 'SYP', currencySymbol: 'ل.س', phoneLength: 9, phonePattern: '[0-9]{9}' },
+    { name: 'المغرب', code: '+212', currency: 'MAD', currencySymbol: 'د.م', phoneLength: 9, phonePattern: '[0-9]{9}' },
+    { name: 'الجزائر', code: '+213', currency: 'DZD', currencySymbol: 'د.ج', phoneLength: 9, phonePattern: '[0-9]{9}' },
+    { name: 'تونس', code: '+216', currency: 'TND', currencySymbol: 'د.ت', phoneLength: 8, phonePattern: '[0-9]{8}' },
+    { name: 'ليبيا', code: '+218', currency: 'LYD', currencySymbol: 'د.ل', phoneLength: 9, phonePattern: '[0-9]{9}' },
+    { name: 'اليمن', code: '+967', currency: 'YER', currencySymbol: 'ر.ي', phoneLength: 9, phonePattern: '[0-9]{9}' },
+    // مضافة حديثاً
+    { name: 'السودان', code: '+249', currency: 'SDG', currencySymbol: 'ج.س', phoneLength: 9, phonePattern: '[0-9]{9}' },
+    { name: 'السنغال', code: '+221', currency: 'XOF', currencySymbol: 'Fr', phoneLength: 9, phonePattern: '[0-9]{9}' },
+    { name: 'ساحل العاج', code: '+225', currency: 'XOF', currencySymbol: 'Fr', phoneLength: 10, phonePattern: '[0-9]{10}' },
+    { name: 'جيبوتي', code: '+253', currency: 'DJF', currencySymbol: 'Fr', phoneLength: 8, phonePattern: '[0-9]{8}' },
+    { name: 'إسبانيا', code: '+34', currency: 'EUR', currencySymbol: '€', phoneLength: 9, phonePattern: '[0-9]{9}' },
+    { name: 'فرنسا', code: '+33', currency: 'EUR', currencySymbol: '€', phoneLength: 9, phonePattern: '[0-9]{9}' },
+    { name: 'إنجلترا', code: '+44', currency: 'GBP', currencySymbol: '£', phoneLength: 10, phonePattern: '[0-9]{10}' },
+    { name: 'البرتغال', code: '+351', currency: 'EUR', currencySymbol: '€', phoneLength: 9, phonePattern: '[0-9]{9}' },
+    { name: 'إيطاليا', code: '+39', currency: 'EUR', currencySymbol: '€', phoneLength: 10, phonePattern: '[0-9]{10}' },
+    { name: 'اليونان', code: '+30', currency: 'EUR', currencySymbol: '€', phoneLength: 10, phonePattern: '[0-9]{10}' },
+    { name: 'قبرص', code: '+357', currency: 'EUR', currencySymbol: '€', phoneLength: 8, phonePattern: '[0-9]{8}' },
+    { name: 'تركيا', code: '+90', currency: 'TRY', currencySymbol: '₺', phoneLength: 10, phonePattern: '[0-9]{10}' },
+    { name: 'تايلاند', code: '+66', currency: 'THB', currencySymbol: '฿', phoneLength: 9, phonePattern: '[0-9]{9}' },
   ];
 
   const [selectedCountry, setSelectedCountry] = useState(countries[0]); // Default to Saudi Arabia
 
   // عند تحميل الصفحة: تحقق من وجود بريد معلق في localStorage
-  useEffect(() => {
-    const storedPendingEmail = localStorage.getItem('pendingEmailVerification');
-    if (storedPendingEmail) {
-      setPendingEmail(storedPendingEmail);
-      setShowEmailVerification(true);
-    }
-  }, []);
+  // useEffect(() => {
+  //   const storedPendingEmail = localStorage.getItem('pendingEmailVerification');
+  //   if (storedPendingEmail) {
+  //     setPendingEmail(storedPendingEmail);
+  //     setShowEmailVerification(true);
+  //   }
+  // }, []);
 
   // إيقاف التحميل إذا فشلت المصادقة أو انتهت
   useEffect(() => {
@@ -103,7 +118,7 @@ export default function LoginPage() {
           rememberMe: true
         }));
         setLoginMethod('phone');
-        secureConsole.log('📱 Auto-filled phone from Remember Me');
+        console.log('📱 Auto-filled phone from Remember Me');
       } else if (savedEmail) {
         setFormData(prev => ({
           ...prev,
@@ -111,8 +126,35 @@ export default function LoginPage() {
           rememberMe: true
         }));
         setLoginMethod('email');
-        secureConsole.log('📧 Auto-filled email from Remember Me');
+        console.log('📧 Auto-filled email from Remember Me');
       }
+    }
+  }, []);
+
+  // تحميل كلمة المرور الجديدة من استعادة كلمة المرور
+  useEffect(() => {
+    const newPassword = localStorage.getItem('newPassword');
+    const resetPhone = localStorage.getItem('resetPhone');
+    const resetEmail = localStorage.getItem('resetEmail');
+    const passwordChanged = localStorage.getItem('passwordChanged');
+    
+    if (newPassword && resetPhone && resetEmail && passwordChanged === 'true') {
+      setFormData(prev => ({
+        ...prev,
+        phone: resetPhone,
+        email: resetEmail,
+        password: newPassword
+      }));
+      setLoginMethod('email'); // استخدام البريد الإلكتروني للتسجيل
+      setMessage('تم تحميل كلمة المرور الجديدة. ملاحظة: كلمة المرور لم تتغير فعلياً في Firebase، يرجى استخدام كلمة المرور الأصلية أو التواصل مع الدعم الفني.');
+      
+      // مسح البيانات من localStorage بعد الاستخدام
+      localStorage.removeItem('newPassword');
+      localStorage.removeItem('resetPhone');
+      localStorage.removeItem('resetEmail');
+      localStorage.removeItem('passwordChanged');
+      
+      console.log('🔑 Auto-filled new password from reset');
     }
   }, []);
 
@@ -167,8 +209,8 @@ export default function LoginPage() {
 
   // دالة للتعامل مع الحسابات المعطلة أو غير المحددة
   const handleInvalidAccount = (accountType: string | undefined) => {
-    const errorMessage = getInvalidAccountMessage(accountType);
-    toast.error(errorMessage, { id: 'login', duration: 6000 });
+    const errorMessage = `نوع الحساب غير صحيح: ${accountType || 'غير محدد'}`;
+    console.error(errorMessage);
     setError(errorMessage);
     setLoading(false);
   };
@@ -229,14 +271,14 @@ export default function LoginPage() {
       if (loginMethod === 'email') {
         // التحقق من البريد الإلكتروني
         if (!formData.email.trim()) {
-          toast.error('يرجى إدخال البريد الإلكتروني', { duration: 3000 });
+          console.error('يرجى إدخال البريد الإلكتروني');
           setError('يرجى إدخال البريد الإلكتروني');
           setLoading(false);
           return;
         }
 
         if (!/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(formData.email)) {
-          toast.error('يرجى إدخال بريد إلكتروني صالح', { duration: 3000 });
+          console.error('يرجى إدخال بريد إلكتروني صالح');
           setError('يرجى إدخال بريد إلكتروني صالح');
           setLoading(false);
           return;
@@ -246,7 +288,7 @@ export default function LoginPage() {
       } else {
         // التحقق من رقم الهاتف
         if (!formData.phone.trim()) {
-          toast.error('يرجى إدخال رقم الهاتف', { duration: 3000 });
+          console.error('يرجى إدخال رقم الهاتف');
           setError('يرجى إدخال رقم الهاتف');
           setLoading(false);
           return;
@@ -257,7 +299,7 @@ export default function LoginPage() {
           const phoneRegex = new RegExp(selectedCountry.phonePattern);
           if (!phoneRegex.test(formData.phone)) {
             const phoneError = `يرجى إدخال رقم هاتف صحيح مكون من ${selectedCountry.phoneLength} أرقام للدولة ${selectedCountry.name}`;
-            toast.error(phoneError, { duration: 4000 });
+            console.error(phoneError);
             setError(phoneError);
             setLoading(false);
             return;
@@ -271,7 +313,7 @@ export default function LoginPage() {
         const firebaseEmail = await findFirebaseEmailByPhone(fullPhone);
         if (!firebaseEmail) {
           const phoneNotFoundError = `رقم الهاتف غير مسجل في النظام. يرجى إنشاء حساب جديد أو التحقق من صحة الرقم.`;
-          toast.error(phoneNotFoundError, { duration: 5000 });
+          console.error(phoneNotFoundError);
           setError(phoneNotFoundError);
           setLoading(false);
           return;
@@ -279,14 +321,30 @@ export default function LoginPage() {
         loginEmail = firebaseEmail;
       }
 
-      secureConsole.log('🔐 محاولة تسجيل الدخول...');
-      toast.loading('جاري التحقق من البيانات...', { id: 'login' });
+      console.log('🔐 محاولة تسجيل الدخول...');
+      console.log('جاري التحقق من البيانات...');
       
       // محاولة تسجيل الدخول مباشرة
       const result = await login(loginEmail, formData.password);
       
-      secureConsole.log('✅ تم تسجيل الدخول بنجاح');
-      toast.success('تم تسجيل الدخول بنجاح!', { id: 'login' });
+      console.log('✅ تم تسجيل الدخول بنجاح');
+      console.log('تم تسجيل الدخول بنجاح!');
+      
+      // التحقق من وجود result
+      if (!result) {
+        console.error('فشل في تسجيل الدخول - لا توجد نتيجة');
+        setError('فشل في تسجيل الدخول. يرجى المحاولة مرة أخرى.');
+        setLoading(false);
+        return;
+      }
+      
+      // التحقق من وجود userData
+      if (!result.userData) {
+        console.error('فشل في تسجيل الدخول - لا توجد بيانات مستخدم');
+        setError('فشل في تسجيل الدخول. يرجى المحاولة مرة أخرى.');
+        setLoading(false);
+        return;
+      }
       
       // التحقق من وجود accountType
       if (!result.userData.accountType) {
@@ -312,7 +370,7 @@ export default function LoginPage() {
         localStorage.setItem('accountType', result.userData.accountType);
       }
       
-      toast.success('تم تسجيل الدخول بنجاح! جاري تحويلك...', { duration: 2000 });
+      console.log('تم تسجيل الدخول بنجاح! جاري تحويلك...');
       
       // توجيه مباشر للوحة التحكم المناسبة
       const dashboardRoute = getDashboardRoute(result.userData.accountType);
@@ -322,7 +380,7 @@ export default function LoginPage() {
       }, 1000);
       
     } catch (err: any) {
-      secureConsole.error('فشل تسجيل الدخول:', err);
+      console.error('فشل تسجيل الدخول:', err);
       console.log('Error code:', err.code); // للتأكد من نوع الخطأ
       
       // التحقق من نوع الخطأ
@@ -341,7 +399,7 @@ export default function LoginPage() {
 • قم بإنشاء حساب جديد إذا لم يكن لديك حساب
 • تواصل مع الدعم الفني إذا كنت متأكداً من صحة الرقم`;
         
-        toast.error(noAccountError, { id: 'login', duration: 6000 });
+        console.error(noAccountError);
         setError(noAccountError);
       } else if (err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') {
         const wrongPasswordError = `كلمة المرور غير صحيحة
@@ -353,7 +411,7 @@ export default function LoginPage() {
 • تأكد من عدم تفعيل Caps Lock`;
         
         console.log('Setting error:', wrongPasswordError); // للتأكد من تعيين الخطأ
-        toast.error(wrongPasswordError, { id: 'login', duration: 6000 });
+        console.error(wrongPasswordError);
         setError(wrongPasswordError);
       } else if (err.code === 'auth/too-many-requests') {
         const tooManyRequestsError = `تم تجاوز عدد المحاولات المسموح بها
@@ -363,7 +421,7 @@ export default function LoginPage() {
 • استخدم "نسيت كلمة المرور" لإعادة تعيينها
 • تواصل مع الدعم الفني إذا استمرت المشكلة`;
         
-        toast.error(tooManyRequestsError, { id: 'login', duration: 6000 });
+        console.error(tooManyRequestsError);
         setError(tooManyRequestsError);
       } else if (err.code === 'auth/network-request-failed') {
         const networkError = `خطأ في الاتصال
@@ -373,7 +431,7 @@ export default function LoginPage() {
 • حاول إعادة تحميل الصفحة
 • تأكد من استقرار الاتصال`;
         
-        toast.error(networkError, { id: 'login', duration: 5000 });
+        console.error(networkError);
         setError(networkError);
       } else if (err.code === 'auth/invalid-email') {
         const invalidEmailError = `صيغة البريد الإلكتروني غير صحيحة
@@ -383,12 +441,12 @@ export default function LoginPage() {
 • تأكد من وجود @ و . في البريد
 • مثال: user@example.com`;
         
-        toast.error(invalidEmailError, { id: 'login', duration: 5000 });
+        console.error(invalidEmailError);
         setError(invalidEmailError);
       } else {
         // أخطاء أخرى
         const genericError = `خطأ في تسجيل الدخول: ${err.message || 'حدث خطأ غير متوقع'}`;
-        toast.error(genericError, { id: 'login', duration: 5000 });
+        console.error(genericError);
         setError(genericError);
       }
       
@@ -397,35 +455,35 @@ export default function LoginPage() {
     }
   };
 
-  const handleEmailVerificationSuccess = () => {
-    setShowEmailVerification(false);
-    setPendingEmail(null);
-    localStorage.removeItem('pendingEmailVerification');
-    toast.success('✅ تم التحقق من البريد الإلكتروني بنجاح! سيتم تحويلك للوحة التحكم.', { duration: 3000 });
-    setTimeout(() => {
-      if (userData) {
-        const dashboardRoute = getDashboardRoute(userData.accountType);
-        router.replace(dashboardRoute);
-      }
-    }, 1000);
-  };
+  // const handleEmailVerificationSuccess = () => {
+  //   setShowEmailVerification(false);
+  //   setPendingEmail(null);
+  //   localStorage.removeItem('pendingEmailVerification');
+  //   toast.success('✅ تم التحقق من البريد الإلكتروني بنجاح! سيتم تحويلك للوحة التحكم.', { duration: 3000 });
+  //   setTimeout(() => {
+  //     if (userData) {
+  //       const dashboardRoute = getDashboardRoute(userData.accountType);
+  //       router.replace(dashboardRoute);
+  //     }
+  //   }, 1000);
+  // };
 
-  const handleEmailVerificationFailed = (error: string) => {
-    setShowEmailVerification(false);
-    setPendingEmail(null);
-    localStorage.removeItem('pendingEmailVerification');
-    const errorMessage = error || 'فشل التحقق من البريد الإلكتروني.';
-    toast.error(errorMessage, { duration: 5000 });
-    setError(errorMessage);
-  };
+  // const handleEmailVerificationFailed = (error: string) => {
+  //   setShowEmailVerification(false);
+  //   setPendingEmail(null);
+  //   localStorage.removeItem('pendingEmailVerification');
+  //   const errorMessage = error || 'فشل التحقق من البريد الإلكتروني.';
+  //   toast.error(errorMessage, { duration: 5000 });
+  //   setError(errorMessage);
+  // };
 
-  const handleEmailVerificationCancel = () => {
-    setShowEmailVerification(false);
-    setPendingEmail(null);
-    localStorage.removeItem('pendingEmailVerification');
-    toast.error('تم إلغاء التحقق من البريد الإلكتروني.', { duration: 3000 });
-    setError('تم إلغاء التحقق من البريد الإلكتروني.');
-  };
+  // const handleEmailVerificationCancel = () => {
+  //   setShowEmailVerification(false);
+  //   setPendingEmail(null);
+  //   localStorage.removeItem('pendingEmailVerification');
+  //   toast.error('تم إلغاء التحقق من البريد الإلكتروني.', { duration: 3000 });
+  //   setError('تم إلغاء التحقق من البريد الإلكتروني.');
+  // };
 
   const handleCountryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const country = countries.find(c => c.code === e.target.value);
@@ -440,7 +498,7 @@ export default function LoginPage() {
         dir="rtl"
       >
         <div className="w-full max-w-xs overflow-hidden bg-white shadow-2xl rounded-xl">
-          <div className="p-3 text-center text-white bg-gradient-to-r from-blue-500 to-purple-600">
+          <div className="p-3 text-center text-white bg-gradient-to-r from-blue-600 to-purple-700">
             <div className="flex justify-center mb-2">
               <Shield className="w-8 h-8" />
             </div>
@@ -469,7 +527,7 @@ export default function LoginPage() {
           dir="rtl"
         >
           <div className="w-full max-w-md overflow-hidden bg-white shadow-2xl rounded-xl">
-            <div className="p-3 text-center text-white bg-gradient-to-r from-red-500 to-orange-600">
+            <div className="p-3 text-center text-white bg-gradient-to-r from-red-600 to-orange-700">
               <div className="flex justify-center mb-2">
                 <AlertTriangle className="w-8 h-8" />
               </div>
@@ -512,7 +570,7 @@ export default function LoginPage() {
                 </button>
                 <button
                   onClick={() => window.location.reload()}
-                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                  className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
                 >
                   إعادة المحاولة
                 </button>
@@ -527,11 +585,11 @@ export default function LoginPage() {
     
     return (
       <div
-        className="flex items-center justify-center min-h-screen p-2 bg-gradient-to-br from-blue-600 to-purple-700"
+        className="flex items-center justify-center min-h-screen p-2 bg-gradient-to-br from-green-600 to-blue-700"
         dir="rtl"
       >
         <div className="w-full max-w-xs overflow-hidden bg-white shadow-2xl rounded-xl">
-          <div className="p-3 text-center text-white bg-gradient-to-r from-green-500 to-blue-600">
+          <div className="p-3 text-center text-white bg-gradient-to-r from-green-600 to-blue-700">
             <div className="flex justify-center mb-2">
               <CheckCircle className="w-8 h-8" />
             </div>
@@ -566,7 +624,7 @@ export default function LoginPage() {
             <div className="space-y-3">
               <button
                 onClick={() => router.push(dashboardRoute)}
-                className="w-full py-3 text-sm font-medium text-white transition-colors bg-green-600 rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+                className="w-full py-3 text-sm font-medium text-white transition-colors bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
               >
                 الذهاب إلى لوحة التحكم
               </button>
@@ -575,12 +633,12 @@ export default function LoginPage() {
                 onClick={() => {
                   // تسجيل خروج والبقاء في صفحة الدخول
                   logout().then(() => {
-                    toast.success('تم تسجيل الخروج بنجاح', { duration: 2000 });
+                    console.log('تم تسجيل الخروج بنجاح');
                     setMessage('تم تسجيل الخروج بنجاح');
                     setError('');
                   }).catch((error) => {
                     console.error('خطأ في تسجيل الخروج:', error);
-                    toast.error('حدث خطأ أثناء تسجيل الخروج', { duration: 3000 });
+                    console.error('حدث خطأ أثناء تسجيل الخروج');
                     setError('حدث خطأ أثناء تسجيل الخروج');
                   });
                 }}
@@ -596,29 +654,30 @@ export default function LoginPage() {
   }
 
   return (
-      <div
-        className={`flex items-center justify-center min-h-screen p-2 bg-gradient-to-br from-blue-600 to-purple-700 ${isClient && isRTL ? 'dir-rtl' : 'dir-ltr'}`}
-      >
-        <div className="w-full max-w-xs overflow-hidden transition-all duration-500 transform bg-white shadow-2xl rounded-xl hover:scale-102">
-        {/* Header */}
-        <div className="p-3 text-center text-white bg-gradient-to-r from-blue-500 to-purple-600">
-          <div className="flex justify-center mb-2">
-            <Shield className="w-8 h-8" />
+    <div className={`${isClient && isRTL ? 'dir-rtl' : 'dir-ltr'} min-h-screen w-full flex items-center justify-center bg-purple-950 px-4 py-8`}>
+      {/* Centered compact card */}
+      <div className="w-full max-w-md rounded-2xl border border-purple-100 shadow-2xl backdrop-blur bg-white/95">
+        <div className="px-6 pt-6 pb-3">
+          <div className="flex justify-between items-center mb-8">
+            <div className="flex gap-2 items-center text-purple-600">
+              <Shield className="w-6 h-6" />
+              <span className="text-base font-bold">El7lm</span>
+            </div>
+            <button type="button" onClick={() => router.push('/auth/register')} className="text-xs text-gray-600 hover:text-indigo-600">ليس لديك حساب؟ إنشاء حساب</button>
           </div>
-                          <h1 className="mb-1 text-xl font-bold">تسجيل الدخول</h1>
-                <p className="text-xs text-blue-100">مرحباً بك مرة أخرى في منصة El7lm</p>
-          
-          {/* Language Switcher */}
-          <div className="flex justify-center mt-2">
-            {/* تم إلغاء مبدل اللغة مؤقتاً */}
+          <div className="mb-2 text-center">
+            <h1 className="text-xl font-extrabold text-gray-900">تسجيل الدخول</h1>
+            <p className="mt-1 text-xs text-gray-500">مرحباً بك مرة أخرى في منصة El7lm</p>
           </div>
-        </div>
 
-        <form onSubmit={handleLogin} className="p-4 space-y-4">
-          {/* Alert Messages */}
-          {error && (
-            <div className="p-3 text-sm text-red-700 rounded-lg bg-red-50 border border-red-200">
-              <div className="flex items-start gap-2">
+          <form
+            onSubmit={handleLogin}
+            className="px-6 pb-6 space-y-4"
+          >
+            <div className="space-y-4">
+            {/* Error and Success Messages */}
+            {error && (
+                <div className="flex gap-2 items-start p-4 text-red-700 bg-red-50 rounded-lg" role="alert" aria-live="assertive">
                 <AlertTriangle className="w-5 h-5 mt-0.5 flex-shrink-0" />
                 <div className="flex-1">
                   <div className="whitespace-pre-line">
@@ -627,14 +686,14 @@ export default function LoginPage() {
                   <div className="flex gap-2 mt-3 text-xs">
                     <button
                       type="button"
-                      onClick={() => window.location.href = '/auth/forgot-password'}
+                      onClick={() => router.push('/auth/forgot-password')}
                       className="px-3 py-1 bg-red-100 text-red-700 rounded hover:bg-red-200 transition-colors"
                     >
                       نسيت كلمة المرور
                     </button>
                     <button
                       type="button"
-                      onClick={() => window.location.href = '/auth/register'}
+                      onClick={() => router.push('/auth/register')}
                       className="px-3 py-1 bg-red-100 text-red-700 rounded hover:bg-red-200 transition-colors"
                     >
                       إنشاء حساب جديد
@@ -642,84 +701,69 @@ export default function LoginPage() {
                   </div>
                 </div>
               </div>
+            )}
+            {message && (
+              <div className="flex gap-2 items-center p-4 text-green-700 bg-green-50 rounded-lg">
+                <CheckCircle className="w-5 h-5" />
+                <p>{message}</p>
+              </div>
+            )}
+
+            {/* Login Method Toggle */}
+            <div className="flex items-center justify-center space-x-2 p-2 bg-gray-50 rounded-lg">
+              <button
+                type="button"
+                onClick={() => setLoginMethod('phone')}
+                className={`flex items-center gap-2 px-3 py-1 text-xs rounded-lg transition-colors ${
+                  loginMethod === 'phone'
+                    ? 'bg-purple-600 text-white'
+                    : 'bg-white text-gray-600 hover:bg-gray-100'
+                }`}
+              >
+                <Phone className="w-3 h-3" />
+                رقم الهاتف
+              </button>
+              <button
+                type="button"
+                onClick={() => setLoginMethod('email')}
+                className={`flex items-center gap-2 px-3 py-1 text-xs rounded-lg transition-colors ${
+                  loginMethod === 'email'
+                    ? 'bg-purple-600 text-white'
+                    : 'bg-white text-gray-600 hover:bg-gray-100'
+                }`}
+              >
+                <Mail className="w-3 h-3" />
+                البريد الإلكتروني
+              </button>
             </div>
-          )}
-          {message && (
-            <div className="flex items-center gap-2 p-2 text-xs text-green-700 rounded-lg bg-green-50">
-              <CheckCircle className="w-4 h-4" />
-              <p>{message}</p>
-            </div>
-          )}
 
-          {/* Security Notice */}
-          <div className="flex items-center gap-2 p-2 text-xs text-blue-700 rounded-lg bg-blue-50">
-            <KeyRound className="flex-shrink-0 w-4 h-4" />
-                            <p>نحن نستخدم أحدث تقنيات الأمان لحماية بياناتك</p>
-          </div>
-
-          {/* Login Method Toggle */}
-          <div className="flex items-center justify-center space-x-2 p-2 bg-gray-50 rounded-lg">
-            <button
-              type="button"
-              onClick={() => setLoginMethod('phone')}
-              className={`flex items-center gap-2 px-3 py-1 text-xs rounded-lg transition-colors ${
-                loginMethod === 'phone'
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-white text-gray-600 hover:bg-gray-100'
-              }`}
-            >
-              <Phone className="w-3 h-3" />
-                              رقم الهاتف
-            </button>
-            <button
-              type="button"
-              onClick={() => setLoginMethod('email')}
-              className={`flex items-center gap-2 px-3 py-1 text-xs rounded-lg transition-colors ${
-                loginMethod === 'email'
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-white text-gray-600 hover:bg-gray-100'
-              }`}
-            >
-              <Mail className="w-3 h-3" />
-                              البريد الإلكتروني
-            </button>
-          </div>
-
-          {/* Form Fields */}
-          <div className="space-y-3">
+            {/* Form Fields */}
             {loginMethod === 'phone' ? (
               <div className="space-y-3">
                 {/* Country Selection */}
                 <div>
-                  <label className="block mb-1 text-xs text-gray-700">البلد</label>
-                  <div className="relative">
-                    <select
-                      value={selectedCountry?.code || ''}
-                      onChange={handleCountryChange}
-                      className="w-full py-2 pl-3 pr-8 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      title="اختر البلد"
-                      aria-label="اختر البلد"
-                    >
-                      {countries.map((country) => (
-                        <option key={country.code} value={country.code}>
+                  <label className="block mb-1.5 text-gray-700 text-sm">البلد</label>
+                  <select
+                    value={selectedCountry?.code || ''}
+                    onChange={handleCountryChange}
+                    className="py-2 pr-10 pl-4 w-full text-sm rounded-lg border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    title="اختر البلد"
+                    aria-label="اختر البلد"
+                  >
+                    {countries.map((country) => (
+                      <option key={country.code} value={country.code}>
                         {country.name} ({country.code}) - {country.phoneLength} أرقام
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+                      </option>
+                    ))}
+                  </select>
                 </div>
                 
                 {/* Phone Input */}
                 <div>
-                  <label className="block mb-1 text-xs text-gray-700">
-                    رقم الهاتف
-                    <span className="text-xs text-gray-500 mr-1">
-                                              ({selectedCountry?.phoneLength || 0} أرقام)
-                    </span>
-                  </label>
+                  <label className="block mb-1.5 text-gray-700 text-sm">رقم الهاتف</label>
                   <div className="relative">
                     <div className="flex">
-                      <div className="flex items-center px-3 border border-r-0 border-gray-300 rounded-l-lg bg-gray-50 text-sm">
+                      <div className="flex items-center px-2 text-xs bg-gray-50 rounded-l-lg border border-r-0 border-gray-300">
                         {selectedCountry?.code || '+966'}
                       </div>
                       <input
@@ -727,134 +771,111 @@ export default function LoginPage() {
                         name="phone"
                         value={formData.phone}
                         onChange={handleInputChange}
-                        className="w-full py-2 pl-3 pr-8 text-sm border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder={`${selectedCountry?.phoneLength || 9} أرقام`}
+                        className="w-full py-2 pl-10 pr-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent border-gray-300 text-sm"
+                        placeholder={selectedCountry ? `${selectedCountry.phoneLength} أرقام` : 'أدخل رقم الهاتف'}
                         pattern={selectedCountry?.phonePattern || '[0-9]{9}'}
                         maxLength={selectedCountry?.phoneLength || 9}
                         required
+                        aria-label="رقم الهاتف"
+                        title={`أدخل رقم الهاتف بدون كود الدولة (${selectedCountry?.phoneLength || 9} أرقام)`}
                       />
-                      <Phone className="absolute w-4 h-4 text-gray-400 -translate-y-1/2 right-2 top-1/2" />
+                      <Phone className="absolute right-3 top-1/2 w-5 h-5 text-gray-400 -translate-y-1/2" />
                     </div>
-                    <p className="text-xs text-gray-500 mt-1">
-                    مثال: {selectedCountry?.name === 'مصر' ? '1234567890' : 
-                             selectedCountry?.name === 'قطر' ? '12345678' : 
-                             selectedCountry?.name === 'السعودية' ? '123456789' : 
-                             '123456789'}
+                  </div>
+                  {/* تلميحات رقم الهاتف */}
+                  <div className="mt-2 p-2 bg-blue-50 border border-blue-200 rounded-lg">
+                    <p className="text-xs text-blue-700">
+                      <strong>مثال:</strong> {selectedCountry?.name} - {selectedCountry?.code} + {selectedCountry ? '0'.repeat(selectedCountry.phoneLength) : '1012345678'}
                     </p>
+                    <p className="text-xs text-gray-600 mt-1">• أدخل الرقم بدون كود الدولة</p>
                   </div>
                 </div>
               </div>
             ) : (
-              <div className="relative">
-                <label className="block mb-1 text-xs text-gray-700">البريد الإلكتروني</label>
+              <div>
+                <label className="block mb-1.5 text-gray-700 text-sm">البريد الإلكتروني</label>
                 <div className="relative">
                   <input
                     type="email"
                     name="email"
                     value={formData.email}
                     onChange={handleInputChange}
-                    className="w-full py-2 pl-3 pr-8 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                          placeholder="أدخل بريدك الإلكتروني"
+                    className="py-2 pr-10 pl-4 w-full text-sm rounded-lg border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    placeholder="أدخل بريدك الإلكتروني"
                     required
                   />
-                  <Mail className="absolute w-4 h-4 text-gray-400 -translate-y-1/2 right-2 top-1/2" />
+                  <Mail className="absolute right-3 top-1/2 w-5 h-5 text-gray-400 -translate-y-1/2" />
                 </div>
               </div>
             )}
 
-            <div className="relative">
-                              <label className="block mb-1 text-xs text-gray-700">كلمة المرور</label>
+            <div>
+              <label className="block mb-1.5 text-gray-700 text-sm">كلمة المرور</label>
               <div className="relative">
                 <input
                   type={showPassword ? 'text' : 'password'}
                   name="password"
                   value={formData.password}
                   onChange={handleInputChange}
-                  className="w-full py-2 pl-10 pr-8 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                      placeholder="أدخل كلمة المرور"
+                  className="py-2 pr-10 pl-10 w-full text-sm rounded-lg border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  placeholder="أدخل كلمة المرور"
                   required
                 />
-                <Lock className="absolute w-4 h-4 text-gray-400 -translate-y-1/2 right-2 top-1/2" />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute text-gray-400 -translate-y-1/2 left-2 top-1/2 hover:text-gray-600"
-                >
-                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                <Lock className="absolute right-3 top-1/2 w-5 h-5 text-gray-400 -translate-y-1/2" />
+                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute left-3 top-1/2 text-gray-400 -translate-y-1/2 hover:text-gray-600">
+                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
               </div>
             </div>
 
             {/* Remember Me & Forgot Password */}
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-2">
                 <input
                   type="checkbox"
                   name="rememberMe"
                   checked={formData.rememberMe}
                   onChange={handleInputChange}
-                  className="w-3 h-3 text-blue-600 rounded"
+                  className="w-4 h-4 text-purple-600 rounded"
                   title="تذكرني"
                   aria-label="تذكرني"
                 />
-                <label className="text-xs text-gray-600">تذكرني</label>
+                <span className="text-sm text-gray-600">تذكرني</span>
               </div>
               <button
                 type="button"
-                className="text-xs text-blue-600 hover:text-blue-700 hover:underline"
-                onClick={() => (window.location.href = '/auth/forgot-password')}
+                className="text-sm text-purple-600 hover:text-purple-700 hover:underline"
+                onClick={() => router.push('/auth/forgot-password')}
               >
                 نسيت كلمة المرور؟
               </button>
             </div>
-          </div>
-
-          {/* Submit Button */}
-          <button
-            type="submit"
-            disabled={loading || authLoading}
-            className="w-full py-2 text-sm font-medium text-white transition-colors bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {(loading || authLoading) ? (
-              <div className="flex items-center justify-center gap-2">
-                <Loader2 className="w-4 h-4 animate-spin" />
-                <span>
-                {authLoading ? 'جاري التحقق من البيانات...' : 'جاري تسجيل الدخول...'}
-                </span>
-              </div>
-            ) : (
-                              'تسجيل الدخول'
-            )}
-          </button>
-
-          {/* Register Link */}
-          <div className="text-xs text-center text-gray-600">
-                          ليس لديك حساب؟{' '}
-            <button
-              type="button"
-              onClick={() => (window.location.href = '/auth/register')}
-              className="font-medium text-blue-600 hover:text-blue-700 hover:underline"
-            >
-                            إنشاء حساب جديد
-            </button>
-          </div>
-
-          {/* Account Types Info */}
-          <div className="pt-3 text-xs text-center text-gray-500 border-t">
-                        <p className="mb-2">يمكنك التسجيل كـ:</p>
-            <div className="grid grid-cols-2 gap-2 text-xs">
-            <span className="text-blue-600">• لاعب</span>
-            <span className="text-green-600">• نادي</span>
-            <span className="text-purple-600">• وكيل</span>
-            <span className="text-orange-600">• أكاديمية</span>
-            <span className="text-cyan-600">• مدرب</span>
-            <span className="text-red-600">• مسوق</span>
             </div>
-          </div>
-        </form>
 
-      {/* Email Verification Modal */}
-        {showEmailVerification && pendingEmail && (
+            {/* Submit Button */}
+            <div className="flex gap-2 justify-between items-center pt-1">
+              <span />
+              <button
+                type="submit"
+                disabled={loading || authLoading}
+                className={`px-4 py-2 rounded-lg text-white text-sm font-semibold transition-all ${loading || authLoading ? 'bg-gray-400' : 'bg-purple-600 hover:bg-purple-700'}`}
+              >
+                {loading || authLoading ? (
+                  <div className="flex items-center justify-center gap-2">
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <span>
+                      {authLoading ? 'جاري التحقق من البيانات...' : 'جاري تسجيل الدخول...'}
+                    </span>
+                  </div>
+                ) : (
+                  'تسجيل الدخول'
+                )}
+              </button>
+            </div>
+          </form>
+
+      {/* Email Verification Modal - DISABLED */}
+        {/* {showEmailVerification && pendingEmail && (
           <EmailVerification
             email={pendingEmail}
             name={userData?.name || 'مستخدم'}
@@ -862,11 +883,12 @@ export default function LoginPage() {
             onVerificationFailed={handleEmailVerificationFailed}
             onCancel={handleEmailVerificationCancel}
           />
-        )}
+        )} */}
         </div>
-      
-      {/* Toast Notifications */}
-      <Toaster
+      </div>
+
+      {/* Toast Notifications - Disabled temporarily */}
+      {/* <Toaster
         position="top-center"
         reverseOrder={false}
         gutter={8}
@@ -919,7 +941,7 @@ export default function LoginPage() {
             },
           },
         }}
-      />
+      /> */}
       </div>
   );
 }

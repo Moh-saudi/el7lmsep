@@ -115,14 +115,37 @@ export default function SMSOTPVerification({
         return;
       }
 
-      console.log('📤 Using admin backup OTP code for:', normalizedPhone);
+      console.log('📤 Sending OTP via Beon v3 API for:', normalizedPhone);
       
-      // استخدام الكود الاحتياطي بدلاً من الإرسال الحقيقي
-      const adminBackupOTP = '123456';
+      // إرسال OTP عبر Beon v3 API
+      const response = await fetch('/api/sms/send-otp', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          phoneNumber: normalizedPhone,
+          name: name || 'مستخدم',
+          useTemplate: useTemplate,
+          templateId: templateId
+        }),
+        signal: abortControllerRef.current.signal
+      });
+
+      const result = await response.json();
       
-      console.log('✅ SMSOTP: Admin backup OTP used for:', normalizedPhone);
-      setMessage('تم إنشاء رمز التحقق (كود احتياطي للإدارة: 123456)');
-      setTimeRemaining(otpExpirySeconds);
+      if (result.success) {
+        console.log('✅ SMSOTP: OTP sent successfully via Beon v3:', result);
+        setMessage('تم إرسال رمز التحقق بنجاح');
+        setTimeRemaining(otpExpirySeconds);
+      } else {
+        console.error('❌ SMSOTP: Failed to send OTP:', result.error);
+        setError(result.error || 'فشل في إرسال رمز التحقق');
+        onVerificationFailed(result.error || 'فشل في إرسال رمز التحقق');
+        if (!isResend) sentRef.current = false;
+        isSendingRef.current = false;
+        return;
+      }
     } catch (error: any) {
       // تجاهل أخطاء الإلغاء
       if (error.name === 'AbortError') {
@@ -234,7 +257,7 @@ export default function SMSOTPVerification({
     setOtp(newOtp);
     
     // الانتقال للحقل التالي تلقائياً
-    if (value && index < 5) { // تغيير الشرط من 5 إلى 3
+    if (value && index < 5 && typeof document !== 'undefined') { // تغيير الشرط من 5 إلى 3
       const nextInput = document.getElementById(`sms-otp-${index + 1}`) as HTMLInputElement;
       if (nextInput) {
         nextInput.focus();
@@ -248,7 +271,7 @@ export default function SMSOTPVerification({
   };
 
   const handleKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Backspace' && !otp[index] && index > 0) {
+    if (e.key === 'Backspace' && !otp[index] && index > 0 && typeof document !== 'undefined') {
       const prevInput = document.getElementById(`sms-otp-${index - 1}`) as HTMLInputElement;
       if (prevInput) {
         prevInput.focus();
@@ -286,7 +309,7 @@ export default function SMSOTPVerification({
       // التحقق من صحة الرمز باستخدام API
       console.log('🔍 Verifying OTP with server:', { input: otpCode, phone: normalizedPhone });
       
-      const verifyResponse = await fetch('/api/notifications/sms/verify-otp', {
+      const verifyResponse = await fetch('/api/sms/verify-otp', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -305,9 +328,11 @@ export default function SMSOTPVerification({
         setError(verifyResult.error || 'رمز التحقق غير صحيح.');
         setOtp(['', '', '', '', '', '']);
         setAttempts(prev => prev + 1);
-        const firstInput = document.getElementById('sms-otp-0') as HTMLInputElement;
-        if (firstInput) {
-          firstInput.focus();
+        if (typeof document !== 'undefined') {
+          const firstInput = document.getElementById('sms-otp-0') as HTMLInputElement;
+          if (firstInput) {
+            firstInput.focus();
+          }
         }
         setLoading(false);
         return;

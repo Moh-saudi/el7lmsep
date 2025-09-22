@@ -65,10 +65,10 @@ export default function EmailVerification({
       };
 
       const result = await emailjs.send(
-        process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID!,
-        process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID!,
+        'service_12345678', // Service ID
+        'template_12345678', // Template ID
         templateParams,
-        process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY!
+        'public_key_12345678' // Public Key
       );
 
       return { success: true, message: 'تم إرسال رمز التحقق إلى بريدك الإلكتروني!' };
@@ -115,7 +115,7 @@ export default function EmailVerification({
     setOtp(newOtp);
 
     // الانتقال للحقل التالي تلقائياً
-    if (value && index < 5) {
+    if (value && index < 5 && typeof document !== 'undefined') {
       const nextInput = document.getElementById(`otp-${index + 1}`) as HTMLInputElement;
       if (nextInput) {
         nextInput.focus();
@@ -130,7 +130,7 @@ export default function EmailVerification({
 
   const handleKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
     // الانتقال للحقل السابق عند الضغط على Backspace
-    if (e.key === 'Backspace' && !otp[index] && index > 0) {
+    if (e.key === 'Backspace' && !otp[index] && index > 0 && typeof document !== 'undefined') {
       const prevInput = document.getElementById(`otp-${index - 1}`) as HTMLInputElement;
       if (prevInput) {
         prevInput.focus();
@@ -155,9 +155,11 @@ export default function EmailVerification({
       if (currentOtpCode !== otpCode) {
         setError('رمز التحقق غير صحيح.');
         setOtp(['', '', '', '', '', '']);
-        const firstInput = document.getElementById('otp-0') as HTMLInputElement;
-        if (firstInput) {
-          firstInput.focus();
+        if (typeof document !== 'undefined') {
+          const firstInput = document.getElementById('otp-0') as HTMLInputElement;
+          if (firstInput) {
+            firstInput.focus();
+          }
         }
         setLoading(false);
         return;

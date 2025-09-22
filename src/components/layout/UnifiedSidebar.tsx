@@ -94,8 +94,21 @@ const UnifiedSidebar: React.FC<UnifiedSidebarProps> = ({
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set(['main']));
   const [screenSize, setScreenSize] = useState<'mobile' | 'tablet' | 'desktop'>('desktop');
 
-  // تحديد نوع الحساب
-  const accountType = userData?.accountType || 'player';
+  // تحديد نوع الحساب من المسار أولاً، ثم من userData
+  const getAccountTypeFromPath = () => {
+    if (!pathname) return null;
+    const pathSegments = pathname.split('/');
+    if (pathSegments.length >= 3 && pathSegments[1] === 'dashboard') {
+      const pathAccountType = pathSegments[2];
+      const validAccountTypes = ['admin', 'player', 'club', 'academy', 'agent', 'trainer', 'marketer', 'parent'];
+      if (pathAccountType && validAccountTypes.includes(pathAccountType)) {
+        return pathAccountType;
+      }
+    }
+    return null;
+  };
+
+  const accountType = getAccountTypeFromPath() || userData?.accountType || 'player';
 
   // كشف حجم الشاشة تلقائياً
   useEffect(() => {
@@ -176,7 +189,7 @@ const UnifiedSidebar: React.FC<UnifiedSidebarProps> = ({
     }
   };
 
-  const accountInfo = ACCOUNT_TYPE_INFO[accountType as keyof typeof ACCOUNT_TYPE_INFO] || ACCOUNT_TYPE_INFO.player;
+  const accountInfo = ACCOUNT_TYPE_INFO[accountType as keyof typeof ACCOUNT_TYPE_INFO] || ACCOUNT_TYPE_INFO['player'];
   const IconComponent = accountInfo.icon;
 
   // تحديد عرض السايدبار حسب حجم الشاشة
@@ -357,21 +370,6 @@ const UnifiedSidebar: React.FC<UnifiedSidebarProps> = ({
             }
           ]
         },
-        {
-          id: 'notifications',
-          title: 'الإشعارات',
-          icon: Bell,
-          items: [
-            {
-              id: 'notifications',
-              label: t('sidebar.player.notifications'),
-              icon: Bell,
-              href: `/dashboard/${userData?.accountType || 'player'}/notifications`,
-              color: 'text-rose-600',
-              bgColor: 'bg-rose-50'
-            }
-          ]
-        }
       ],
       club: [
         {
@@ -380,20 +378,20 @@ const UnifiedSidebar: React.FC<UnifiedSidebarProps> = ({
           icon: Users,
           items: [
             {
-              id: 'searchPlayers',
-              label: t('sidebar.club.searchPlayers'),
-              icon: Search,
-              href: `/dashboard/club/search`,
-              color: 'text-blue-600',
-              bgColor: 'bg-blue-50'
-            },
-            {
               id: 'players',
-              label: t('sidebar.club.players'),
+              label: 'اللاعبين',
               icon: Users,
               href: `/dashboard/club/players`,
               color: 'text-purple-600',
               bgColor: 'bg-purple-50'
+            },
+            {
+              id: 'searchPlayers',
+              label: 'البحث عن لاعبين',
+              icon: Search,
+              href: `/dashboard/club/search-players`,
+              color: 'text-blue-600',
+              bgColor: 'bg-blue-50'
             }
           ]
         },
@@ -403,43 +401,121 @@ const UnifiedSidebar: React.FC<UnifiedSidebarProps> = ({
           icon: Video,
           items: [
             {
-              id: 'videos',
-              label: t('sidebar.club.videos'),
+              id: 'playerVideos',
+              label: 'فيديوهات اللاعبين',
               icon: Video,
-              href: `/dashboard/club/videos`,
+              href: `/dashboard/club/player-videos`,
               color: 'text-red-600',
               bgColor: 'bg-red-50'
-            },
-            {
-              id: 'playerVideos',
-              label: t('sidebar.club.playerVideos'),
-              icon: Play,
-              href: `/dashboard/club/player-videos`,
-              color: 'text-emerald-600',
-              bgColor: 'bg-emerald-50'
             }
           ]
         },
         {
-          id: 'management',
-          title: 'الإدارة والتقارير',
-          icon: BarChart3,
+          id: 'business',
+          title: 'الأعمال والإدارة',
+          icon: Building,
           items: [
             {
-              id: 'stats',
-              label: t('sidebar.club.stats'),
-              icon: BarChart3,
-              href: `/dashboard/club/stats`,
-              color: 'text-slate-600',
-              bgColor: 'bg-slate-50'
+              id: 'contracts',
+              label: 'العقود',
+              icon: FileText,
+              href: `/dashboard/club/contracts`,
+              color: 'text-indigo-600',
+              bgColor: 'bg-indigo-50'
             },
             {
-              id: 'finances',
-              label: t('sidebar.club.finances'),
-              icon: DollarSign,
-              href: `/dashboard/club/finances`,
+              id: 'negotiations',
+              label: 'المفاوضات',
+              icon: Handshake,
+              href: `/dashboard/club/negotiations`,
+              color: 'text-cyan-600',
+              bgColor: 'bg-cyan-50'
+            },
+            {
+              id: 'playerEvaluation',
+              label: 'تقييم اللاعبين',
+              icon: Star,
+              href: `/dashboard/club/player-evaluation`,
+              color: 'text-yellow-600',
+              bgColor: 'bg-yellow-50'
+            },
+            {
+              id: 'marketValues',
+              label: 'القيم السوقية',
+              icon: TrendingUp,
+              href: `/dashboard/club/market-values`,
               color: 'text-green-600',
               bgColor: 'bg-green-50'
+            },
+            {
+              id: 'marketing',
+              label: 'التسويق',
+              icon: Target,
+              href: `/dashboard/club/marketing`,
+              color: 'text-pink-600',
+              bgColor: 'bg-pink-50'
+            },
+            {
+              id: 'aiAnalysis',
+              label: 'التحليل بالذكاء الاصطناعي',
+              icon: BarChart3,
+              href: `/dashboard/club/ai-analysis`,
+              color: 'text-violet-600',
+              bgColor: 'bg-violet-50'
+            }
+          ]
+        },
+        {
+          id: 'communication',
+          title: 'التواصل والإشعارات',
+          icon: MessageSquare,
+          items: [
+            {
+              id: 'messages',
+              label: 'الرسائل',
+              icon: MessageSquare,
+              href: `/dashboard/club/messages`,
+              color: 'text-cyan-600',
+              bgColor: 'bg-cyan-50'
+            },
+            {
+              id: 'notifications',
+              label: 'الإشعارات',
+              icon: Bell,
+              href: `/dashboard/club/notifications`,
+              color: 'text-orange-600',
+              bgColor: 'bg-orange-50'
+            }
+          ]
+        },
+        {
+          id: 'finances',
+          title: 'المالية والاشتراكات',
+          icon: DollarSign,
+          items: [
+            {
+              id: 'bulkPayment',
+              label: 'الدفع الجماعي',
+              icon: CreditCard,
+              href: `/dashboard/club/bulk-payment`,
+              color: 'text-green-600',
+              bgColor: 'bg-green-50'
+            },
+            {
+              id: 'billing',
+              label: 'الفواتير والاشتراكات',
+              icon: DollarSign,
+              href: `/dashboard/club/billing`,
+              color: 'text-emerald-600',
+              bgColor: 'bg-emerald-50'
+            },
+            {
+              id: 'subscriptionStatus',
+              label: 'حالة الاشتراك',
+              icon: Star,
+              href: `/dashboard/club/subscription-status`,
+              color: 'text-yellow-600',
+              bgColor: 'bg-yellow-50'
             }
           ]
         },
@@ -450,7 +526,7 @@ const UnifiedSidebar: React.FC<UnifiedSidebarProps> = ({
           items: [
             {
               id: 'referrals',
-              label: t('sidebar.player.referrals'),
+              label: 'الإحالات والمكافآت',
               icon: UserPlus,
               href: `/dashboard/club/referrals`,
               color: 'text-pink-600',
@@ -593,12 +669,12 @@ const UnifiedSidebar: React.FC<UnifiedSidebarProps> = ({
         },
         {
           id: 'academy',
-          title: 'أكاديمية الحلم',
+          title: 'مدرسة الحلم',
           icon: GraduationCap,
           items: [
             {
               id: 'dreamAcademyVideos',
-              label: 'إدارة أكاديمية الحلم',
+              label: 'إدارة مدرسة الحلم',
               icon: GraduationCap,
               href: `/dashboard/admin/dream-academy/videos`,
               color: 'text-amber-600',
@@ -614,7 +690,7 @@ const UnifiedSidebar: React.FC<UnifiedSidebarProps> = ({
             },
             {
               id: 'dreamAcademySettings',
-              label: 'إعدادات أكاديمية الحلم',
+              label: 'إعدادات مدرسة الحلم',
               icon: Settings,
               href: `/dashboard/admin/dream-academy/settings`,
               color: 'text-slate-600',
@@ -622,7 +698,7 @@ const UnifiedSidebar: React.FC<UnifiedSidebarProps> = ({
             },
             {
               id: 'dreamAcademy',
-              label: 'أكاديمية الحلم',
+              label: 'مدرسة الحلم',
               icon: GraduationCap,
               href: `/dashboard/dream-academy`,
               color: 'text-orange-600',
@@ -649,45 +725,60 @@ const UnifiedSidebar: React.FC<UnifiedSidebarProps> = ({
       agent: [
         {
           id: 'clients',
-          title: 'إدارة العملاء',
+          title: 'إدارة العملاء واللاعبين',
           icon: Users,
           items: [
             {
               id: 'players',
-              label: t('sidebar.agent.players'),
+              label: 'اللاعبين',
               icon: Users,
               href: `/dashboard/agent/players`,
               color: 'text-purple-600',
               bgColor: 'bg-purple-50'
             },
             {
-              id: 'clubs',
-              label: t('sidebar.agent.clubs'),
-              icon: Handshake,
-              href: `/dashboard/agent/clubs`,
+              id: 'searchPlayers',
+              label: 'البحث عن لاعبين',
+              icon: Search,
+              href: `/dashboard/agent/search-players`,
               color: 'text-blue-600',
               bgColor: 'bg-blue-50'
             }
           ]
         },
         {
-          id: 'business',
-          title: 'الأعمال والعقود',
-          icon: FileText,
+          id: 'content',
+          title: 'المحتوى والفيديوهات',
+          icon: Video,
           items: [
             {
-              id: 'negotiations',
-              label: t('sidebar.agent.negotiations'),
+              id: 'playerVideos',
+              label: 'فيديوهات اللاعبين',
+              icon: Video,
+              href: `/dashboard/agent/player-videos`,
+              color: 'text-red-600',
+              bgColor: 'bg-red-50'
+            }
+          ]
+        },
+        {
+          id: 'communication',
+          title: 'التواصل والإشعارات',
+          icon: MessageSquare,
+          items: [
+            {
+              id: 'messages',
+              label: 'الرسائل',
               icon: MessageSquare,
-              href: `/dashboard/agent/negotiations`,
+              href: `/dashboard/agent/messages`,
               color: 'text-cyan-600',
               bgColor: 'bg-cyan-50'
             },
             {
-              id: 'contracts',
-              label: t('sidebar.agent.contracts'),
-              icon: FileText,
-              href: `/dashboard/agent/contracts`,
+              id: 'notifications',
+              label: 'الإشعارات',
+              icon: Bell,
+              href: `/dashboard/agent/notifications`,
               color: 'text-orange-600',
               bgColor: 'bg-orange-50'
             }
@@ -695,24 +786,32 @@ const UnifiedSidebar: React.FC<UnifiedSidebarProps> = ({
         },
         {
           id: 'finances',
-          title: 'المالية والعمولات',
+          title: 'المالية والاشتراكات',
           icon: DollarSign,
           items: [
             {
-              id: 'commissions',
-              label: t('sidebar.agent.commissions'),
-              icon: DollarSign,
-              href: `/dashboard/agent/commissions`,
+              id: 'bulkPayment',
+              label: 'الدفع الجماعي',
+              icon: CreditCard,
+              href: `/dashboard/agent/bulk-payment`,
               color: 'text-green-600',
               bgColor: 'bg-green-50'
             },
             {
-              id: 'stats',
-              label: t('sidebar.agent.stats'),
-              icon: BarChart3,
-              href: `/dashboard/agent/stats`,
-              color: 'text-slate-600',
-              bgColor: 'bg-slate-50'
+              id: 'billing',
+              label: 'الفواتير والاشتراكات',
+              icon: DollarSign,
+              href: `/dashboard/agent/billing`,
+              color: 'text-emerald-600',
+              bgColor: 'bg-emerald-50'
+            },
+            {
+              id: 'subscriptionStatus',
+              label: 'حالة الاشتراك',
+              icon: Star,
+              href: `/dashboard/agent/subscription-status`,
+              color: 'text-yellow-600',
+              bgColor: 'bg-yellow-50'
             }
           ]
         },
@@ -723,7 +822,7 @@ const UnifiedSidebar: React.FC<UnifiedSidebarProps> = ({
           items: [
             {
               id: 'referrals',
-              label: t('sidebar.player.referrals'),
+              label: 'الإحالات والمكافآت',
               icon: UserPlus,
               href: `/dashboard/agent/referrals`,
               color: 'text-pink-600',
@@ -735,70 +834,93 @@ const UnifiedSidebar: React.FC<UnifiedSidebarProps> = ({
       academy: [
         {
           id: 'students',
-          title: 'إدارة الطلاب',
+          title: 'إدارة الطلاب واللاعبين',
           icon: Users,
           items: [
             {
               id: 'students',
-              label: t('sidebar.academy.students'),
+              label: 'الطلاب واللاعبين',
               icon: Users,
-              href: `/dashboard/academy/students`,
+              href: `/dashboard/academy/players`,
               color: 'text-purple-600',
               bgColor: 'bg-purple-50'
             },
             {
-              id: 'trainers',
-              label: t('sidebar.academy.trainers'),
-              icon: Users,
-              href: `/dashboard/academy/trainers`,
-              color: 'text-cyan-600',
-              bgColor: 'bg-cyan-50'
+              id: 'searchPlayers',
+              label: 'البحث عن لاعبين',
+              icon: Search,
+              href: `/dashboard/academy/search-players`,
+              color: 'text-blue-600',
+              bgColor: 'bg-blue-50'
             }
           ]
         },
         {
           id: 'content',
-          title: 'المحتوى والدورات',
-          icon: FileText,
+          title: 'المحتوى والفيديوهات',
+          icon: Video,
           items: [
             {
-              id: 'courses',
-              label: t('sidebar.academy.courses'),
-              icon: FileText,
-              href: `/dashboard/academy/courses`,
-              color: 'text-blue-600',
-              bgColor: 'bg-blue-50'
-            },
-            {
-              id: 'videos',
-              label: t('sidebar.academy.videos'),
+              id: 'playerVideos',
+              label: 'فيديوهات اللاعبين',
               icon: Video,
-              href: `/dashboard/academy/videos`,
+              href: `/dashboard/academy/player-videos`,
               color: 'text-red-600',
               bgColor: 'bg-red-50'
             }
           ]
         },
         {
-          id: 'management',
-          title: 'الإدارة والتقارير',
-          icon: BarChart3,
+          id: 'communication',
+          title: 'التواصل والإشعارات',
+          icon: MessageSquare,
           items: [
             {
-              id: 'stats',
-              label: t('sidebar.academy.stats'),
-              icon: BarChart3,
-              href: `/dashboard/academy/stats`,
-              color: 'text-slate-600',
-              bgColor: 'bg-slate-50'
+              id: 'messages',
+              label: 'الرسائل',
+              icon: MessageSquare,
+              href: `/dashboard/academy/messages`,
+              color: 'text-cyan-600',
+              bgColor: 'bg-cyan-50'
             },
             {
-              id: 'finances',
-              label: t('sidebar.academy.finances'),
-              icon: DollarSign,
-              href: `/dashboard/academy/finances`,
+              id: 'notifications',
+              label: 'الإشعارات',
+              icon: Bell,
+              href: `/dashboard/academy/notifications`,
+              color: 'text-orange-600',
+              bgColor: 'bg-orange-50'
+            }
+          ]
+        },
+        {
+          id: 'finances',
+          title: 'المالية والاشتراكات',
+          icon: DollarSign,
+          items: [
+            {
+              id: 'bulkPayment',
+              label: 'الدفع الجماعي',
+              icon: CreditCard,
+              href: `/dashboard/academy/bulk-payment`,
               color: 'text-green-600',
               bgColor: 'bg-green-50'
+            },
+            {
+              id: 'billing',
+              label: 'الفواتير والاشتراكات',
+              icon: DollarSign,
+              href: `/dashboard/academy/billing`,
+              color: 'text-emerald-600',
+              bgColor: 'bg-emerald-50'
+            },
+            {
+              id: 'subscriptionStatus',
+              label: 'حالة الاشتراك',
+              icon: Star,
+              href: `/dashboard/academy/subscription-status`,
+              color: 'text-yellow-600',
+              bgColor: 'bg-yellow-50'
             }
           ]
         },
@@ -809,7 +931,7 @@ const UnifiedSidebar: React.FC<UnifiedSidebarProps> = ({
           items: [
             {
               id: 'referrals',
-              label: t('sidebar.player.referrals'),
+              label: 'الإحالات والمكافآت',
               icon: UserPlus,
               href: `/dashboard/academy/referrals`,
               color: 'text-pink-600',
@@ -820,63 +942,94 @@ const UnifiedSidebar: React.FC<UnifiedSidebarProps> = ({
       ],
       trainer: [
         {
-          id: 'sessions',
-          title: 'الجلسات واللاعبين',
-          icon: Clock,
+          id: 'players',
+          title: 'إدارة اللاعبين',
+          icon: Users,
           items: [
             {
-              id: 'sessions',
-              label: t('sidebar.trainer.sessions'),
-              icon: Clock,
-              href: `/dashboard/trainer/sessions`,
-              color: 'text-blue-600',
-              bgColor: 'bg-blue-50'
-            },
-            {
               id: 'players',
-              label: t('sidebar.trainer.players'),
+              label: 'اللاعبين',
               icon: Users,
               href: `/dashboard/trainer/players`,
               color: 'text-purple-600',
               bgColor: 'bg-purple-50'
+            },
+            {
+              id: 'searchPlayers',
+              label: 'البحث عن لاعبين',
+              icon: Search,
+              href: `/dashboard/trainer/search-players`,
+              color: 'text-blue-600',
+              bgColor: 'bg-blue-50'
             }
           ]
         },
         {
           id: 'content',
-          title: 'المحتوى والبرامج',
-          icon: FileText,
+          title: 'المحتوى والفيديوهات',
+          icon: Video,
           items: [
             {
-              id: 'videos',
-              label: t('sidebar.trainer.videos'),
+              id: 'playerVideos',
+              label: 'فيديوهات اللاعبين',
               icon: Video,
-              href: `/dashboard/trainer/videos`,
+              href: `/dashboard/trainer/player-videos`,
               color: 'text-red-600',
               bgColor: 'bg-red-50'
+            }
+          ]
+        },
+        {
+          id: 'communication',
+          title: 'التواصل والإشعارات',
+          icon: MessageSquare,
+          items: [
+            {
+              id: 'messages',
+              label: 'الرسائل',
+              icon: MessageSquare,
+              href: `/dashboard/trainer/messages`,
+              color: 'text-cyan-600',
+              bgColor: 'bg-cyan-50'
             },
             {
-              id: 'programs',
-              label: t('sidebar.trainer.programs'),
-              icon: FileText,
-              href: `/dashboard/trainer/programs`,
+              id: 'notifications',
+              label: 'الإشعارات',
+              icon: Bell,
+              href: `/dashboard/trainer/notifications`,
               color: 'text-orange-600',
               bgColor: 'bg-orange-50'
             }
           ]
         },
         {
-          id: 'management',
-          title: 'الإدارة والتقارير',
-          icon: BarChart3,
+          id: 'finances',
+          title: 'المالية والاشتراكات',
+          icon: DollarSign,
           items: [
             {
-              id: 'stats',
-              label: t('sidebar.trainer.stats'),
-              icon: BarChart3,
-              href: `/dashboard/trainer/stats`,
-              color: 'text-slate-600',
-              bgColor: 'bg-slate-50'
+              id: 'bulkPayment',
+              label: 'الدفع الجماعي',
+              icon: CreditCard,
+              href: `/dashboard/trainer/bulk-payment`,
+              color: 'text-green-600',
+              bgColor: 'bg-green-50'
+            },
+            {
+              id: 'billing',
+              label: 'الفواتير والاشتراكات',
+              icon: DollarSign,
+              href: `/dashboard/trainer/billing`,
+              color: 'text-emerald-600',
+              bgColor: 'bg-emerald-50'
+            },
+            {
+              id: 'subscriptionStatus',
+              label: 'حالة الاشتراك',
+              icon: Star,
+              href: `/dashboard/trainer/subscription-status`,
+              color: 'text-yellow-600',
+              bgColor: 'bg-yellow-50'
             }
           ]
         },
@@ -887,11 +1040,120 @@ const UnifiedSidebar: React.FC<UnifiedSidebarProps> = ({
           items: [
             {
               id: 'referrals',
-              label: t('sidebar.player.referrals'),
+              label: 'الإحالات والمكافآت',
               icon: UserPlus,
               href: `/dashboard/trainer/referrals`,
               color: 'text-pink-600',
               bgColor: 'bg-pink-50'
+            }
+          ]
+        }
+      ],
+      marketer: [
+        {
+          id: 'players',
+          title: 'إدارة اللاعبين',
+          icon: Users,
+          items: [
+            {
+              id: 'players',
+              label: 'اللاعبين',
+              icon: Users,
+              href: `/dashboard/marketer/players`,
+              color: 'text-purple-600',
+              bgColor: 'bg-purple-50'
+            },
+            {
+              id: 'search',
+              label: 'البحث',
+              icon: Search,
+              href: `/dashboard/marketer/search`,
+              color: 'text-blue-600',
+              bgColor: 'bg-blue-50'
+            }
+          ]
+        },
+        {
+          id: 'content',
+          title: 'المحتوى والفيديوهات',
+          icon: Video,
+          items: [
+            {
+              id: 'videos',
+              label: 'الفيديوهات',
+              icon: Video,
+              href: `/dashboard/marketer/videos`,
+              color: 'text-red-600',
+              bgColor: 'bg-red-50'
+            }
+          ]
+        },
+        {
+          id: 'communication',
+          title: 'التواصل والإشعارات',
+          icon: MessageSquare,
+          items: [
+            {
+              id: 'messages',
+              label: 'الرسائل',
+              icon: MessageSquare,
+              href: `/dashboard/marketer/messages`,
+              color: 'text-cyan-600',
+              bgColor: 'bg-cyan-50'
+            },
+            {
+              id: 'notifications',
+              label: 'الإشعارات',
+              icon: Bell,
+              href: `/dashboard/marketer/notifications`,
+              color: 'text-orange-600',
+              bgColor: 'bg-orange-50'
+            }
+          ]
+        },
+        {
+          id: 'finances',
+          title: 'المالية والاشتراكات',
+          icon: DollarSign,
+          items: [
+            {
+              id: 'payment',
+              label: 'المدفوعات',
+              icon: CreditCard,
+              href: `/dashboard/marketer/payment`,
+              color: 'text-green-600',
+              bgColor: 'bg-green-50'
+            },
+            {
+              id: 'subscription',
+              label: 'الاشتراكات',
+              icon: DollarSign,
+              href: `/dashboard/marketer/subscription`,
+              color: 'text-emerald-600',
+              bgColor: 'bg-emerald-50'
+            },
+            {
+              id: 'subscriptionStatus',
+              label: 'حالة الاشتراك',
+              icon: Star,
+              href: `/dashboard/marketer/subscription-status`,
+              color: 'text-yellow-600',
+              bgColor: 'bg-yellow-50'
+            }
+          ]
+        },
+        {
+          id: 'dreamAcademy',
+          title: 'مدرسة الحلم',
+          icon: GraduationCap,
+          items: [
+            {
+              id: 'dreamAcademy',
+              label: 'مدرسة الحلم',
+              icon: GraduationCap,
+              href: `/dashboard/marketer/dream-academy`,
+              color: 'text-indigo-600',
+              bgColor: 'bg-indigo-50'
             }
           ]
         }
@@ -900,7 +1162,7 @@ const UnifiedSidebar: React.FC<UnifiedSidebarProps> = ({
 
     return [
       baseGroup,
-      ...(accountSpecificGroups[accountType as keyof typeof accountSpecificGroups] || accountSpecificGroups.player)
+      ...(accountSpecificGroups[accountType as keyof typeof accountSpecificGroups] || [])
     ];
   };
 
@@ -908,14 +1170,14 @@ const UnifiedSidebar: React.FC<UnifiedSidebarProps> = ({
 
   // الحصول على صورة المستخدم
   const getUserAvatar = () => {
-    if (userData?.photoURL) return userData.photoURL;
-    if (userData?.avatar) return userData.avatar;
-    if (userData?.profileImage) return userData.profileImage;
+    if (userData?.['photoURL']) return userData['photoURL'];
+    if (userData?.['avatar']) return userData['avatar'];
+    if (userData?.['profileImage']) return userData['profileImage'];
     return null;
   };
 
   const getUserDisplayName = () => {
-    return userData?.displayName || userData?.name || user?.displayName || user?.email?.split('@')[0] || 'مستخدم';
+    return userData?.['displayName'] || userData?.['name'] || user?.displayName || user?.email?.split('@')[0] || 'مستخدم';
   };
 
   const handleNavigation = (href: string, id: string) => {
@@ -968,7 +1230,7 @@ const UnifiedSidebar: React.FC<UnifiedSidebarProps> = ({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+            className="fixed inset-0 z-40 bg-black/50 lg:hidden"
             onClick={onToggle}
           />
         )}
@@ -982,12 +1244,12 @@ const UnifiedSidebar: React.FC<UnifiedSidebarProps> = ({
         className={`fixed top-0 right-0 h-full bg-gradient-to-b ${accountInfo.color} z-50 shadow-2xl backdrop-blur-xl border-l border-white/20 ${
           isMobile ? 'w-80' : getSidebarWidth()
         }`}
-        dir={isRTL}
+        dir="rtl"
       >
         <div className="flex flex-col h-full">
           {/* Header */}
-          <div className="flex items-center justify-between p-4 border-b border-white/20">
-            <div className="flex items-center gap-3">
+          <div className="flex justify-between items-center p-4 border-b border-white/20">
+            <div className="flex gap-3 items-center">
               <div className={`p-2 rounded-xl ${accountInfo.bgColor}`}>
                 <IconComponent className={`w-6 h-6 ${accountInfo.textColor}`} />
               </div>
@@ -999,14 +1261,14 @@ const UnifiedSidebar: React.FC<UnifiedSidebarProps> = ({
                     exit={{ opacity: 0, x: -20 }}
                     className="flex flex-col"
                   >
-                    <h2 className="text-white font-bold text-lg">{accountInfo.title}</h2>
-                    <p className="text-white/70 text-sm">{accountInfo.subtitle}</p>
+                    <h2 className="text-lg font-bold text-white">{accountInfo.title}</h2>
+                    <p className="text-sm text-white/70">{accountInfo.subtitle}</p>
                   </motion.div>
                 )}
               </AnimatePresence>
             </div>
             
-            <div className="flex items-center gap-2">
+            <div className="flex gap-2 items-center">
               {(userData?.accountType && userData.accountType !== 'player') && (
                 <JoinRequestNotifications />
               )}
@@ -1035,7 +1297,7 @@ const UnifiedSidebar: React.FC<UnifiedSidebarProps> = ({
 
           {/* User Profile */}
           <div className="p-4 border-b border-white/20">
-            <div className="flex items-center gap-3">
+            <div className="flex gap-3 items-center">
               <Avatar className="w-12 h-12 ring-2 ring-white/30">
                 <AvatarImage src={getUserAvatar() || '/default-avatar.png'} alt={getUserDisplayName()} />
                 <AvatarFallback className={`${accountInfo.bgColor} ${accountInfo.textColor} font-bold`}>
@@ -1051,8 +1313,8 @@ const UnifiedSidebar: React.FC<UnifiedSidebarProps> = ({
                     exit={{ opacity: 0, x: -20 }}
                     className="flex-1 min-w-0"
                   >
-                    <h3 className="text-white font-semibold truncate">{getUserDisplayName()}</h3>
-                    <div className="flex items-center gap-2">
+                    <h3 className="font-semibold text-white truncate">{getUserDisplayName()}</h3>
+                    <div className="flex gap-2 items-center">
                       <Badge variant="secondary" className={`${accountInfo.bgColor} ${accountInfo.textColor} border-0`}>
                         {accountInfo.emoji} {accountInfo.subtitle}
                       </Badge>
@@ -1064,7 +1326,7 @@ const UnifiedSidebar: React.FC<UnifiedSidebarProps> = ({
           </div>
 
           {/* Navigation */}
-          <nav className="flex-1 overflow-y-auto py-4">
+          <nav className="overflow-y-auto flex-1 py-4">
             <div className="px-4 space-y-2">
               {menuGroups.map((group, groupIndex) => {
                 const isGroupExpanded = expandedGroups.has(group.id);
@@ -1086,7 +1348,7 @@ const UnifiedSidebar: React.FC<UnifiedSidebarProps> = ({
                         group.id === 'main' ? 'font-semibold' : 'font-medium'
                       }`}
                     >
-                      <div className="flex items-center gap-2">
+                      <div className="flex gap-2 items-center">
                         <GroupIcon className="w-4 h-4" />
                         <AnimatePresence>
                           {showText && (
@@ -1126,7 +1388,7 @@ const UnifiedSidebar: React.FC<UnifiedSidebarProps> = ({
                           transition={{ duration: 0.3, ease: 'easeInOut' }}
                           className="overflow-hidden"
                         >
-                          <div className="space-y-1 pr-4">
+                          <div className="pr-4 space-y-1">
                             {group.items.map((item, itemIndex) => {
                               const isActive = activeItem === item.id;
                               const IconComponent = item.icon;
@@ -1143,7 +1405,7 @@ const UnifiedSidebar: React.FC<UnifiedSidebarProps> = ({
                                     onClick={() => handleNavigation(item.href, item.id)}
                                     className={`w-full justify-start gap-3 h-10 px-3 transition-all duration-500 ease-out ${
                                       isActive
-                                        ? 'bg-white text-gray-900 shadow-lg'
+                                        ? 'text-gray-900 bg-white shadow-lg'
                                         : 'text-white hover:bg-white/20'
                                     }`}
                                   >
@@ -1193,7 +1455,7 @@ const UnifiedSidebar: React.FC<UnifiedSidebarProps> = ({
             <Button
               variant="ghost"
               onClick={handleLogout}
-              className="w-full justify-start gap-3 h-12 px-4 text-white hover:bg-red-600/20 hover:text-red-200"
+              className="gap-3 justify-start px-4 w-full h-12 text-white hover:bg-red-600/20 hover:text-red-200"
             >
               <div className="p-2 rounded-lg bg-red-600/20">
                 <LogOut className="w-4 h-4 text-red-200" />

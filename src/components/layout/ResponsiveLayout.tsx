@@ -718,6 +718,29 @@ export const ResponsiveLayoutWrapper: React.FC<ResponsiveLayoutWrapperProps> = (
   showFooter = true
 }) => {
   const { user, userData, loading } = useAuth();
+  
+  return (
+    <LayoutProvider>
+      <ResponsiveLayoutContent
+        accountType={accountType}
+        showSidebar={showSidebar}
+        showHeader={showHeader}
+        showFooter={showFooter}
+      >
+        {children}
+      </ResponsiveLayoutContent>
+    </LayoutProvider>
+  );
+};
+
+const ResponsiveLayoutContent: React.FC<ResponsiveLayoutWrapperProps> = ({
+  children,
+  accountType = 'player',
+  showSidebar = true,
+  showHeader = true,
+  showFooter = true
+}) => {
+  const { user, userData, loading } = useAuth();
   const { isSidebarOpen, isSidebarCollapsed, isMobile, toggleSidebar, toggleSidebarCollapse } = useLayout();
 
   if (loading) {

@@ -24,8 +24,10 @@ export default function AcademySidebar({ collapsed, setCollapsed }) {
   const [academyName, setAcademyName] = useState('');
 
   useEffect(() => {
-    const htmlLang = document.documentElement.lang;
-    // setLang(htmlLang || 'ar'); // This line is removed as per the new_code
+    if (typeof document !== 'undefined') {
+      const htmlLang = document.documentElement.lang;
+      // setLang(htmlLang || 'ar'); // This line is removed as per the new_code
+    }
   }, []);
 
   // جلب شعار الأكاديمية من Firestore مع التحديث الفوري
@@ -80,24 +82,16 @@ export default function AcademySidebar({ collapsed, setCollapsed }) {
 
   // عناصر القائمة الجانبية مع الترجمة
   const academyMenuItems = [
-    { title: 'sidebar.academy.home', icon: <Home />, path: '/dashboard/academy' },
-    { title: 'sidebar.academy.profile', icon: <User />, path: '/dashboard/academy/profile' },
-    { title: 'sidebar.academy.students', icon: <Users />, path: '/dashboard/academy/players' },
-    { title: 'sidebar.academy.searchPlayers', icon: <Search />, path: '/dashboard/academy/search-players' },
-    { title: 'sidebar.academy.playerVideos', icon: <Video />, path: '/dashboard/academy/player-videos' },
-    { title: 'sidebar.academy.courses', icon: <BookOpen />, path: '/dashboard/academy/programs' },
-    { title: 'sidebar.academy.teams', icon: <Target />, path: '/dashboard/academy/teams' },
-    { title: 'sidebar.academy.trainers', icon: <GraduationCap />, path: '/dashboard/academy/coaches' },
-    { title: 'sidebar.academy.schedule', icon: <Calendar />, path: '/dashboard/academy/schedule' },
-    { title: 'sidebar.academy.tournaments', icon: <Trophy />, path: '/tournaments/unified-registration' },
-    { title: 'sidebar.academy.performance', icon: <Star />, path: '/dashboard/academy/performance' },
-    { title: 'sidebar.academy.reports', icon: <Award />, path: '/dashboard/academy/reports' },
-    { title: 'sidebar.academy.facilities', icon: <MapPin />, path: '/dashboard/academy/facilities' },
-    { title: 'sidebar.common.notifications', icon: <Bell />, path: '/dashboard/academy/notifications' },
-    { title: 'sidebar.common.messages', icon: <MessageSquare />, path: '/dashboard/academy/messages' },
-    { title: 'sidebar.academy.bulkPayment', icon: <Users />, path: '/dashboard/academy/bulk-payment' },
-    { title: 'sidebar.academy.billing', icon: <Award />, path: '/dashboard/academy/billing' },
-    { title: 'sidebar.common.changePassword', icon: <KeyRound />, path: '/dashboard/academy/change-password' },
+    { title: 'الرئيسية', icon: <Home />, path: '/dashboard/academy' },
+    { title: 'الملف الشخصي', icon: <User />, path: '/dashboard/academy/profile' },
+    { title: 'الطلاب واللاعبين', icon: <Users />, path: '/dashboard/academy/players' },
+    { title: 'البحث عن لاعبين', icon: <Search />, path: '/dashboard/academy/search-players' },
+    { title: 'فيديوهات اللاعبين', icon: <Video />, path: '/dashboard/academy/player-videos' },
+    { title: 'الرسائل', icon: <MessageSquare />, path: '/dashboard/academy/messages' },
+    { title: 'الإشعارات', icon: <Bell />, path: '/dashboard/academy/notifications' },
+    { title: 'الدفع الجماعي', icon: <CreditCard />, path: '/dashboard/academy/bulk-payment' },
+    { title: 'الفواتير والاشتراكات', icon: <Award />, path: '/dashboard/academy/billing' },
+    { title: 'حالة الاشتراك', icon: <Star />, path: '/dashboard/academy/subscription-status' },
   ];
 
   return (

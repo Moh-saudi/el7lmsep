@@ -1,0 +1,535 @@
+[
+  {
+    "id": "TC001",
+    "title": "OTP Authentication via SMS for Registration",
+    "description": "Verify that the user can successfully register using OTP sent via SMS with correct phone number and that OTP is verified correctly.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to the registration page."
+      },
+      {
+        "type": "action",
+        "description": "Enter a valid phone number."
+      },
+      {
+        "type": "action",
+        "description": "Select SMS as OTP delivery method."
+      },
+      {
+        "type": "action",
+        "description": "Request OTP."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify OTP is sent via SMS and received."
+      },
+      {
+        "type": "action",
+        "description": "Enter received OTP."
+      },
+      {
+        "type": "action",
+        "description": "Submit OTP verification."
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm registration completed and user redirected to the appropriate dashboard."
+      }
+    ]
+  },
+  {
+    "id": "TC002",
+    "title": "OTP Authentication via WhatsApp for Registration",
+    "description": "Ensure OTP sent over WhatsApp is delivered and accepted during registration, with unified OTP logic applied.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to the registration page."
+      },
+      {
+        "type": "action",
+        "description": "Enter a valid phone number."
+      },
+      {
+        "type": "action",
+        "description": "Select WhatsApp as OTP delivery method."
+      },
+      {
+        "type": "action",
+        "description": "Request OTP."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify OTP is sent via WhatsApp and received."
+      },
+      {
+        "type": "action",
+        "description": "Enter received OTP."
+      },
+      {
+        "type": "action",
+        "description": "Submit OTP verification."
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm registration completed successfully and user sees the correct dashboard."
+      }
+    ]
+  },
+  {
+    "id": "TC003",
+    "title": "OTP Authentication Failure Handling",
+    "description": "Test OTP verification failure for invalid OTP, expired OTP, and exceeding rate limits during registration and password recovery.",
+    "category": "error handling",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to login or registration page."
+      },
+      {
+        "type": "action",
+        "description": "Enter valid phone number."
+      },
+      {
+        "type": "action",
+        "description": "Request OTP multiple times exceeding rate limit."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the system blocks requests and shows rate limiting message."
+      },
+      {
+        "type": "action",
+        "description": "Enter an invalid or expired OTP."
+      },
+      {
+        "type": "action",
+        "description": "Submit OTP."
+      },
+      {
+        "type": "assertion",
+        "description": "Ensure OTP verification fails with appropriate error message."
+      }
+    ]
+  },
+  {
+    "id": "TC004",
+    "title": "Multi-Currency Payment Handling with Geidea",
+    "description": "Validate payment sessions can be created and processed via Geidea gateway with multiple currencies and payments update correctly via webhook.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Initiate payment session selecting different supported currencies."
+      },
+      {
+        "type": "action",
+        "description": "Complete payment using valid payment method through Geidea."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify payment confirmation and update of payment status in user account."
+      },
+      {
+        "type": "action",
+        "description": "Simulate webhook notification with payment success and failure."
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm payment status and transaction records are updated accordingly."
+      }
+    ]
+  },
+  {
+    "id": "TC005",
+    "title": "Apple Pay Payment Integration Test",
+    "description": "Test initiation and successful completion of payment via Apple Pay within the Geidea payment system.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Select Apple Pay as payment method."
+      },
+      {
+        "type": "action",
+        "description": "Initiate payment session."
+      },
+      {
+        "type": "action",
+        "description": "Complete payment via Apple Pay wallet."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify payment completion notification and update of subscription/invoice status."
+      }
+    ]
+  },
+  {
+    "id": "TC006",
+    "title": "SkipCash Payment Integration Test",
+    "description": "Validate payment via SkipCash is correctly handled and reflected in system payment records.",
+    "category": "functional",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Choose SkipCash as payment method."
+      },
+      {
+        "type": "action",
+        "description": "Initiate payment and complete according to SkipCash app flow."
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm payment recorded with accurate details and user receives confirmation."
+      }
+    ]
+  },
+  {
+    "id": "TC007",
+    "title": "Role-Based Dashboard Rendering",
+    "description": "Verify that after authentication, users see dashboards tailored to their role (player, club, academy, agent, trainer, marketer, admin) with correct sidebar, header, features and translations.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Login as each role type."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify dashboard layout, sidebar, header, and features reflect role-specific content."
+      },
+      {
+        "type": "assertion",
+        "description": "Check that all text is translated based on current language setting and UI direction is correct for RTL (Arabic) and LTR (English)."
+      }
+    ]
+  },
+  {
+    "id": "TC008",
+    "title": "Language Switching and Persistence",
+    "description": "Test the language switcher changes application language instantly across all dashboards and persists choice in localStorage; verify RTL/LTR layout adjustments.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Login to any dashboard."
+      },
+      {
+        "type": "action",
+        "description": "Use language switcher to switch from English to Arabic."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify all UI text updates instantly with correct Arabic translations and layout switches to RTL."
+      },
+      {
+        "type": "action",
+        "description": "Refresh the page."
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm Arabic remains selected and layout is RTL based on stored preferences."
+      },
+      {
+        "type": "action",
+        "description": "Switch back to English."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify UI text updates instantly and layout switches back to LTR."
+      }
+    ]
+  },
+  {
+    "id": "TC009",
+    "title": "Media Upload and Management",
+    "description": "Verify image and video uploads to Firebase and Supabase for player profiles work with proper progress indication, successful storage, and error handling.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to media upload section in player profile."
+      },
+      {
+        "type": "action",
+        "description": "Upload supported image file and monitor upload progress."
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm image uploaded successfully and is displayed in media gallery."
+      },
+      {
+        "type": "action",
+        "description": "Upload supported video file and monitor upload progress."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify video is stored correctly and playable from media gallery."
+      },
+      {
+        "type": "action",
+        "description": "Attempt uploading unsupported file format or large file exceeding limits."
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm appropriate error messages are displayed and upload is rejected."
+      }
+    ]
+  },
+  {
+    "id": "TC010",
+    "title": "Real-Time Multi-Channel Notification Delivery",
+    "description": "Test notifications are sent and received in near real-time via all supported channels, including in-app UI and external push, under normal and load conditions.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Trigger various notifications (e.g., join requests, contract updates) for user."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify notifications appear immediately in-app notification center."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify push notifications are received on device."
+      },
+      {
+        "type": "action",
+        "description": "Simulate high volume notification load."
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm notifications are still delivered reliably without loss or delay."
+      }
+    ]
+  },
+  {
+    "id": "TC011",
+    "title": "Secure Logging and HMAC Verification for Payments",
+    "description": "Ensure that payment requests and webhook callbacks are logged securely and HMAC signatures are verified correctly to prevent tampering.",
+    "category": "security",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Initiate payment transaction."
+      },
+      {
+        "type": "assertion",
+        "description": "Check secure logs record transaction details without sensitive data exposure."
+      },
+      {
+        "type": "action",
+        "description": "Send webhook payment notification with valid HMAC signature."
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm system accepts and processes webhook."
+      },
+      {
+        "type": "action",
+        "description": "Send webhook notification with invalid or missing HMAC signature."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify webhook is rejected and logged as security incident."
+      }
+    ]
+  },
+  {
+    "id": "TC012",
+    "title": "Rate Limiting Enforcement",
+    "description": "Verify that rate limiting protects authentication and OTP APIs from excessive requests and returns appropriate error messages.",
+    "category": "security",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Send rapid successive OTP requests via SMS or WhatsApp for same phone number."
+      },
+      {
+        "type": "assertion",
+        "description": "Ensure requests beyond limit receive rate limit error response."
+      },
+      {
+        "type": "action",
+        "description": "Send rapid successive login or registration attempts."
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm system blocks excessive requests and logs incidents."
+      }
+    ]
+  },
+  {
+    "id": "TC013",
+    "title": "Tournament Registration API Validation and Security",
+    "description": "Test that tournament registrations API validates all input fields, enforces business rules, and securely handles requests with proper authentication.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Submit valid tournament registration data via API."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify successful registration with appropriate response and record created."
+      },
+      {
+        "type": "action",
+        "description": "Submit tournament registration requests missing required fields or with invalid data."
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm API returns validation error responses."
+      },
+      {
+        "type": "action",
+        "description": "Attempt registration API calls without authentication."
+      },
+      {
+        "type": "assertion",
+        "description": "Ensure API denies access with proper error code."
+      }
+    ]
+  },
+  {
+    "id": "TC014",
+    "title": "Admin Panel Statistics and Action Logs",
+    "description": "Validate that admin users can view advanced statistics, perform email migration tasks, export data, and that action logs record significant admin actions correctly.",
+    "category": "functional",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Login as admin user."
+      },
+      {
+        "type": "action",
+        "description": "Access the statistics dashboard."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify statistics data is accurate and updated."
+      },
+      {
+        "type": "action",
+        "description": "Perform an email migration task via admin tools."
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm migration executes without error and logs the action."
+      },
+      {
+        "type": "action",
+        "description": "Export user data."
+      },
+      {
+        "type": "assertion",
+        "description": "Validate export file integrity and action logged."
+      }
+    ]
+  },
+  {
+    "id": "TC015",
+    "title": "Player Management Features Functionality",
+    "description": "Test player profile creation, skill assessment recording, medical record uploads, achievements tracking, contract history management, and media gallery display.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Create or edit a player profile."
+      },
+      {
+        "type": "action",
+        "description": "Add skill assessments and verify data saved correctly."
+      },
+      {
+        "type": "action",
+        "description": "Upload medical records and verify secure storage."
+      },
+      {
+        "type": "action",
+        "description": "Add player achievements and confirm they display correctly."
+      },
+      {
+        "type": "action",
+        "description": "Input contract history entries and verify correct timeline and details."
+      },
+      {
+        "type": "assertion",
+        "description": "Check that all data is correctly reflected in player dashboard and can be edited or deleted."
+      }
+    ]
+  },
+  {
+    "id": "TC016",
+    "title": "UI Components Accessibility and Responsiveness",
+    "description": "Verify core UI components (buttons, inputs, dialogs, badges, avatars) render correctly, are accessible and responsive on mobile and desktop.",
+    "category": "ui",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Load various UI components in different screen sizes."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify layout and styling adapt correctly across breakpoints."
+      },
+      {
+        "type": "action",
+        "description": "Use keyboard navigation to interact with UI components."
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm accessible attributes (ARIA labels, focus states) are present and functional."
+      }
+    ]
+  },
+  {
+    "id": "TC017",
+    "title": "Error Handling Mechanisms",
+    "description": "Test that backend and frontend errors produce user-friendly messages, log detailed info securely, and recover gracefully.",
+    "category": "error handling",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Trigger various errors like network failure, invalid input, and server errors on API endpoints."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify frontend displays appropriate error messages."
+      },
+      {
+        "type": "assertion",
+        "description": "Check backend logs record error details securely without leaking sensitive info."
+      },
+      {
+        "type": "action",
+        "description": "Perform actions after error to verify application stability."
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm app recovers and user can continue normal workflow."
+      }
+    ]
+  }
+]

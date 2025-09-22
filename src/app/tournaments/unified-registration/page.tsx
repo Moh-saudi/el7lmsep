@@ -39,7 +39,7 @@ import { db } from '@/lib/firebase/config';
 import { toast } from 'sonner';
 import { Tournament, TournamentRegistration, ClubPlayer } from '@/types/tournament';
 import { Player } from '@/types/player';
-import ResponsiveLayoutWrapper from '@/components/layout/ResponsiveLayout';
+import ResponsiveLayoutWrapper from '@/components/layout/ResponsiveLayout_fixed';
 import { useAuth } from '@/lib/firebase/auth-provider';
 import GeideaPaymentModal from '@/components/GeideaPaymentModal';
 import { supabase } from '@/lib/supabase/config';

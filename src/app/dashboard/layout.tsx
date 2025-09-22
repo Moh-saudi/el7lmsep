@@ -1,11 +1,11 @@
 'use client';
 
 import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+// import 'react-toastify/dist/ReactToastify.css'; // تم تعطيله مؤقتاً لحل مشكلة SSR
 import { useAuth } from '@/lib/firebase/auth-provider';
 import { useMemo } from 'react';
 import { usePathname } from 'next/navigation';
-import ResponsiveLayoutWrapper from '@/components/layout/ResponsiveLayout';
+import ResponsiveLayoutWrapper from '@/components/layout/ResponsiveLayout_fixed';
 import FloatingChatWidget from '@/components/support/FloatingChatWidget';
 import OfflineIndicator from '@/components/ui/OfflineIndicator';
 
@@ -18,11 +18,26 @@ export default function DashboardLayout({
   const { user, userData: authUserData, loading: authLoading } = useAuth();
   const showOfflineBanner = process.env.NEXT_PUBLIC_SHOW_OFFLINE_BANNER === 'true';
 
-  // تحديد نوع الحساب
+  // تحديد نوع الحساب من المسار أولاً، ثم من userData
   const accountType = useMemo(() => {
+    // استخراج نوع الحساب من المسار
+    const pathSegments = pathname.split('/');
+    if (pathSegments.length >= 3 && pathSegments[1] === 'dashboard') {
+      const pathAccountType = pathSegments[2];
+      // التحقق من أن نوع الحساب صحيح
+      const validAccountTypes = ['admin', 'player', 'club', 'academy', 'agent', 'trainer', 'marketer', 'parent'];
+      if (validAccountTypes.includes(pathAccountType)) {
+        return pathAccountType;
+      }
+    }
+    
+    // إذا لم نجد نوع حساب صحيح في المسار، استخدم userData
     if (!authUserData?.accountType) return 'player';
     return authUserData.accountType;
-  }, [authUserData?.accountType]);
+  }, [pathname, authUserData?.accountType]);
+
+  // إذا كانت صفحة admin، لا نطبق layout العام
+  const isAdminPage = pathname.startsWith('/dashboard/admin');
 
   // عرض شاشة تحميل إذا كانت المصادقة تحمل
   if (authLoading) {
@@ -51,6 +66,7 @@ export default function DashboardLayout({
       </div>
     );
   }
+
 
   return (
     <>

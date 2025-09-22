@@ -51,7 +51,7 @@ export default function SimpleLoader({
   const colorClass = getColorClasses();
 
   return (
-    <div className="min-h-screen flex items-center justify-center">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-600 to-purple-700">
       <div className={`relative ${sizes.container}`}>
         {/* الكرة الأولى */}
         <div 
