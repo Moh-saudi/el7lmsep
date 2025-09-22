@@ -7,7 +7,7 @@ import toast from 'react-hot-toast';
 import { openWhatsAppShare, testWhatsAppShare } from '@/lib/utils/whatsapp-share';
 
 export default function AdminPaymentsPage() {
-  const [payments, setPayments] = useState([]);
+  const [payments, setPayments] = useState<any[]>([]);
   const [filteredPayments, setFilteredPayments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedPayment, setSelectedPayment] = useState(null);
