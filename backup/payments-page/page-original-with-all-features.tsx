@@ -88,7 +88,7 @@ export default function AdminPaymentsPage() {
     custom: 'رسالة مخصصة'
   };
 
-  const selectTemplate = (template) => {
+  const selectTemplate = (template: any) => {
     if (template === 'custom') {
       setMessageText('');
     } else if (typeof messageTemplates[template] === 'function') {

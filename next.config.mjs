@@ -63,7 +63,6 @@ const nextConfig = {
         serverActions: {
             bodySizeLimit: '100mb',
         },
-        serverExternalPackages: ['firebase-admin', 'framer-motion'],
     },
 
     // إعدادات webpack مبسطة
