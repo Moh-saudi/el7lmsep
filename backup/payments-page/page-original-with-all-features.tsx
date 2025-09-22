@@ -187,7 +187,7 @@ export default function AdminPaymentsPage() {
   };
 
   // تحديث الفلاتر
-  const updateFilter = (key, value) => {
+  const updateFilter = (key: any, value: any) => {
     setFilters(prev => ({ ...(prev || {}), [key]: value }));
   };
 
