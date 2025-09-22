@@ -117,11 +117,11 @@ export default function AdminPaymentsPage() {
     if (filters.status !== 'all') {
       filtered = filtered.filter(payment => {
         if (filters.status === 'completed') {
-          return payment.status === 'completed' || payment.status === 'success' || payment.status === 'paid';
+          return (payment as any).status === 'completed' || (payment as any).status === 'success' || (payment as any).status === 'paid';
         } else if (filters.status === 'pending') {
-          return payment.status === 'pending' || payment.status === 'processing' || payment.status === 'waiting';
+          return (payment as any).status === 'pending' || (payment as any).status === 'processing' || (payment as any).status === 'waiting';
         } else if (filters.status === 'cancelled') {
-          return payment.status === 'cancelled' || payment.status === 'failed' || payment.status === 'rejected';
+          return (payment as any).status === 'cancelled' || (payment as any).status === 'failed' || (payment as any).status === 'rejected';
         }
         return true;
       });
