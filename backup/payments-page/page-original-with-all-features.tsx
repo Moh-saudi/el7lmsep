@@ -106,10 +106,10 @@ export default function AdminPaymentsPage() {
     if (filters.search) {
       const searchTerm = filters.search.toLowerCase();
       filtered = filtered.filter(payment => 
-        payment.playerName.toLowerCase().includes(searchTerm) ||
-        payment.playerPhone.toLowerCase().includes(searchTerm) ||
-        payment.paymentMethod.toLowerCase().includes(searchTerm) ||
-        payment.collection.toLowerCase().includes(searchTerm)
+        (payment as any).playerName?.toLowerCase().includes(searchTerm) ||
+        (payment as any).playerPhone?.toLowerCase().includes(searchTerm) ||
+        (payment as any).paymentMethod?.toLowerCase().includes(searchTerm) ||
+        (payment as any).collection?.toLowerCase().includes(searchTerm)
       );
     }
 
