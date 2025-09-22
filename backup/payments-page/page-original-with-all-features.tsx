@@ -137,14 +137,14 @@ export default function AdminPaymentsPage() {
     // فلتر التاريخ
     if (filters.dateFrom) {
       filtered = filtered.filter(payment => {
-        const paymentDate = payment.createdAt?.toDate ? payment.createdAt.toDate() : new Date(payment.createdAt);
+        const paymentDate = (payment as any).createdAt?.toDate ? (payment as any).createdAt.toDate() : new Date((payment as any).createdAt);
         return paymentDate >= new Date(filters.dateFrom);
       });
     }
 
     if (filters.dateTo) {
       filtered = filtered.filter(payment => {
-        const paymentDate = payment.createdAt?.toDate ? payment.createdAt.toDate() : new Date(payment.createdAt);
+        const paymentDate = (payment as any).createdAt?.toDate ? (payment as any).createdAt.toDate() : new Date((payment as any).createdAt);
         return paymentDate <= new Date(filters.dateTo);
       });
     }
