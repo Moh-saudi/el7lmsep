@@ -205,7 +205,7 @@ export default function AdminPaymentsPage() {
   };
 
   // تحديد/إلغاء تحديد صف
-  const toggleRowSelection = (paymentId) => {
+  const toggleRowSelection = (paymentId: any) => {
     setSelectedRows(prev => 
       (prev || []).includes(paymentId) 
         ? (prev || []).filter(id => id !== paymentId)
