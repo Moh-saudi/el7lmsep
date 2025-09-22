@@ -224,7 +224,7 @@ export default function AdminPaymentsPage() {
   };
 
   // تحديث حالة المدفوعة
-  const handleStatusUpdate = (payment) => {
+  const handleStatusUpdate = (payment: any) => {
     setUpdatingPayment(payment);
     setNewStatus(payment.status);
     setShowStatusUpdateDialog(true);
