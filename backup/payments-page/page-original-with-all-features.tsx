@@ -239,7 +239,7 @@ export default function AdminPaymentsPage() {
 
     try {
       // تحديث الحالة في قاعدة البيانات
-      const paymentRef = doc(db, updatingPayment.collection, updatingPayment.id);
+      const paymentRef = doc(db, (updatingPayment as any).collection, (updatingPayment as any).id);
       await updateDoc(paymentRef, {
         status: newStatus,
         updatedAt: new Date(),
