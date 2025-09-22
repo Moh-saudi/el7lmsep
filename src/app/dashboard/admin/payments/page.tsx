@@ -15,10 +15,13 @@ export default function AdminPaymentsPage() {
         const paymentsRef = collection(db, 'payments');
         const q = query(paymentsRef, orderBy('createdAt', 'desc'));
         const snapshot = await getDocs(q);
-        const paymentsData = snapshot.docs.map(doc => ({
-          id: doc.id,
-          ...(doc.data() || {})
-        }));
+        const paymentsData = snapshot.docs.map(doc => {
+          const data = doc.data();
+          return {
+            id: doc.id,
+            ...(data || {})
+          };
+        });
         setPayments(paymentsData);
       } catch (error) {
         console.error('خطأ في جلب المدفوعات:', error);
