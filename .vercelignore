@@ -1,0 +1,17 @@
+# Ignore backup files that may cause build issues
+backup/
+
+# Ignore development files
+.next/
+node_modules/
+*.log
+
+# Ignore test files
+**/*.test.*
+**/*.spec.*
+testsprite_tests/
+
+# Ignore temporary files
+tmp/
+temp/
+.vscode/
