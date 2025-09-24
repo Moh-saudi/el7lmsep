@@ -128,7 +128,7 @@ export default function AdminNotificationsPage() {
   };
 
   // إرسال إشعار عبر WhatsApp
-  const sendNotificationViaWhatsApp = (notification) => {
+  const sendNotificationViaWhatsApp = (notification: any) => {
     if (!notification.paymentData?.playerPhone) {
       toast.error('رقم الهاتف غير متوفر');
       return;
