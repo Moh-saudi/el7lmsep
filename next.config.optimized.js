@@ -55,6 +55,22 @@ const nextConfig = {
     },
     // تحسين webpack
     webpack: (config, { isServer, dev }) => {
+        // حل مشكلة تحذيرات webpack cache
+        config.infrastructureLogging = {
+            level: 'error',
+        };
+        
+        // إعدادات cache محسنة
+        config.cache = {
+            type: 'filesystem',
+            buildDependencies: {
+                config: [__filename],
+            },
+            managedPaths: [
+                /^(.+?[\\/]node_modules[\\/])(@.+?[\\/])?(.+?)([\\/]|$)/,
+            ],
+        };
+        
         // تحسين معالجة الصور
         config.module.rules.push({
             test: /\.(png|jpe?g|gif|svg)$/i,

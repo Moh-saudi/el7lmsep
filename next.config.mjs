@@ -80,6 +80,22 @@ const nextConfig = {
             };
         }
         
+        // حل مشكلة تحذيرات webpack cache
+        config.infrastructureLogging = {
+            level: 'error',
+        };
+        
+        // إعدادات cache محسنة
+        config.cache = {
+            type: 'filesystem',
+            buildDependencies: {
+                config: [import.meta.url],
+            },
+            managedPaths: [
+                /^(.+?[\\/]node_modules[\\/])(@.+?[\\/])?(.+?)([\\/]|$)/,
+            ],
+        };
+        
         return config;
     },
 }

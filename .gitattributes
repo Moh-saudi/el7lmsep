@@ -1,0 +1,23 @@
+# Git LFS configuration for large files
+# This file tells Git which files should be handled by Git LFS
+
+# Large binary files
+*.node filter=lfs diff=lfs merge=lfs -text
+*.wasm filter=lfs diff=lfs merge=lfs -text
+
+# Large image files (if you want to use LFS for them)
+# *.jpg filter=lfs diff=lfs merge=lfs -text
+# *.png filter=lfs diff=lfs merge=lfs -text
+
+# Exclude node_modules completely
+node_modules/ export-ignore
+
+# Exclude build artifacts
+.next/ export-ignore
+out/ export-ignore
+dist/ export-ignore
+build/ export-ignore
+
+# Exclude large backup files
+backup/ export-ignore
+*.zip export-ignore
