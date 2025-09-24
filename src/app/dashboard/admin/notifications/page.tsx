@@ -117,7 +117,7 @@ export default function AdminNotificationsPage() {
     }
   };
 
-  const formatDate = (date) => {
+  const formatDate = (date: Date) => {
     return new Intl.DateTimeFormat('ar-EG', {
       year: 'numeric',
       month: 'long',
