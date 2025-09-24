@@ -1,5 +1,11 @@
-import { db } from '@/lib/firebase/config';
-import { doc, getDoc } from 'firebase/firestore';
+/**
+ * YouTube API Configuration
+ * تكوين YouTube API
+ */
+
+import { CONFIG } from "../config";
+import { db } from "@/lib/firebase/config";
+import { doc, getDoc } from "firebase/firestore";
 
 let cachedKey: string | null | undefined;
 
@@ -7,23 +13,26 @@ export async function getYouTubeApiKey(): Promise<string | null> {
   if (typeof cachedKey !== 'undefined') return cachedKey;
 
   // Prefer environment variable
-  const envKey = process.env.YOUTUBE_API_KEY?.trim();
+  const envKey = CONFIG.youtube.API_KEY?.trim();
   if (envKey) {
     cachedKey = envKey;
-    return cachedKey;
+    return envKey;
   }
 
+  // Fallback to Firestore
   try {
-    // Fallback to Firestore settings: app_settings/youtube { apiKey: string }
-    const ref = doc(db, 'app_settings', 'youtube');
-    const snap = await getDoc(ref);
-    const apiKey = (snap.exists() && (snap.data() as any)?.apiKey) || null;
-    cachedKey = apiKey;
-    return cachedKey;
-  } catch {
-    cachedKey = null;
-    return cachedKey;
+    const configDoc = await getDoc(doc(db, 'config', 'youtube'));
+    if (configDoc.exists()) {
+      const data = configDoc.data();
+      cachedKey = data.apiKey || null;
+      return cachedKey;
+    }
+  } catch (error) {
+    console.error('Error fetching YouTube API key from Firestore:', error);
   }
+
+  cachedKey = null;
+  return null;
 }
 
-
+export const YOUTUBE_CONFIG = CONFIG.youtube;

@@ -6,6 +6,13 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const token = searchParams.get('token') || BEON_V3_CONFIG.TOKEN;
 
+    if (!token) {
+      return NextResponse.json(
+        { success: false, error: 'توكن API مطلوب' },
+        { status: 400 }
+      );
+    }
+
     console.log('🔍 التحقق من حساب BeOn V3:', { token: token.substring(0, 10) + '...' });
 
     const response = await fetch(`${BEON_V3_CONFIG.BASE_URL}${BEON_V3_CONFIG.ENDPOINTS.ACCOUNT_DETAILS}`, {

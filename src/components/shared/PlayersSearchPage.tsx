@@ -593,7 +593,7 @@ export default function PlayersSearchPage({ accountType }: PlayersSearchPageProp
         setIsLoadingMore(false);
       }
     }
-  }, [user?.uid, players, playersPerPage, getPlayerImage, isLoadingMore]);
+  }, [user?.uid, playersPerPage, getPlayerImage, isLoadingMore]);
 
   // Load data on mount - FIXED: Only depend on user.uid to prevent infinite loops
   useEffect(() => {
@@ -604,7 +604,7 @@ export default function PlayersSearchPage({ accountType }: PlayersSearchPageProp
     }
   }, [user?.uid]); // Only depend on user.uid
 
-  // Auto-load more players when scrolling to bottom
+  // Auto-load more players when scrolling to bottom - محسن لمنع infinite loops
   useEffect(() => {
     const handleScroll = () => {
       if (window.innerHeight + document.documentElement.scrollTop >= document.documentElement.offsetHeight - 1000) {
@@ -616,7 +616,7 @@ export default function PlayersSearchPage({ accountType }: PlayersSearchPageProp
 
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [isLoading, isLoadingMore, players.length, loadMorePlayers]);
+  }, [isLoading, isLoadingMore, loadMorePlayers]); // إزالة players.length من dependencies
 
   // Optimized filtering - محسن بدون console logs
   const filteredPlayers = useMemo(() => {

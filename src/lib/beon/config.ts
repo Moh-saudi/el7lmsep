@@ -3,75 +3,46 @@
  * تكوين API BeOn V3
  */
 
-export const BEON_V3_CONFIG = {
-  // Base URL for BeOn V3 API
-  BASE_URL: process.env.BEON_V3_BASE_URL || 'https://v3.api.beon.chat',
-  
-  // Your API Token (correct token)
-  TOKEN: process.env.BEON_V3_TOKEN || 'Yt3A3RwMQHx49trsz1EMgSKP8qOD0CSVJXdJxy6IqNNtcYblsYWtfVAtaJpv',
-  
-  // Endpoints (updated to match documentation)
-  ENDPOINTS: {
-    // SMS Endpoints
-    SMS_BULK: '/api/v3/messages/sms/bulk',
-    SMS_TEMPLATE: '/api/v3/send/message/sms/template',
-    
-    // WhatsApp Endpoints (using SMS endpoints as per documentation)
-    WHATSAPP: '/api/v3/messages/sms/bulk',
-    
-    // Template Management
-    CREATE_TEMPLATE: '/api/v3/partner/templates/create',
-    
-    // Account
-    ACCOUNT_DETAILS: '/api/v3/account'
-  },
-  
-  // Default settings
-  DEFAULTS: {
-    SENDER_NAME: 'El7lm',
-    LANGUAGE: 'ar',
-    OTP_LENGTH: 4
-  }
-};
+import { CONFIG } from "../config";
 
-// Helper function to create headers
-export const createBeOnHeaders = (token?: string) => {
+export const BEON_V3_CONFIG = CONFIG.beon;
+
+// Export individual config values for backward compatibility
+export const BEON_BASE_URL = BEON_V3_CONFIG.BASE_URL;
+export const BEON_TOKEN = BEON_V3_CONFIG.TOKEN;
+export const BEON_SENDER_NAME = BEON_V3_CONFIG.SENDER_NAME;
+
+/**
+ * Create BeOn API headers
+ */
+export function createBeOnHeaders(token?: string) {
+  const authToken = token || BEON_TOKEN;
   return {
-    'beon-token': token || BEON_V3_CONFIG.TOKEN,
-    'Content-Type': 'application/json; charset=utf-8'
+    'Authorization': `Bearer ${authToken}`,
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
   };
-};
+}
 
-// Helper function to create form data headers
-export const createBeOnFormHeaders = (token?: string) => {
+/**
+ * Create BeOn API headers for form data
+ */
+export function createBeOnFormHeaders(token?: string) {
+  const authToken = token || BEON_TOKEN;
   return {
-    'beon-token': token || BEON_V3_CONFIG.TOKEN
+    'Authorization': `Bearer ${authToken}`,
+    'Accept': 'application/json',
   };
-};
+}
 
-// Response interfaces
+// Types for BeOn API
 export interface BeOnResponse {
   success: boolean;
   message?: string;
   error?: string;
-  data?: any;
   code?: string;
+  data?: any;
   retryAfter?: number;
-}
-
-export interface BeOnError {
-  code: string;
-  message: string;
-  details?: any;
-  retryAfter?: number;
-}
-
-export interface BeOnSMSResponse {
-  success: boolean;
-  messageId?: string;
-  phoneNumbers: string[];
-  status: 'sent' | 'failed' | 'pending';
-  timestamp?: string;
 }
 
 export interface SMSBulkRequest {
@@ -79,41 +50,7 @@ export interface SMSBulkRequest {
   message: string;
 }
 
-export interface SMSTemplateRequest {
-  template_id: number;
-  phoneNumber: string;
-  name: string;
-  vars: string[];
-}
-
-export interface TemplateCreateRequest {
-  name: string;
-  lang: string;
+export interface WhatsAppBulkRequest {
+  phoneNumbers: string[];
   message: string;
-}
-
-// Backward compatibility exports
-export const BEON_CONFIG = BEON_V3_CONFIG;
-export const getBeOnToken = () => BEON_V3_CONFIG.TOKEN;
-export const getBeOnEndpoint = (endpoint: string) => `${BEON_V3_CONFIG.BASE_URL}${endpoint}`;
-
-// Utility functions
-export async function retryRequest<T>(
-  requestFn: () => Promise<T>, 
-  maxRetries: number = 3,
-  delay: number = 1000
-): Promise<T> {
-  for (let i = 0; i < maxRetries; i++) {
-    try {
-      return await requestFn();
-    } catch (error) {
-      if (i === maxRetries - 1) throw error;
-      
-      // زيادة التأخير مع كل محاولة
-      const currentDelay = delay * Math.pow(2, i);
-      console.log(`🔄 إعادة المحاولة ${i + 1}/${maxRetries} بعد ${currentDelay}ms`);
-      await new Promise(resolve => setTimeout(resolve, currentDelay));
-    }
-  }
-  throw new Error('فشل في جميع محاولات إعادة الإرسال');
 }

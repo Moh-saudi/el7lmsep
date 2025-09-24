@@ -1,25 +1,27 @@
 {
-  "totalSent": 5,
-  "successful": 5,
+  "totalSent": 6,
+  "successful": 6,
   "failed": 0,
   "pending": 0,
-  "todaySent": 5,
-  "thisWeekSent": 5,
-  "thisMonthSent": 5,
+  "todaySent": 6,
+  "thisWeekSent": 6,
+  "thisMonthSent": 6,
   "lastReset": "2025-09-10T08:53:50.381Z",
   "dailyStats": {
-    "2025-09-10": 5
+    "2025-09-10": 5,
+    "2025-09-22": 1
   },
   "hourlyStats": {
+    "7": 1,
     "11": 1,
     "17": 4
   },
   "errorStats": {},
   "topPhones": {
-    "+201017799580": 1
+    "+201017799580": 2
   },
   "messageTypes": {
-    "sms": 5,
+    "sms": 6,
     "whatsapp": 0,
     "unified": 0
   }

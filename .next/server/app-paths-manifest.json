@@ -1,7 +1,1 @@
-{
-  "/page": "app/page.js",
-  "/tournaments/unified-registration/page": "app/tournaments/unified-registration/page.js",
-  "/dashboard/admin/payments/page": "app/dashboard/admin/payments/page.js",
-  "/dashboard/admin/tournaments/page": "app/dashboard/admin/tournaments/page.js",
-  "/dashboard/dream-academy/page": "app/dashboard/dream-academy/page.js"
-}
+{}

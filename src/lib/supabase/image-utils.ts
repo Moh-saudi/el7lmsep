@@ -1,3 +1,8 @@
+/**
+ * Supabase Image Utilities
+ * أدوات معالجة صور Supabase
+ */
+
 import { supabase } from './config';
 
 export const getSupabaseImageUrl = (path: string, bucket: string = 'avatars') => {
@@ -213,4 +218,4 @@ export const getPlayerAvatarUrl = (userData: any, user?: any) => {
   // إذا لم نجد صورة، إرجاع null للسماح بعرض الصورة الافتراضية
   console.log('❌ No player avatar found, returning null for fallback');
   return null;
-}; 
+};

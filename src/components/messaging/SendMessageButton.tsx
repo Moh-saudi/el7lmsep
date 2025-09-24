@@ -317,10 +317,12 @@ const SendMessageButton: React.FC<SendMessageButtonProps> = ({
           participants: existingConversation.data().participants
         });
 
-        // تحديث أسماء المشاركين
+        // تحديث أسماء المشاركين وأنواعهم
         batch.update(conversationRef, {
           [`participantNames.${user.uid}`]: getUserDisplayName(),
           [`participantNames.${targetUserId}`]: receiverName,
+          [`participantTypes.${user.uid}`]: userData?.accountType || 'player',
+          [`participantTypes.${targetUserId}`]: targetUserType || 'player',
           updatedAt: serverTimestamp()
         });
       } else {
@@ -340,8 +342,8 @@ const SendMessageButton: React.FC<SendMessageButtonProps> = ({
             [targetUserId]: receiverName
           },
           participantTypes: {
-            [user.uid]: userData.accountType,
-            [targetUserId]: targetUserType
+            [user.uid]: userData?.accountType || 'player',
+            [targetUserId]: targetUserType || 'player'
           },
           lastMessage: finalMessage,
           lastMessageTime: serverTimestamp(),

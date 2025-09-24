@@ -1031,5 +1031,6 @@ export default function ClubPlayersPage() {
     </main>
   );
 }
-}  
+} 
+ 
  

@@ -2113,7 +2113,7 @@ function PlayerReportPage() {
 
   // تم دمج هذه الـ useEffect في الـ useEffect السابق لتجنب التكرار
 
-  // إضافة useEffect لمراقبة حالة التحميل
+  // إضافة useEffect لمراقبة حالة التحميل - محسن لمنع infinite loops
   useEffect(() => {
     if (isLoading) {
       console.log('⏳ [useEffect] حالة التحميل: جاري تحميل بيانات اللاعب...', {
@@ -2128,7 +2128,7 @@ function PlayerReportPage() {
         isCorrectPlayer: player.id === targetPlayerId
       });
       
-      // التحقق من أن البيانات صحيحة
+      // التحقق من أن البيانات صحيحة - بدون إعادة تعيين state لتجنب infinite loop
       if (player.id !== targetPlayerId) {
         console.error('❌ [useEffect] خطأ: البيانات المعروضة ليست للاعب المطلوب!', {
           displayedPlayerId: player.id,
@@ -2136,11 +2136,8 @@ function PlayerReportPage() {
           targetPlayerId: targetPlayerId
         });
         
-        // إعادة تحميل البيانات الصحيحة
-        console.log('🔄 [useEffect] إعادة تحميل البيانات الصحيحة...');
-        setIsLoading(true);
-        setError(null);
-        setPlayer(null);
+        // فقط تسجيل الخطأ بدون إعادة تعيين state
+        console.log('⚠️ [useEffect] تم اكتشاف خطأ في البيانات - سيتم إعادة التحميل من خلال useEffect منفصل');
       }
     } else if (error) {
       console.log('❌ [useEffect] حدث خطأ في تحميل البيانات:', error);
