@@ -22,8 +22,8 @@ export async function POST(request: NextRequest) {
         body: {
           phoneNumbers: [phone],
           message: message,
-          sender: BEON_V3_CONFIG.DEFAULTS.SENDER_NAME,
-          lang: BEON_V3_CONFIG.DEFAULTS.LANGUAGE
+          sender: BEON_V3_CONFIG.SENDER_NAME,
+          lang: 'ar'
         }
       },
       // تنسيق بدون sender
@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
         body: {
           phoneNumbers: [phone],
           message: message,
-          lang: BEON_V3_CONFIG.DEFAULTS.LANGUAGE
+          lang: 'ar'
         }
       },
       // تنسيق بدون lang
@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
         body: {
           phoneNumbers: [phone],
           message: message,
-          sender: BEON_V3_CONFIG.DEFAULTS.SENDER_NAME
+          sender: BEON_V3_CONFIG.SENDER_NAME
         }
       },
       // تنسيق مبسط
@@ -58,8 +58,8 @@ export async function POST(request: NextRequest) {
         body: {
           phoneNumber: phone,
           message: message,
-          sender: BEON_V3_CONFIG.DEFAULTS.SENDER_NAME,
-          lang: BEON_V3_CONFIG.DEFAULTS.LANGUAGE
+          sender: BEON_V3_CONFIG.SENDER_NAME,
+          lang: 'ar'
         }
       },
       // تنسيق مع text بدلاً من message
@@ -68,8 +68,8 @@ export async function POST(request: NextRequest) {
         body: {
           phoneNumbers: [phone],
           text: message,
-          sender: BEON_V3_CONFIG.DEFAULTS.SENDER_NAME,
-          lang: BEON_V3_CONFIG.DEFAULTS.LANGUAGE
+          sender: BEON_V3_CONFIG.SENDER_NAME,
+          lang: 'ar'
         }
       }
     ];
