@@ -29,8 +29,8 @@ export async function POST(request: NextRequest) {
         const requestBody = {
           phoneNumber: phone,
           message: message,
-          sender: BEON_V3_CONFIG.DEFAULTS.SENDER_NAME,
-          lang: BEON_V3_CONFIG.DEFAULTS.LANGUAGE
+          sender: BEON_V3_CONFIG.SENDER_NAME,
+          lang: 'ar'
         };
 
         const response = await fetch(`${BEON_V3_CONFIG.BASE_URL}${endpoint}`, {
