@@ -23,8 +23,10 @@ const eslintConfig = [
       // إلغاء قواعد HTML التي تسبب مشاكل
       "@next/next/no-head-element": "off",
       "jsx-a11y/anchor-is-valid": "off",
-    },
-    ignorePatterns: [
+    }
+  },
+  {
+    ignores: [
       "node_modules/",
       ".next/",
       "out/",
@@ -33,7 +35,8 @@ const eslintConfig = [
       "**/*.test.ts",
       "**/*.test.tsx",
       "**/*.spec.ts",
-      "**/*.spec.tsx"
+      "**/*.spec.tsx",
+      "backup/**/*"
     ]
   }
 ];
