@@ -5,6 +5,9 @@
 
 import { BEON_V3_CONFIG } from "../config";
 
+// Re-export the main config for direct imports
+export { BEON_V3_CONFIG };
+
 // Export individual config values for backward compatibility
 export const BEON_BASE_URL = BEON_V3_CONFIG.BASE_URL;
 export const BEON_TOKEN = BEON_V3_CONFIG.TOKEN;
