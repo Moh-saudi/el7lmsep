@@ -3,9 +3,7 @@
  * تكوين API BeOn V3
  */
 
-import { CONFIG } from "../config";
-
-export const BEON_V3_CONFIG = CONFIG.beon;
+import { BEON_V3_CONFIG } from "../config";
 
 // Export individual config values for backward compatibility
 export const BEON_BASE_URL = BEON_V3_CONFIG.BASE_URL;

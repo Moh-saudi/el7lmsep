@@ -3,7 +3,7 @@
  * تكوين YouTube API
  */
 
-import { CONFIG } from "../config";
+import { YOUTUBE_CONFIG } from "../config";
 import { db } from "@/lib/firebase/config";
 import { doc, getDoc } from "firebase/firestore";
 
@@ -13,7 +13,7 @@ export async function getYouTubeApiKey(): Promise<string | null> {
   if (typeof cachedKey !== 'undefined') return cachedKey;
 
   // Prefer environment variable
-  const envKey = CONFIG.youtube.API_KEY?.trim();
+  const envKey = YOUTUBE_CONFIG.API_KEY?.trim();
   if (envKey) {
     cachedKey = envKey;
     return envKey;
@@ -35,4 +35,4 @@ export async function getYouTubeApiKey(): Promise<string | null> {
   return null;
 }
 
-export const YOUTUBE_CONFIG = CONFIG.youtube;
+export { YOUTUBE_CONFIG };

@@ -15,17 +15,17 @@ import {
 } from "firebase/firestore";
 import { getStorage, FirebaseStorage } from "firebase/storage";
 import { getFunctions, Functions } from "firebase/functions";
-import { CONFIG } from "../config";
+import { FIREBASE_CONFIG } from "../config";
 
 // Firebase configuration
 const firebaseConfig = {
-  apiKey: CONFIG.firebase.apiKey,
-  authDomain: CONFIG.firebase.authDomain,
-  projectId: CONFIG.firebase.projectId,
-  storageBucket: CONFIG.firebase.storageBucket,
-  messagingSenderId: CONFIG.firebase.messagingSenderId,
-  appId: CONFIG.firebase.appId,
-  measurementId: CONFIG.firebase.measurementId,
+  apiKey: FIREBASE_CONFIG.API_KEY,
+  authDomain: FIREBASE_CONFIG.AUTH_DOMAIN,
+  projectId: FIREBASE_CONFIG.PROJECT_ID,
+  storageBucket: FIREBASE_CONFIG.STORAGE_BUCKET,
+  messagingSenderId: FIREBASE_CONFIG.MESSAGING_SENDER_ID,
+  appId: FIREBASE_CONFIG.APP_ID,
+  measurementId: FIREBASE_CONFIG.MEASUREMENT_ID,
 };
 
 // Initialize Firebase
