@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useEffect, useState, ReactNode, useMemo, useCallback } from 'react';
 import { 
   onAuthStateChanged, 
   signInWithEmailAndPassword, 
@@ -247,15 +247,15 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
   useEffect(() => {
     let isSubscribed = true;
     let userDocUnsubscribe: (() => void) | null = null;
-    let isInitialized = false;
+    const isInitializedRef = { current: false };
 
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      // تجنب التكرار في التهيئة
-      if (isInitialized) {
+      // تجنب التكرار في التهيئة باستخدام ref
+      if (isInitializedRef.current) {
         console.log('🔄 AuthProvider - Skipping duplicate initialization');
         return;
       }
-      isInitialized = true;
+      isInitializedRef.current = true;
       try {
         if (user && isSubscribed) {
           setUser(user);
@@ -427,7 +427,7 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
 
     return () => {
       isSubscribed = false;
-      isInitialized = false;
+      isInitializedRef.current = false;
       if (userDocUnsubscribe) {
         userDocUnsubscribe();
       }
@@ -440,7 +440,7 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
   }, []);
 
   // Enhanced login function with network resilience
-  const login = async (email: string, password: string): Promise<{ user: User; userData: UserData }> => {
+  const login = useCallback(async (email: string, password: string): Promise<{ user: User; userData: UserData }> => {
     try {
       console.log('🔐 AuthProvider - Login attempt started:', {
         email: email,
@@ -604,10 +604,10 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
       // هذا يسمح لصفحة تسجيل الدخول بالتعرف على نوع الخطأ
       throw error;
     }
-  };
+  }, []);
 
   // Enhanced registration function
-  const register = async (
+  const register = useCallback(async (
     email: string, 
     password: string, 
     role: UserRole, 
@@ -771,10 +771,10 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   // Logout function
-  const logout = async (): Promise<void> => {
+  const logout = useCallback(async (): Promise<void> => {
     try {
       await signOut(auth);
       setUser(null);
@@ -786,10 +786,10 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
       // لا نقوم بتعيين error في الحالة العامة للـ logout
       // setError('Error during logout');
     }
-  };
+  }, [router]);
 
   // Update user data function
-  const updateUserData = async (updates: Partial<UserData>): Promise<void> => {
+  const updateUserData = useCallback(async (updates: Partial<UserData>): Promise<void> => {
     if (!user) return;
     
     try {
@@ -822,20 +822,20 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
       console.error('Error updating user data:', error);
       setError('Failed to update user data');
     }
-  };
+  }, [user]);
 
   // Password reset function
-  const resetPassword = async (email: string): Promise<void> => {
+  const resetPassword = useCallback(async (email: string): Promise<void> => {
     try {
       await sendPasswordResetEmail(auth, email);
     } catch (error) {
       console.error('Password reset error:', error);
       throw error;
     }
-  };
+  }, []);
 
   // Change password function
-  const changePassword = async (currentPassword: string, newPassword: string): Promise<void> => {
+  const changePassword = useCallback(async (currentPassword: string, newPassword: string): Promise<void> => {
     if (!user || !user.email) throw new Error('User not authenticated');
 
     try {
@@ -849,10 +849,10 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
       console.error('Change password error:', error);
       throw error;
     }
-  };
+  }, [user]);
 
   // Refresh user data function
-  const refreshUserData = async (): Promise<void> => {
+  const refreshUserData = useCallback(async (): Promise<void> => {
     if (!user) return;
     
     try {
@@ -935,13 +935,13 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
       console.error('Error refreshing user data:', error);
       setError('Failed to refresh user data');
     }
-  };
+  }, [user]);
 
   // Clear error function
-  const clearError = () => setError(null);
+  const clearError = useCallback(() => setError(null), []);
 
-  // Context value
-  const value: AuthContextType = {
+  // Context value - memoized to prevent unnecessary re-renders
+  const value: AuthContextType = useMemo(() => ({
     user,
     userData,
     loading,
@@ -955,7 +955,7 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
     changePassword,
     clearError,
     refreshUserData
-  };
+  }), [user, userData, loading, error, login, register, logout, updateUserData, resetPassword, changePassword, clearError, refreshUserData]);
 
   return (
     <AuthContext.Provider value={value}>
